@@ -1,5 +1,6 @@
 import Header from "@/components/Header"
 import ListItem from "@/components/ListItem";
+import NowPlayingBar from "@/components/NowPlayingBar";
 
 export default function Home() {
   return (
@@ -46,6 +47,7 @@ export default function Home() {
           </h1>
         </div>
       </div>
+      <NowPlayingBar />
     </div>
   );
 }
