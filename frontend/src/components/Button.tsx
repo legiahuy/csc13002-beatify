@@ -7,7 +7,7 @@ interface ButtonProps
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
   className,
   children,
-  disable,
+  disabled,
   type = "button",
   ...props
 }, ref) => {
@@ -22,8 +22,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
         border-transparent
         px-3
         py-3
-        disable:cursor-not-allowed
-        disable:opacity-50
+        disabled:cursor-not-allowed
+        disabled:opacity-50
         text-black
         font-bold
         hover:opacity-80
@@ -31,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
       `, 
         className
       )}
-      disabled={disable}
+      disabled={disabled}
       ref={ref}
       {...props}
     >
