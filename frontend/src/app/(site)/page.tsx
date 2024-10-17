@@ -1,6 +1,6 @@
 import Header from "@/components/Header"
 import ListItem from "@/components/ListItem";
-import NowPlayingBar from "@/components/NowPlayingBar";
+import NowPlayingBar from "@/components/PlayingBar";
 
 export default function Home() {
   return (
