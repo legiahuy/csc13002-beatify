@@ -2,9 +2,12 @@ import { forwardRef } from "react"
 import { twMerge } from "tailwind-merge";
 
 interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  fullWidth?: boolean;
+}
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
+  fullWidth,
   className,
   children,
   disabled,
@@ -15,7 +18,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(({
     <button
       type={type}
       className={twMerge(`
-        w-full
+        ${fullWidth ? 'w-full' : ''}
         rounded-full
         bg-cyan-500
         border

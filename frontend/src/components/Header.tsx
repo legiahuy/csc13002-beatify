@@ -36,6 +36,9 @@ const Header:React.FC<HeaderProps> = ({
   return (
     <div
       className={twMerge(`
+        sticky
+        top-0
+        z-50
         h-fit
         bg-gradient-to-b
         from-cyan-800
@@ -157,7 +160,7 @@ const Header:React.FC<HeaderProps> = ({
           <>
             <div>
               <Button
-                onClick={() => {}}
+                onClick={() => router.push('/register')}
                 className="
                   bg-transparent
                   text-neutral-300
@@ -169,7 +172,7 @@ const Header:React.FC<HeaderProps> = ({
             </div>
             <div>
               <Button
-                onClick={() => {}}
+                onClick={() => router.push('/login')}
                 className="
                   bg-white
                   px-6

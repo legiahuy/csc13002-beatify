@@ -1,15 +1,16 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import path from "path";
 import { useMemo } from "react";
 import { HiHome } from "react-icons/hi";
-import { BiSearch } from "react-icons/bi";
-import { BiSolidMusic } from "react-icons/bi";
+import { BiSearch, BiSolidMusic } from "react-icons/bi";
+import { IoAdd } from "react-icons/io5";
+import { IoIosAlbums } from "react-icons/io";
+import { PiMicrophoneStageDuotone } from "react-icons/pi";
+import { BsMusicNoteList } from "react-icons/bs";
 
 import Box from "./Box"
 import SidebarItem from "./SidebarItem";
-import Library from "./Library";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -20,20 +21,55 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
 
-  const routes = useMemo(() => [
+  const menuRoutes = useMemo(() => [
     {
       icon: HiHome,
       label: 'Home',
-      active: pathname !== '/explore',
+      active: pathname === '/',
       href: '/'
     },
     {
       icon: BiSolidMusic,
-      label: 'Explore',
-      active: pathname === '/explore',
-      href: '/explore'
+      label: 'Genres',
+      active: pathname === '/genres',
+      href: '/genres'
+    },
+    {
+      icon: IoIosAlbums,
+      label: 'Albums',
+      active: pathname === '/albums',
+      href: '/albums'
+    },
+    {
+      icon: PiMicrophoneStageDuotone,
+      label: 'Artists',
+      active: pathname === '/artists',
+      href: '/artists'
     }
   ], [pathname]);
+
+  const libraryRoutes = useMemo(() => [
+    {
+      icon: BsMusicNoteList,
+      label: 'Recent Added',
+      href: '/recent-added'
+    },
+    {
+      icon: BsMusicNoteList,
+      label: 'Albums',
+      href: '/my-albums'
+    },
+    {
+      icon: BsMusicNoteList,
+      label: 'Favourites',
+      href: '/favourites'
+    },
+    {
+      icon: BsMusicNoteList,
+      label: 'Local',
+      href: '/local'
+    }
+  ], []);
 
   return (
     <div className="flex h-full">
@@ -45,35 +81,47 @@ const Sidebar: React.FC<SidebarProps> = ({
         bg-black
         w-[300px]
         p-2
-      "
-    >
-      <Box>
-        <div 
-          className="
-            flex
-            flex-col
-            gap-y-4
-            px-5
-            py-4
-          "
-        >
-          {routes.map((item) =>  (
-            <SidebarItem
-              key={item.label}
-              {...item}
-            />
-          ))}
+      ">
+        <Box>
+          <div className="flex flex-col gap-y-4 px-5 py-4">
+            <p className="text-white font-bold text-lg">BEATIFY</p>
+            <div>
+              <p className="text-neutral-500 text-sm mb-4">MENU</p>
+              {menuRoutes.map((item) => (
+                <SidebarItem
+                  key={item.label}
+                  {...item}
+                />
+              ))}
+            </div>
+            
+            <div>
+              <p className="text-neutral-500 text-sm mb-4">LIBRARY</p>
+              {libraryRoutes.map((item) => (
+                <SidebarItem
+                  key={item.label}
+                  {...item}
+                />
+              ))}
+            </div>
+
+            <div>
+              <p className="text-neutral-500 text-sm mb-4">PLAYLIST</p>
+              <SidebarItem
+              //icon plus new item
+                icon={IoAdd}
+                label="Create new playlist"
+                href="/create-playlist"
+              />
+            </div>
           </div>
-      </Box>
-        <Box className="overflow-y-auto h-full">
-          <Library />
         </Box>
       </div>
       <main className="h-full flex-1 overflow-y-auto py-2">
         {children}
       </main>
     </div>
-    );
+  );
 }
 
 export default Sidebar;

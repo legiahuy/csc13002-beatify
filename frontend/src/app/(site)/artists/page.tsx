@@ -1,58 +1,7 @@
 import Header from "@/components/Header"
 import Image from "next/image";
 import NowPlayingBar from "@/components/PlayingBar";
-
-const topArtists = [
-  {
-    image: "/images/hieuthuhai.jpeg",
-    name: "Hiếu Thứ Hai",
-    title: "Nghệ sĩ",
-    href: "vu"
-  },
-  {
-    image: "/images/sontung.jpg",
-    name: "Sơn Tùng M-TP",
-    title: "Nghệ sĩ",
-    href: "sontung"
-  },
-  {
-    image: "/images/jack.jpg",
-    name: "Jack - J97",
-    title: "Nghệ sĩ",
-    href: "jack"
-  },
-  {
-    image: "/images/tlinh.jpg",
-    name: "TLINH",
-    title: "Nghệ sĩ",
-    href: "tlinh"
-  },
-  {
-    image: "/images/dalab.jpg",
-    name: "Da LAB",
-    title: "Nghệ sĩ",
-    href: "dalab"
-  },
-  // Thêm nhiều nghệ sĩ hơn
-  {
-    image: "/images/hoangthuylinh.jpg",
-    name: "Hoàng Thùy Linh",
-    title: "Nghệ sĩ",
-    href: "hoangthuylinh"
-  },
-  {
-    image: "/images/denluot.jpg",
-    name: "Đen Vâu",
-    title: "Nghệ sĩ",
-    href: "denvau"
-  },
-  {
-    image: "/images/mytan.jpg",
-    name: "Mỹ Tâm",
-    title: "Nghệ sĩ",
-    href: "mytam"
-  }
-];
+import { topArtists } from "@/data/songs";
 
 export default function Artists() {
   return (
