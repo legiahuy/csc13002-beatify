@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import {Figtree} from 'next/font/google'
 import Sidebar from '@/components/Sidebar'
+import { PlayerProvider } from '@/contexts/PlayerContext'
 
 const font = Figtree({ subsets: ['latin']})
 
@@ -24,16 +25,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body
         className={font.className}>
-        <Sidebar>
-          {children}
-        </Sidebar>
+        <PlayerProvider>
+          <Sidebar>
+            {children}
+          </Sidebar>
+        </PlayerProvider>
       </body>
     </html>
   );

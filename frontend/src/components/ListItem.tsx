@@ -7,75 +7,65 @@ import { FaPlay } from "react-icons/fa"
 interface ListItemProps {
   image: string;
   name: string;
-  artist: string;
   href: string;
+  artist: string;
 }
 
 const ListItem: React.FC<ListItemProps> = ({
   image,
   name,
-  artist,
-  href
+  href,
+  artist
 }) => {
   const router = useRouter();
 
   const onClick = () => {
-    router.push(href);
+    router.push(`/songs/${href}`);
   }
   return (
-    <div
+    <button
+      onClick={onClick}
       className="
         relative 
         group 
         flex 
-        flex-col
-        items-center
-        cursor-pointer
+        flex-col 
+        items-center 
+        justify-center 
+        rounded-md 
+        overflow-hidden 
+        gap-x-4 
+        bg-neutral-100/10 
+        cursor-pointer 
+        hover:bg-neutral-100/20 
+        transition 
+        p-3
       "
     >
       <div className="
-        relative
-        aspect-square
+        relative 
+        aspect-square 
         w-full
+        h-full 
+        rounded-md 
         overflow-hidden
-        rounded-md
       ">
-        <Image 
+        <Image
           className="object-cover"
-          fill
           src={image}
-          alt="Image"
+          fill
+          alt={name}
         />
-        <div 
-          className="
-            absolute
-            transition
-            opacity-0
-            rounded-full
-            flex
-            items-center
-            justify-center
-            bg-green-500
-            p-3
-            drop-shadow-md
-            right-4
-            bottom-4
-            group-hover:opacity-100
-            hover:scale-110
-          "
-        >
-          <FaPlay className="text-black" size={12}/>
-        </div>
       </div>
-      <div className="flex flex-col w-full gap-y-1 mt-4">
-        <p className="font-semibold text-sm text-white truncate w-full">
+      <div className="flex flex-col items-start w-full pt-4 gap-y-1">
+        <p className="font-semibold truncate w-full text-white">
           {name}
         </p>
-        <p className="text-xs text-neutral-400 truncate w-full">
+        <p className="text-neutral-400 text-sm pb-4 w-full truncate">
           {artist}
         </p>
       </div>
-    </div>
+    </button>
   );
 }
 
