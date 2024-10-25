@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
 import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
+import { useState } from "react";
 
 import Button from "./Button"
 
@@ -20,6 +21,13 @@ const Header:React.FC<HeaderProps> = ({
   className
 }) => {
   const router = useRouter();
+  const [searchValue, setSearchValue] = useState("");
+
+  const onSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Xử lý tìm kiếm ở đây
+    router.push(`/search?q=${searchValue}`);
+  }
 
   const HandleLogout = () => {
     // Handle logout in the future
@@ -42,12 +50,14 @@ const Header:React.FC<HeaderProps> = ({
         flex
         items-center
         justify-between
+        gap-x-4
       ">
         <div className="
           hidden
           md:flex
           gap-x-2
           items-center
+          flex-shrink-0
         ">
           <button
             onClick={() => router.back()}
@@ -78,44 +88,72 @@ const Header:React.FC<HeaderProps> = ({
             <RxCaretRight className="text-white" size={35}/>
           </button>
         </div>
-        <div className="flex md:hidden gap-x-2 items-center">
-          <button
-            className="
-              rounded-full
-              p-2
-              bg-white
-              flex
-              items-center
-              justify-center
-              hover:opacity-80
-              transition  
-            "
-          >
-            <HiHome className="text-black" size={20} />
-          </button>
-          <button
-            className="
-              rounded-full
-              p-2
-              bg-white
-              flex
-              items-center
-              justify-center
-              hover:opacity-80
-              transition  
-            "
-          >
-            <BiSearch className="text-black" size={20} />
-          </button>
-        </div>
-        <div
+
+        {/* Thanh tìm kiếm được cập nhật */}
+        <form 
+          onSubmit={onSearch}
           className="
-            flex
-            justify-between
-            items-center
-            gap-x-4
+            hidden 
+            md:flex 
+            flex-1 
+            justify-center 
+            max-w-[400px]
+            w-full
+            mx-auto
           "
         >
+          <div className="
+            flex 
+            items-center 
+            w-full 
+            bg-neutral-900 
+            rounded-full 
+            overflow-hidden
+            transition
+            border
+            border-transparent
+            focus-within:bg-neutral-800
+          ">
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder="Tìm kiếm..."
+              className="
+                w-full 
+                px-4 
+                py-2 
+                outline-none 
+                bg-transparent
+                text-white 
+                placeholder:text-neutral-400
+                text-sm
+              "
+            />
+            <button 
+              type="submit"
+              className="
+                p-2
+                text-neutral-400
+                hover:text-white
+                transition
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <BiSearch size={20} />
+            </button>
+          </div>
+        </form>
+
+        <div className="
+          flex
+          justify-end
+          items-center
+          gap-x-4
+          flex-shrink-0
+        ">
           <>
             <div>
               <Button
