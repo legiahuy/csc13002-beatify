@@ -24,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     {
       icon: HiHome,
       label: 'Home',
-      active: pathname !== '/search' && pathname !== '/explore',
+      active: pathname !== '/explore',
       href: '/'
     },
     {
@@ -32,12 +32,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       label: 'Explore',
       active: pathname === '/explore',
       href: '/explore'
-    },
-    {
-      icon: BiSearch,
-      label: 'Search',
-      active: pathname === '/search',
-      href: '/search'
     }
   ], [pathname]);
 
