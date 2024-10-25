@@ -7,41 +7,38 @@ import { FaPlay } from "react-icons/fa"
 interface ListItemProps {
   image: string;
   name: string;
+  artist: string;
   href: string;
 }
 
 const ListItem: React.FC<ListItemProps> = ({
   image,
   name,
+  artist,
   href
 }) => {
   const router = useRouter();
 
   const onClick = () => {
-    // Add authentication before push
     router.push(href);
   }
   return (
-    <button
-      onClick={onClick}
+    <div
       className="
-        relative
-        group
-        flex
+        relative 
+        group 
+        flex 
+        flex-col
         items-center
-        rounded-md
-        overflow-hidden
-        gap-x-4
-        bg-neutral-100/10
-        hover:bg-neutral-100/20
-        transition
-        pr-4
+        cursor-pointer
       "
     >
       <div className="
         relative
-        min-h-[64px]
-        min-w-[64px]
+        aspect-square
+        w-full
+        overflow-hidden
+        rounded-md
       ">
         <Image 
           className="object-cover"
@@ -49,31 +46,36 @@ const ListItem: React.FC<ListItemProps> = ({
           src={image}
           alt="Image"
         />
+        <div 
+          className="
+            absolute
+            transition
+            opacity-0
+            rounded-full
+            flex
+            items-center
+            justify-center
+            bg-green-500
+            p-3
+            drop-shadow-md
+            right-4
+            bottom-4
+            group-hover:opacity-100
+            hover:scale-110
+          "
+        >
+          <FaPlay className="text-black" size={12}/>
+        </div>
       </div>
-      <p className="font-medium truncate py-5">
-        {name}
-      </p>
-      <div 
-        className="
-          absolute
-          transition
-          opacity-0
-          rounded-full
-          flex
-          items-center
-          justify-center
-          bg-cyan-500
-          p-4
-          drop-shadow-md
-          right-5
-          group-hover:opacity-100
-          hover:scale-110
-        "
-      >
-        <FaPlay className="text-black"/>
+      <div className="flex flex-col w-full gap-y-1 mt-4">
+        <p className="font-semibold text-sm text-white truncate w-full">
+          {name}
+        </p>
+        <p className="text-xs text-neutral-400 truncate w-full">
+          {artist}
+        </p>
       </div>
-      
-    </button>
+    </div>
   );
 }
 
