@@ -6,6 +6,7 @@ import Image from "next/image";
 import NowPlayingBar from "@/components/PlayingBar";
 import { FaPlay, FaPause } from 'react-icons/fa';
 import { usePlayer } from '@/contexts/PlayerContext';
+import Link from 'next/link';
 
 interface SongPageProps {
   params: {
@@ -24,12 +25,15 @@ export default function SongPage({ params }: SongPageProps) {
   const isCurrentSong = currentSong?.href === song.href;
 
   return (
-    <div className="bg-gradient-to-b from-neutral-800 to-neutral-900 h-full w-full overflow-hidden overflow-y-auto">
+    <div className="bg-gradient-to-b from-neutral-800 to-neutral-900 h-full w-[99.5%] rounded-lg overflow-hidden overflow-y-auto">
+      <Header>
+        <div></div>
+      </Header>
       <div className="p-6">
         <div className="flex flex-col md:flex-row items-end gap-x-7">
           <div className="relative h-64 w-64 shadow-2xl">
             <Image
-              className="object-cover"
+              className="object-cover rounded-lg"
               fill
               src={song.image}
               alt={song.name}
@@ -93,26 +97,43 @@ export default function SongPage({ params }: SongPageProps) {
             <div className="flex-1">Tiêu đề</div>
             <div className="w-[100px] text-right">⏱</div>
           </div>
-          <div 
-            onClick={() => {
-              if (isCurrentSong) {
-                togglePlay();
-              } else {
-                playSong(song);
-              }
-            }}
-            className="flex items-center text-neutral-400 text-sm px-6 py-4 hover:bg-white/10 rounded-lg cursor-pointer"
-          >
-            <div className="w-[30px]">
-              {isCurrentSong && isPlaying ? (
-                <FaPause size={16} />
-              ) : (
-                <FaPlay size={16} />
-              )}
+          <Link href={`/songs/${song.href}`}>
+            <div 
+              className="
+                flex 
+                items-center 
+                text-neutral-400 
+                text-sm 
+                px-6 
+                py-4 
+                hover:bg-white/10 
+                rounded-lg 
+                cursor-pointer
+                group
+              "
+            >
+              <div className="w-[30px]">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault(); // Ngăn chặn chuyển trang khi click vào play
+                    if (isCurrentSong) {
+                      togglePlay();
+                    } else {
+                      playSong(song);
+                    }
+                  }}
+                >
+                  {isCurrentSong && isPlaying ? (
+                    <FaPause size={16} />
+                  ) : (
+                    <FaPlay size={16} />
+                  )}
+                </button>
+              </div>
+              <div className="flex-1">{song.name}</div>
+              <div className="w-[100px] text-right">{song.duration}</div>
             </div>
-            <div className="flex-1">{song.name}</div>
-            <div className="w-[100px] text-right">{song.duration}</div>
-          </div>
+          </Link>
         </div>
       </div>
       <NowPlayingBar />
