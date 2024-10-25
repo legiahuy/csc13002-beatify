@@ -28,7 +28,7 @@ export const trendingHits = [
   },
   {
     image: "/images/thienlyoi.jpg",
-    name: "Thiên lý ơi",
+    name: "Thiên Lý ơi",
     artist: "Jack - J97", 
     href: "thienly",
     type: "Single",
