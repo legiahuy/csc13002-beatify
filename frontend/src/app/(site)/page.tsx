@@ -4,73 +4,7 @@ import NowPlayingBar from "@/components/PlayingBar";
 import Image from "next/image";
 import Link from "next/link";
 import { BiChevronRight } from "react-icons/bi";
-
-// Thêm data cho trending hits và top artists
-const trendingHits = [
-  {
-    image: "/images/hieuthuhai.jpeg",
-    name: "APT.",
-    artist: "ROSÉ, Bruno Mars",
-    href: "apt"
-  },
-  {
-    image: "/images/nguoihaynoi.jpg",
-    name: "NGUOIHAYNOID",
-    artist: "hoài nam",
-    href: "nguoihaynoid"
-  },
-  {
-    image: "/images/dunglam.jpg",
-    name: "Đừng làm trái tim anh đau",
-    artist: "Sơn Tùng M-TP",
-    href: "dunglam"
-  },
-  {
-    image: "/images/thienlyoi.jpg",
-    name: "Thiên lý ơi",
-    artist: "Jack - J97",
-    href: "thienly"
-  },
-  {
-    image: "/images/nguoihaynoi.jpg",
-    name: "NGUOIHAYNOID",
-    artist: "hoài nam",
-    href: "nguoihaynoid2"
-  }
-];
-
-const topArtists = [
-  {
-    image: "/images/hieuthuhai.jpeg",
-    name: "Hiếu Thứ Hai",
-    title: "Nghệ sĩ",
-    href: "vu"
-  },
-  {
-    image: "/images/sontung.jpg",
-    name: "Sơn Tùng M-TP",
-    title: "Nghệ sĩ",
-    href: "sontung"
-  },
-  {
-    image: "/images/jack.jpg",
-    name: "Jack - J97",
-    title: "Nghệ sĩ",
-    href: "jack"
-  },
-  {
-    image: "/images/tlinh.jpg",
-    name: "TLINH",
-    title: "Nghệ sĩ",
-    href: "tlinh"
-  },
-  {
-    image: "/images/dalab.jpg",
-    name: "Da LAB",
-    title: "Nghệ sĩ",
-    href: "dalab"
-  }
-];
+import { trendingHits, topArtists } from "@/data/songs";
 
 export default function Home() {
   return (
