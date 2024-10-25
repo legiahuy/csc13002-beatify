@@ -1,6 +1,6 @@
 import Header from "@/components/Header"
 import ListItem from "@/components/ListItem";
-import NowPlayingBar from "@/components/PlayingBar";
+import PlayingBar from "@/components/PlayingBar";
 import Image from "next/image";
 import Link from "next/link";
 import { BiChevronRight } from "react-icons/bi";
@@ -12,11 +12,12 @@ export default function Home() {
       bg-neutral-900
       rounded-lg
       h-full
-      w-full
+      w-[99.5%]
       overflow-hidden
       overflow-y-auto
+      pb-20  
     ">
-      <Header>
+      <Header className="flex-shrink-0">
         {/* Trending Hits Section */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
@@ -84,19 +85,15 @@ export default function Home() {
           </div>
           <div className="
             grid 
-            grid-cols-2 
-            sm:grid-cols-3 
-            lg:grid-cols-4 
-            2xl:grid-cols-5 
+            grid-cols-5 
             gap-4
           ">
-            {topArtists.map((artist) => (
+            {topArtists.slice(0, 5).map((artist) => (
               <div key={artist.href} className="flex flex-col items-center">
                 <div className="
                   relative 
                   aspect-square
                   w-[150px]
-                  sm:w-[180px] 
                   rounded-full 
                   overflow-hidden 
                   cursor-pointer 
@@ -117,7 +114,7 @@ export default function Home() {
           </div>
         </div>
       </Header>
-      <NowPlayingBar />
+      <PlayingBar />
     </div>
   );
 }

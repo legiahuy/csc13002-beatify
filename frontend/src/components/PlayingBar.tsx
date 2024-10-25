@@ -6,10 +6,8 @@ import { BsShuffle, BsRepeat } from 'react-icons/bs';
 import { FiVolume2 } from 'react-icons/fi';
 import { usePlayer } from '@/contexts/PlayerContext';
 
-const NowPlayingBar: React.FC = () => {
+const PlayingBar: React.FC = () => {
   const { currentSong, isPlaying, togglePlay } = usePlayer();
-
-  if (!currentSong) return null;
 
   return (
     <div className="
@@ -25,12 +23,20 @@ const NowPlayingBar: React.FC = () => {
         flex 
         items-center 
       ">
-        {/* Song info - left side - absolute positioning */}
+        {/* Song info - left side */}
         <div className="absolute left-4 flex items-center w-[200px]">
-          <img src={currentSong.image} alt="Album cover" className="w-14 h-14 rounded-md shadow-lg" />
+          <img 
+            src={currentSong?.image || '/default-album.png'} 
+            alt="Album cover" 
+            className="w-14 h-14 rounded-md shadow-lg" 
+          />
           <div className="ml-4 overflow-hidden">
-            <h4 className="text-white font-semibold truncate">{currentSong.name}</h4>
-            <p className="text-gray-400 text-sm truncate">{currentSong.artist}</p>
+            <h4 className="text-white font-semibold truncate">
+              {currentSong?.name || 'Chưa chọn bài hát'}
+            </h4>
+            <p className="text-gray-400 text-sm truncate">
+              {currentSong?.artist || 'Chưa có nghệ sĩ'}
+            </p>
           </div>
         </div>
 
@@ -75,4 +81,4 @@ const NowPlayingBar: React.FC = () => {
   );
 }
 
-export default NowPlayingBar;
+export default PlayingBar;

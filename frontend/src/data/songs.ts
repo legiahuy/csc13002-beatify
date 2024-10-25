@@ -1,6 +1,6 @@
 export const trendingHits = [
   {
-    image: "/images/hieuthuhai.jpeg",
+    image: "/images/apt.jpg",
     name: "APT.",
     artist: "ROSÉ, Bruno Mars",
     href: "apt",
@@ -9,16 +9,7 @@ export const trendingHits = [
     duration: "3:45"
   },
   {
-    image: "/images/nguoihaynoi.jpg", 
-    name: "NGUOIHAYNOID",
-    artist: "hoài nam",
-    href: "nguoihaynoid",
-    type: "Album",
-    year: "2023",
-    duration: "4:12"
-  },
-  {
-    image: "/images/dunglam.jpg",
+    image: "/images/dung-lam-trai-tim-anh-dau.jpg",
     name: "Đừng làm trái tim anh đau", 
     artist: "Sơn Tùng M-TP",
     href: "dunglam",
@@ -36,38 +27,38 @@ export const trendingHits = [
     duration: "3:55"
   },
   {
-    image: "/images/nguoihaynoi.jpg",
-    name: "NGUOIHAYNOID",
-    artist: "hoài nam",
-    href: "nguoihaynoid2",
-    type: "Album",
-    year: "2023",
-    duration: "4:12"
+    image: "/images/apt.jpg",
+    name: "APT.",
+    artist: "ROSÉ, Bruno Mars",
+    href: "apt",
+    type: "Single",
+    year: "2024",
+    duration: "3:45"
   },
   {
-    image: "/images/nguoihaynoi.jpg",
-    name: "NGUOIHAYNOID",
-    artist: "hoài nam",
-    href: "nguoihaynoid2",
-    type: "Album",
+    image: "/images/dung-lam-trai-tim-anh-dau.jpg",
+    name: "Đừng làm trái tim anh đau", 
+    artist: "Sơn Tùng M-TP",
+    href: "dunglam",
+    type: "Single",
     year: "2023",
-    duration: "4:12"
+    duration: "4:30"
   },
   {
-    image: "/images/nguoihaynoi.jpg",
-    name: "NGUOIHAYNOID",
-    artist: "hoài nam",
-    href: "nguoihaynoid2",
-    type: "Album",
-    year: "2023",
-    duration: "4:12"
-  }
+    image: "/images/thienlyoi.jpg",
+    name: "Thiên Lý ơi",
+    artist: "Jack - J97", 
+    href: "thienly",
+    type: "Single",
+    year: "2024",
+    duration: "3:55"
+  },
 ];
 
 export const topArtists = [
   {
     image: "/images/hieuthuhai.jpeg",
-    name: "Hiếu Thứ Hai",
+    name: "HIEUTHUHAI",
     title: "Nghệ sĩ",
     href: "vu"
   },
@@ -78,21 +69,27 @@ export const topArtists = [
     href: "sontung"
   },
   {
-    image: "/images/jack.jpg",
+    image: "/images/sontung.jpg",
     name: "Jack - J97",
     title: "Nghệ sĩ",
     href: "jack"
   },
   {
-    image: "/images/tlinh.jpg",
-    name: "TLINH",
-    title: "Nghệ sĩ", 
-    href: "tlinh"
+    image: "/images/hieuthuhai.jpeg",
+    name: "HIEUTHUHAI",
+    title: "Nghệ sĩ",
+    href: "vu"
   },
   {
-    image: "/images/dalab.jpg",
-    name: "Da LAB",
+    image: "/images/sontung.jpg", 
+    name: "Sơn Tùng M-TP",
     title: "Nghệ sĩ",
-    href: "dalab"
+    href: "sontung"
+  },
+  {
+    image: "/images/sontung.jpg",
+    name: "Jack - J97",
+    title: "Nghệ sĩ",
+    href: "jack"
   }
 ];

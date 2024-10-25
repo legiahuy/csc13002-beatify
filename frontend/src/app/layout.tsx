@@ -30,13 +30,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={font.className}>
-        <PlayerProvider>
-          <Sidebar>
-            {children}
-          </Sidebar>
-        </PlayerProvider>
+      <body>
+        {children}
       </body>
     </html>
   );
