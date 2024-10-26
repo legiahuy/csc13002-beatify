@@ -8,6 +8,9 @@ import { IoAdd } from "react-icons/io5";
 import { IoIosAlbums } from "react-icons/io";
 import { PiMicrophoneStageDuotone } from "react-icons/pi";
 import { BsMusicNoteList } from "react-icons/bs";
+import { IoReturnDownBack } from "react-icons/io5";
+import { CiHeart } from "react-icons/ci";
+import { CiFileOn } from "react-icons/ci";
 
 import Box from "./Box"
 import SidebarItem from "./SidebarItem";
@@ -50,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const libraryRoutes = useMemo(() => [
     {
-      icon: BsMusicNoteList,
+      icon: IoReturnDownBack,
       label: 'Recent Added',
       href: '/recent-added'
     },
@@ -60,12 +63,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       href: '/my-albums'
     },
     {
-      icon: BsMusicNoteList,
+      icon: CiHeart,
       label: 'Favourites',
       href: '/favourites'
     },
     {
-      icon: BsMusicNoteList,
+      icon: CiFileOn,
       label: 'Local',
       href: '/local'
     }
