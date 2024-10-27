@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser';
 import 'dotenv/config'
 import songRouter from './src/routes/songRoute.js';
 import playlistRouter from './src/routes/playlistRoute.js';
@@ -16,6 +17,7 @@ connectCloudinary();
 
 // middlewares
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors());
 
 // intializing routes
