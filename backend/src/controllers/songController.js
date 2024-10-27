@@ -5,7 +5,8 @@ import songModel from "../models/songModel.js";
 const addSong = async (req, res) => {
     try {
         const name = req.body.name;
-        const desc = req.body. desc;
+        const artist_id = req.body.artist_id
+        const desc = req.body.desc;
         const playlist = req.body.playlist;
         const audioFile = req.files.audio[0];
         const imageFile = req.files.image[0];
@@ -13,10 +14,11 @@ const addSong = async (req, res) => {
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type: "image"});    
         const duration = `${Math.floor(audioUpload.duration/60)}:${Math.floor(audioUpload.duration%60)}}`
 
-        //console.log(name, desc, playlist, audioUpload, imageUpload);
+        console.log(name, artist_id, desc, playlist, audioUpload, imageUpload);
 
         const songData = {
             name, 
+            artist_id,
             desc,
             playlist,
             image: imageUpload.secure_url,

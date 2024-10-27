@@ -46,3 +46,5 @@ const removePlaylist = async (req, res) => {
     }
 };
 
+export { addPlaylist, listPlaylist, removePlaylist }
+
