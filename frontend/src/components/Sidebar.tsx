@@ -11,6 +11,7 @@ import { BsMusicNoteList } from "react-icons/bs";
 import { IoReturnDownBack } from "react-icons/io5";
 import { CiHeart } from "react-icons/ci";
 import { CiFileOn } from "react-icons/ci";
+import { BiMusic } from "react-icons/bi";
 
 import Box from "./Box"
 import SidebarItem from "./SidebarItem";
@@ -87,7 +88,10 @@ const Sidebar: React.FC<SidebarProps> = ({
       ">
         <Box>
           <div className="flex flex-col gap-y-4 px-5 py-4">
-            <p className="text-white font-bold text-lg">BEATIFY</p>
+            <div className="flex items-center">
+              <BiMusic className="text-white text-xl mr-2" /> {/* Music icon */}
+              <p className="text-white font-bold text-lg">BEATIFY</p>
+            </div>
             <div>
               <p className="text-neutral-500 text-sm mb-4">MENU</p>
               {menuRoutes.map((item) => (
@@ -107,11 +111,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                 />
               ))}
             </div>
-
+  
             <div>
               <p className="text-neutral-500 text-sm mb-4">PLAYLIST</p>
               <SidebarItem
-              //icon plus new item
+                // icon plus new item
                 icon={IoAdd}
                 label="Create new playlist"
                 href="/create-playlist"
@@ -125,6 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </main>
     </div>
   );
+  
 }
 
 export default Sidebar;
