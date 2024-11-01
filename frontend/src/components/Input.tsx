@@ -1,73 +1,24 @@
-"use client";
+"use client"
 
-import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import React from 'react';
 
-interface InputProps {
-  label: string;
-  id: string;
-  type?: string;
-  required?: boolean;
-  register: UseFormRegister<FieldValues>;
-  errors: FieldErrors;
-  disabled?: boolean;
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
-const Input: React.FC<InputProps> = ({
-  label,
-  id,
-  type = "text",
-  required,
-  register,
-  errors,
-  disabled,
-}) => {
-  return (
-    <div>
-      <label
-        htmlFor={id}
-        className="
-          block 
-          text-sm 
-          font-medium 
-          leading-6 
-          text-white
-        "
-      >
-        {label}
-      </label>
-      <div className="mt-2">
-        <input
-          id={id}
-          type={type}
-          autoComplete={id}
-          disabled={disabled}
-          {...register(id, { required })}
-          className={`
-            form-input
-            block 
-            w-full 
-            rounded-md 
-            border-0 
-            py-1.5 
-            bg-neutral-700
-            text-white 
-            shadow-sm 
-            ring-1 
-            ring-inset 
-            ring-neutral-600 
-            placeholder:text-gray-400 
-            focus:ring-2 
-            focus:ring-inset 
-            focus:ring-cyan-600 
-            sm:text-sm 
-            sm:leading-6
-            ${errors[id] && 'focus:ring-rose-500'}
-            ${disabled && 'opacity-50 cursor-default'}
-          `}
-        />
-      </div>
-    </div>
-  );
-}
+const Input: React.FC<InputProps> = ({ icon: Icon, ...props }) => {
+    return (
+        <div className="relative mb-6">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            
+                <Icon className="size-5 text-gray-500" />
+            </div>
+            <input
+                {...props}
+                className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
+            />
+        </div>
+    );
+};
 
 export default Input;
