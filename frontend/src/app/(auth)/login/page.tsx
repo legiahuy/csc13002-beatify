@@ -3,28 +3,50 @@
 import { motion } from "framer-motion";
 import Input from "@/components/Input"; 
 import { Lock, Mail, Loader } from "lucide-react";
-import { useState } from "react";
 import Link from 'next/link'; 
+import { useState, useEffect } from "react";
+import { useAuthStore } from "@/store/authStore";
+
+import RedirectAuthenticatedUser from "@/components/redirectAuthenticatedUser"; // Adjust the path as necessary
+
 
 const Login: React.FC = () => {
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
-	const [error, setError] = useState<string | null>(null); // Assuming you may want to handle an error state
-	const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for the button
+	const [setError] = useState<string | null>(null); // Assuming you may want to handle an error state
+	const [setIsLoading] = useState<boolean>(false); // Loading state for the button
+  const { login, isLoading, error, checkAuth, isCheckingAuth} = useAuthStore();
+
 
 	const handleLogin = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
 		e.preventDefault();
-		// Perform login logic here
+		await login(email, password)
 	};
 
+  useEffect(() => {
+    const checkUserAuth = async () => {
+        await checkAuth(); // Ensure this returns a promise if needed
+    };
+    checkUserAuth();
+  }, [checkAuth]);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+          <Loader className='animate-spin' size={24} />
+      </div>
+    );
+  }
+
 	return (
+    <RedirectAuthenticatedUser>
       <div className="flex items-center justify-center min-h-screen bg-gray-900">
           <motion.div
             className='max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden'
           >
             <div className='p-8'>
-                <h2 className="text-2xl font-semibold text-white mb-1 text-center"> BEATIFY</h2>
-                <h3 className="text-lg font-bold text-white-100 mb-4 text-center">SIGN IN TO BEATIFY </h3>
+                <h2 className="text-2xl font-semibold text-white mb-1 text-center">Beatify</h2>
+                <h3 className="text-lg font-bold text-white-100 mb-4 text-center">Welcome Back</h3>
 
               <form onSubmit={handleLogin}>
                 <Input
@@ -44,7 +66,7 @@ const Login: React.FC = () => {
                 />
 
                 <div className='flex items-center mb-6'>
-                  <Link href='/ForgotPassword' className='text-sm text-gray-400 hover:underline'>
+                  <Link href='/forgot-password' className='text-sm text-purple-400 hover:underline'>
                     Forgot password?
                   </Link>
                 </div>
@@ -57,21 +79,22 @@ const Login: React.FC = () => {
                   type='submit'
                   disabled={isLoading}
                 >
-                  {isLoading ? <Loader className='w-6 h-6 animate-spin  mx-auto' /> : "LOGIN"}
+                  {isLoading ? <Loader className='w-6 h-6 animate-spin  mx-auto' /> : "Login"}
                   </motion.button>
               </form>
             </div>
             <div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center'>
               <p className='text-sm text-gray-400'>
                 Don't have an account?{" "}
-                <Link href='/register' className='text-purple-400 hover:underline'>
+                <Link href='/signup' className='text-purple-400 hover:underline'>
                   Sign up
                 </Link>
               </p>
             </div>
           </motion.div>
         </div>
-      );
+      </RedirectAuthenticatedUser>
+    );
 };
 
 export default Login;

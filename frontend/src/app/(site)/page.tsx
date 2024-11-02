@@ -1,12 +1,27 @@
-import Header from "@/components/Header"
-import ListItem from "@/components/ListItem";
-import PlayingBar from "@/components/PlayingBar";
-import Image from "next/image";
-import Link from "next/link";
-import { BiChevronRight } from "react-icons/bi";
+"use client"
+
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useEffect, ReactNode } from 'react';
+import { BiChevronRight } from 'react-icons/bi';
+import Image from 'next/image';
+import { useAuthStore } from '@/store/authStore'; // adjust this path as necessary
+import Header from '@/components/Header';
+import PlayingBar from '@/components/PlayingBar';
+import ListItem from '@/components/ListItem';
 import { trendingHits, topArtists } from "@/data/songs";
 
+
 export default function Home() {
+  const { isCheckingAuth, checkAuth, isAuthenticated, user } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  console.log("isauthenticated", isAuthenticated);
+  console.log("user", user);
+
   return (
     <div className="
       bg-neutral-900
@@ -47,7 +62,7 @@ export default function Home() {
             grid-cols-5
             gap-4
           ">
-            {trendingHits.slice(0, 5).map((item) => (
+            {trendingHits?.slice(0, 5).map((item) => (
               <ListItem 
                 key={item.href}
                 image={item.image}
@@ -88,7 +103,7 @@ export default function Home() {
             grid-cols-5 
             gap-4
           ">
-            {topArtists.slice(0, 5).map((artist) => (
+            {topArtists?.slice(0, 5).map((artist) => (
               <div key={artist.href} className="flex flex-col items-center">
                 <div className="
                   relative 
