@@ -18,7 +18,7 @@ connectCloudinary();
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true}));
 
 // intializing routes
 app.use("/api/song", songRouter);
