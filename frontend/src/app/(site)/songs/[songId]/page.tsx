@@ -15,14 +15,14 @@ interface SongPageProps {
 }
 
 export default function SongPage({ params }: SongPageProps) {
-  const song = trendingHits.find((item) => item.href === params.songId);
+  const song = trendingHits.find((item) => item.id === params.songId);
   const { playSong, currentSong, isPlaying, togglePlay } = usePlayer();
 
   if (!song) {
     return <div>Không tìm thấy bài hát</div>;
   }
 
-  const isCurrentSong = currentSong?.href === song.href;
+  const isCurrentSong = currentSong?.id === song.id;
 
   return (
     <div className="bg-gradient-to-b from-neutral-800 to-neutral-900 h-full w-[99.5%] rounded-lg overflow-hidden overflow-y-auto">
@@ -97,7 +97,7 @@ export default function SongPage({ params }: SongPageProps) {
             <div className="flex-1">Tiêu đề</div>
             <div className="w-[100px] text-right">⏱</div>
           </div>
-          <Link href={`/songs/${song.href}`}>
+          <Link href={`/songs/${song.id}`}>
             <div 
               className="
                 flex 

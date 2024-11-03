@@ -3,7 +3,8 @@ export const trendingHits = [
     image: "/images/apt.jpg",
     name: "APT.",
     artist: "ROSÉ, Bruno Mars",
-    href: "apt",
+    file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
+    id: "asjfghdsjkhgjdfg",
     type: "Single",
     year: "2024",
     duration: "3:45"
@@ -12,7 +13,8 @@ export const trendingHits = [
     image: "/images/dung-lam-trai-tim-anh-dau.jpg",
     name: "Đừng làm trái tim anh đau", 
     artist: "Sơn Tùng M-TP",
-    href: "dunglam",
+    file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
+    id: "asjfghdsjkhgjasasdfg",
     type: "Single",
     year: "2023",
     duration: "4:30"
@@ -21,7 +23,8 @@ export const trendingHits = [
     image: "/images/thienlyoi.jpg",
     name: "Thiên Lý ơi",
     artist: "Jack - J97", 
-    href: "thienly",
+    file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
+    id: "asjfghdsjkhgjdfg2",
     type: "Single",
     year: "2024",
     duration: "3:55"
@@ -30,7 +33,8 @@ export const trendingHits = [
     image: "/images/apt.jpg",
     name: "APT.",
     artist: "ROSÉ, Bruno Mars",
-    href: "apt",
+    file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
+    id: "asjfghdsjk11hgjdfg",
     type: "Single",
     year: "2024",
     duration: "3:45"
@@ -39,7 +43,8 @@ export const trendingHits = [
     image: "/images/dung-lam-trai-tim-anh-dau.jpg",
     name: "Đừng làm trái tim anh đau", 
     artist: "Sơn Tùng M-TP",
-    href: "dunglam",
+    file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
+    id: "asjfghdsjkhgsssjdfg",
     type: "Single",
     year: "2023",
     duration: "4:30"
@@ -48,7 +53,8 @@ export const trendingHits = [
     image: "/images/thienlyoi.jpg",
     name: "Thiên Lý ơi",
     artist: "Jack - J97", 
-    href: "thienly",
+    file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
+    id: "asjfghdssssjkhgjdfg",
     type: "Single",
     year: "2024",
     duration: "3:55"

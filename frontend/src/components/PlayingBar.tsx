@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaPlay, FaPause, FaStepBackward, FaStepForward } from 'react-icons/fa';
 import { BsShuffle, BsRepeat } from 'react-icons/bs';
 import { FiVolume2 } from 'react-icons/fi';
@@ -8,6 +8,61 @@ import { usePlayer } from '@/contexts/PlayerContext';
 
 const PlayingBar: React.FC = () => {
   const { currentSong, isPlaying, togglePlay } = usePlayer();
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(0.5); // Default volume to 50%
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (!currentSong) return;
+
+    if (!audioRef.current || audioRef.current.src !== currentSong.file) {
+      audioRef.current = new Audio(currentSong.file);
+      audioRef.current.volume = volume;
+      audioRef.current.addEventListener("timeupdate", () => {
+        setCurrentTime(audioRef.current!.currentTime);
+      });
+      audioRef.current.addEventListener("loadedmetadata", () => {
+        setDuration(audioRef.current!.duration);
+      });
+    }
+
+    if (isPlaying) {
+      audioRef.current.play();
+    } else {
+      audioRef.current.pause();
+    }
+
+    return () => {
+      audioRef.current?.pause();
+    };
+  }, [currentSong, isPlaying]);
+
+  const handleVolumeClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickPositionX = e.clientX - rect.left;
+    const clickPositionRatio = clickPositionX / rect.width;
+    setVolume(clickPositionRatio);
+    if (audioRef.current) {
+      audioRef.current.volume = clickPositionRatio;
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickPositionX = e.clientX - rect.left;
+    const clickPositionRatio = clickPositionX / rect.width;
+    const newTime = clickPositionRatio * duration;
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
 
   return (
     <div className="
@@ -61,24 +116,40 @@ const PlayingBar: React.FC = () => {
 
           {/* Progress bar */}
           <div className="flex items-center space-x-2 mt-2">
-            <span className="text-xs text-gray-400 w-10 text-right">0:00</span>
-            <div className="w-[400px] h-1 bg-gray-600 rounded-full">
-              <div className="w-1/3 h-full bg-white rounded-full"></div>
+            <span className="text-xs text-gray-400 w-10 text-right">
+              {formatTime(currentTime)}
+            </span>
+            <div
+              className="w-[400px] h-1 bg-gray-600 rounded-full relative cursor-pointer"
+              onClick={handleProgressClick}
+            >
+              <div
+                className="h-full bg-white rounded-full absolute left-0 top-0"
+                style={{ width: `${(currentTime / duration) * 100}%` }}
+              ></div>
             </div>
-            <span className="text-xs text-gray-400 w-10">3:30</span>
+            <span className="text-xs text-gray-400 w-10">
+              {formatTime(duration)}
+            </span>
           </div>
         </div>
 
         {/* Volume controls - right side - absolute positioning */}
         <div className="absolute right-4 flex items-center justify-end w-[200px]">
           <FiVolume2 className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
-          <div className="w-24 h-1 bg-gray-600 rounded-full ml-2">
-            <div className="w-1/2 h-full bg-white rounded-full"></div>
+          <div
+            className="w-24 h-1 bg-gray-600 rounded-full relative cursor-pointer ml-2"
+            onClick={handleVolumeClick}
+          >
+            <div
+              className="h-full bg-white rounded-full absolute left-0 top-0"
+              style={{ width: `${volume * 100}%` }}
+            ></div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default PlayingBar;
