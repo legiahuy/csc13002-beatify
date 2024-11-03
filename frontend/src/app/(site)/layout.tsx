@@ -1,5 +1,5 @@
 import Sidebar from "@/components/Sidebar";
-import { PlayerProvider } from "@/contexts/PlayerContext";
+import PlayingBar from "@/components/PlayingBar";
 
 export default function SiteLayout({
   children,
@@ -7,15 +7,14 @@ export default function SiteLayout({
   children: React.ReactNode
 }) {
   return (
-    <PlayerProvider>
       <div className="h-full">
         <div className="flex h-full">
           <Sidebar>{''}</Sidebar>
+          <PlayingBar />
           <main className="h-[91%] flex-1 overflow-y-auto">
             {children}
           </main>
         </div>
       </div>
-    </PlayerProvider>
   )
 }

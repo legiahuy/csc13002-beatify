@@ -9,14 +9,17 @@ import { usePlayer } from '@/contexts/PlayerContext';
 interface ListItemProps {
   image: string;
   name: string;
-  href: string;
+  id: string;
+  file:string;
   artist: string;
+  key: string,
 }
 
 const ListItem: React.FC<ListItemProps> = ({
   image,
   name,
-  href,
+  id,
+  file,
   artist
 }: ListItemProps) => {
   const { playSong } = usePlayer();
@@ -24,11 +27,11 @@ const ListItem: React.FC<ListItemProps> = ({
   const handlePlay = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
-    playSong({ href, name, artist, image });
+    playSong({ file, name, artist, image, id });
   };
 
   return (
-    <Link href={`/songs/${href}`}> {/* Thêm /songs/ vào trước href */}
+    <Link href={`/songs/${id}`}> {/* Thêm /songs/ vào trước href */}
       <div className="
         relative 
         group 
