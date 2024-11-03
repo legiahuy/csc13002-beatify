@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useEffect, ReactNode } from 'react';
 import { BiChevronRight } from 'react-icons/bi';
 import Image from 'next/image';
-import { useAuthStore } from '@/store/authStore'; // adjust this path as necessary
+import { useAuthStore } from '@/store/authStore';
 import Header from '@/components/Header';
 import PlayingBar from '@/components/PlayingBar';
 import ListItem from '@/components/ListItem';
