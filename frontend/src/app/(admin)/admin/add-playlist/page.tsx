@@ -1,31 +1,22 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
-import { formatDate } from "@/utils/date";
 import ProtectedRoute from "@/components/protectedRoute";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; 
-import Button from "@/components/Button"
 import Image from 'next/image'
-import upload_song from '@/assets/upload_song.png'
-import upload_added from '@/assets/upload_added.png'
 import upload_area from '@/assets/upload_area.png'
 import axios from "axios";
 import { toast } from "react-toastify";
 
 export const url = 'http://localhost:4000'
 
-interface Playlist {
-  name: string;
-}
-
-const AddSong = () => {
-  const { user, logout, checkAuth } = useAuthStore();
+const AddPlaylist = () => {
+  const { user, checkAuth } = useAuthStore();
 
   useEffect(() => {
     const checkUserAuth = async () => {
-      await checkAuth(); // Ensure this returns a promise if needed
+      await checkAuth(); 
     };
     checkUserAuth();
   }, [checkAuth]);
@@ -34,12 +25,10 @@ const AddSong = () => {
   const router = useRouter();
 
   const [image, setImage] = useState<File | null>(null);
-  const [song, setSong] = useState<File | null>(null);
   const [name, setName] = useState(""); 
   const [desc, setDesc] = useState(""); 
-  const [playlist, setPlaylist] = useState("none"); 
+  const [colour, setColour] = useState("#121212"); 
   const [loading, setLoading] = useState(false); 
-  const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
 
   const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,18 +39,15 @@ const AddSong = () => {
       formData.append('name', name);
       formData.append('desc', desc);
       if (image) formData.append('image', image); 
-      if (song) formData.append('audio', song);   
-      formData.append('playlist', playlist);
+      formData.append('bgColour', colour);
 
-      const response = await axios.post(`${url}/api/song/add`, formData)
+      const response = await axios.post(`${url}/api/playlist/add`, formData)
 
       if(response.data.success) {
-        toast.success("Song added");
+        toast.success("Playlist added");
         setName("");
         setDesc("");
-        setPlaylist("none");
         setImage(null);
-        setSong(null);
       }
       else {
         toast.error("Something went wrong")
@@ -78,25 +64,6 @@ const AddSong = () => {
     return null;
   }
 
-  const loadPlaylistData = async () => {
-    try {
-      const response = await axios.get(`${url}/api/playlist/list`)
-      if(response.data.success) {
-        setPlaylistData(response.data.playlists)
-      }
-      else {
-        toast.error("Unable to load playlists data")
-      }
-
-    } catch (error) {
-      toast.error("Error occured")
-    }
-  }
-
-  useEffect(()=>{
-    loadPlaylistData();
-  })
-
   return loading ? (
     <div className="grid place-items-center min-h-[80vh]">
       <div className="w-16 h-16 place-self-center border-4 border-gray-400 border-t-purple-800 rounded-full animate-spin"></div>
@@ -106,27 +73,6 @@ const AddSong = () => {
       <div className="bg-white-900">
         <form onSubmit={onSubmitHandler} className="flex flex-col items-start gap-8 text-black">
           <div className="flex gap-8">
-            <div className="flex flex-col gap-4">
-              <p>Upload Song</p>
-              <input
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    setSong(e.target.files[0]);
-                  }
-                }}
-                type="file"
-                id="song"
-                accept="audio/*"
-                hidden
-              />
-              <label htmlFor="song">
-                <Image 
-                  src={song ? upload_added : upload_song} 
-                  className="w-24 cursor-pointer" 
-                  alt="Upload song" 
-                />
-              </label>
-            </div>
             <div className="flex flex-col gap-4">
               <p>Upload Image</p>
               <input
@@ -153,7 +99,7 @@ const AddSong = () => {
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <p>Song name</p>
+            <p>Playlist name</p>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -165,7 +111,7 @@ const AddSong = () => {
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <p>Song description</p>
+            <p>Playlist description</p>
             <input
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
@@ -176,19 +122,13 @@ const AddSong = () => {
             />
           </div>
 
-          <div className="flex flex-col gap-2.5">
-            <p>Playlist</p>
-            <select
-              value={playlist}
-              onChange={(e) => setPlaylist(e.target.value)}
-              defaultValue={playlist}
-              className="bg-transparent outline-purple-600 border-2 border-gray-400 p-2.5 w-[max(40vw,250px)]"
-            >
-              <option value="none">None</option>
-              {playlistData.map((item, index) => (
-                <option key={index} value={item.name}>{item.name}</option>
-              ))}
-            </select>
+          <div className="flex flex-col gap-3">
+            <p>Background Colour</p>
+            <input
+              onChange={(e)=>setColour(e.target.value)}
+              value={colour}
+              type="color"
+            />
           </div>
 
           <button
@@ -203,4 +143,4 @@ const AddSong = () => {
   );
 };
 
-export default AddSong;
+export default AddPlaylist;
