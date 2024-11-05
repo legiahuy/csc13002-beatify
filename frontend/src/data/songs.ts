@@ -3,7 +3,7 @@ export const trendingHits = [
     image: "/images/apt.jpg",
     name: "APT.",
     artist: "ROSÉ, Bruno Mars",
-    file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
+    file: "https://res.cloudainary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
     id: "asjfghdsjkhgjdfg",
     type: "Single",
     year: "2024",

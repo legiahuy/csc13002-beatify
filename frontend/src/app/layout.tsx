@@ -5,6 +5,7 @@ import {Figtree} from 'next/font/google'
 import Sidebar from '@/components/Sidebar'
 import { PlayerProvider } from '@/contexts/PlayerContext'
 
+
 const font = Figtree({ subsets: ['latin']})
 
 const geistSans = localFont({
@@ -29,12 +30,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <PlayerProvider>
       <html lang="en">
-        <body>
-          {children}
-        </body>
+        
+        <PlayerProvider>
+          <body>
+            {children}
+          </body>
+        </PlayerProvider>
       </html>
-    </PlayerProvider>
   );
 }
