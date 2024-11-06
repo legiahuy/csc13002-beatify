@@ -2,9 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { trendingHits, topArtists } from "@/data/songs";
-import Header from "@/components/Header";
 import ListItem from "@/components/ListItem";
-import NowPlayingBar from "@/components/PlayingBar";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -24,8 +22,7 @@ export default function SearchPage() {
   );
 
   return (
-    <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
-      <Header>
+    <div className="rounded-lg h-full w-full overflow-hidden overflow-y-auto">
         <div className="mb-2">
           <h1 className="text-white text-3xl font-bold mb-6">
             Search Results for "{query}"
@@ -93,8 +90,6 @@ export default function SearchPage() {
             <p className="text-neutral-400">No results found for "{query}"</p>
           )}
         </div>
-      </Header>
-      <NowPlayingBar />
     </div>
   );
 } 

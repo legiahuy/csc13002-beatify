@@ -1,9 +1,7 @@
 "use client";
 
 import { trendingHits } from "@/data/songs";
-import Header from "@/components/Header";
 import Image from "next/image";
-import NowPlayingBar from "@/components/PlayingBar";
 import { FaPlay, FaPause } from 'react-icons/fa';
 import { usePlayer } from '@/contexts/PlayerContext';
 import Link from 'next/link';
@@ -25,10 +23,8 @@ export default function SongPage({ params }: SongPageProps) {
   const isCurrentSong = currentSong?.id === song.id;
 
   return (
-    <div className="bg-gradient-to-b from-neutral-800 to-neutral-900 h-full w-[99.5%] rounded-lg overflow-hidden overflow-y-auto">
-      <Header>
+    <div className="h-full w-[99.5%] rounded-lg overflow-hidden overflow-y-auto">
         <div></div>
-      </Header>
       <div className="p-6">
         <div className="flex flex-col md:flex-row items-end gap-x-7">
           <div className="relative h-64 w-64 shadow-2xl">
@@ -136,7 +132,6 @@ export default function SongPage({ params }: SongPageProps) {
           </Link>
         </div>
       </div>
-      <NowPlayingBar />
     </div>
   );
 }

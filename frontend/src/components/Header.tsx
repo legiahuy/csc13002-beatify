@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
-import { HiHome } from "react-icons/hi";
 import { BiSearch } from "react-icons/bi";
-import { useState } from "react";
-import RedirectAuthenticatedUser from "@/components/redirectAuthenticatedUser"
+import { useState, useEffect } from "react";
+import { FaUserCircle } from "react-icons/fa";
+
 
 import Button from "./Button"
 
@@ -17,53 +17,35 @@ interface HeaderProps {
   className?: string;
 }
 
+interface HeaderProps {
+  children: React.ReactNode;
+  className?: string;
+  user: { name: string; image: string } | null;  // Add user prop
+}
+
 const Header:React.FC<HeaderProps> = ({
   children,
+  user,
   className
 }) => {
   const router = useRouter();
+  
+  //console.log(user);
   const [searchValue, setSearchValue] = useState("");
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Xử lý tìm kiếm ở đây
     router.push(`/search?q=${searchValue}`);
   }
 
   const HandleLogout = () => {
     // Handle logout in the future
   }
-
   return (
-    <div
-      className={twMerge(`
-        sticky
-        top-0
-        z-50
-        h-fit
-        bg-gradient-to-b
-        from-cyan-800
-        p-6
-      `,
-        className
-      )}
-    >
-      <div className="
-        w-full
-        mb-4
-        flex
-        items-center
-        justify-between
-        gap-x-4
-      ">
-        <div className="
-          hidden
-          md:flex
-          gap-x-2
-          items-center
-          flex-shrink-0
-        ">
-          <button
+    <div className={twMerge(`sticky top-0 z-50 h-fit bg-gradient-to-b from-cyan-800 p-6`)}>
+      <div className="w-full mb-4 flex items-center justify-between gap-x-4">
+        <div className="hidden md:flex gap-x-2 items-center flex-shrink-0">
+        <button
             onClick={() => router.back()}
             className="
               rounded-full
@@ -93,20 +75,12 @@ const Header:React.FC<HeaderProps> = ({
           </button>
         </div>
 
-        {/* Thanh tìm kiếm được cập nhật */}
+        {/* Search bar */}
         <form 
           onSubmit={onSearch}
-          className="
-            hidden 
-            md:flex 
-            flex-1 
-            justify-center 
-            max-w-[400px]
-            w-full
-            mx-auto
-          "
+          className="hidden md:flex flex-1 justify-center max-w-[400px] w-full mx-auto"
         >
-          <div className="
+                    <div className="
             flex 
             items-center 
             w-full 
@@ -122,7 +96,7 @@ const Header:React.FC<HeaderProps> = ({
               type="text"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              placeholder="Tìm kiếm..."
+              placeholder="Search songs and artists"
               className="
                 w-full 
                 px-4 
@@ -151,43 +125,30 @@ const Header:React.FC<HeaderProps> = ({
           </div>
         </form>
 
-        <div className="
-          flex
-          justify-end
-          items-center
-          gap-x-4
-          flex-shrink-0
-        ">
-          <>
-            <RedirectAuthenticatedUser>
-              <div>
-                <Button
-                  onClick={() => router.push('/signup')}
-                  className="
-                    bg-transparent
-                    text-neutral-300
-                    font-medium
-                  "
-                >
-                  Sign up
-                </Button>
-              </div>
-            </RedirectAuthenticatedUser>
-            <RedirectAuthenticatedUser>
-              <div>
-                <Button
-                  onClick={() => router.push('/login')}
-                  className="
-                    bg-white
-                    px-6
-                    py-2
-                  "
-                >
-                  Log in
-                </Button>
-              </div>
-            </RedirectAuthenticatedUser>
-          </>
+        <div className="flex justify-end items-center gap-x-4 flex-shrink-0">
+          {user ? (
+            <div onClick={() => router.push('/profile')} className="cursor-pointer">
+              <FaUserCircle
+                size={40}  // Icon size
+                className="rounded-full bg-neutral-500 text-white"  // Styling the icon to appear as a circle with background color
+              />
+            </div>
+          ) : (
+            <>
+              <Button
+                onClick={() => router.push('/signup')}
+                className="bg-transparent text-neutral-300 font-medium"
+              >
+                Sign up
+              </Button>
+              <Button
+                onClick={() => router.push('/login')}
+                className="bg-white px-6 py-2"
+              >
+                Log in
+              </Button>
+            </>
+          )}
         </div>
       </div>
       {children}

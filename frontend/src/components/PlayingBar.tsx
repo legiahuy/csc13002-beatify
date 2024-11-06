@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaPlay, FaPause, FaStepBackward, FaStepForward } from 'react-icons/fa';
 import { BsShuffle, BsRepeat } from 'react-icons/bs';
-import { FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { HiSpeakerXMark, HiSpeakerWave } from 'react-icons/hi2';
 
@@ -152,7 +151,7 @@ const PlayingBar: React.FC = () => {
         items-center 
       ">
         {/* Song info - left side */}
-        <div className="absolute left-4 flex items-center w-[200px]">
+        <div className="absolute left-4 flex items-center w-[300px]">
           <img 
             src={currentSong?.image || '/default-album.png'} 
             alt="Album cover" 

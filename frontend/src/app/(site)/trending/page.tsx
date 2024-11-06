@@ -56,8 +56,7 @@ const trendingHits = [
 
 export default function Trending() {
   return (
-    <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
-      <Header>
+    <div className="rounded-lg h-full w-full overflow-hidden overflow-y-auto">
         <div className="mb-8">
           <h1 className="text-white text-3xl font-bold mb-6">
             Trending Hits
@@ -82,7 +81,6 @@ export default function Trending() {
             ))}
           </div>
         </div>
-      </Header>
       <NowPlayingBar />
     </div>
   );

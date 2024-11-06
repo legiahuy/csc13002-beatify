@@ -1,12 +1,9 @@
-import Header from "@/components/Header"
 import Image from "next/image";
-import NowPlayingBar from "@/components/PlayingBar";
 import { topArtists } from "@/data/songs";
 
 export default function Artists() {
   return (
-    <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
-      <Header>
+    <div className="rounded-lg h-full w-full overflow-hidden overflow-y-auto">
         <div className="mb-6">
           <h1 className="text-white text-3xl font-bold mb-6">
             Top Artists
@@ -45,8 +42,6 @@ export default function Artists() {
             ))}
           </div>
         </div>
-      </Header>
-      <NowPlayingBar />
     </div>
   );
 }
