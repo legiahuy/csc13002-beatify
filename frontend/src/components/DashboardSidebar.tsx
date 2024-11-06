@@ -47,6 +47,18 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
           label: 'List Playlist',
           active: pathname === '/admin/list-playlist',
           href: '/admin/list-playlist'
+        },
+        {
+          icon: RiPlayListAddFill,
+          label: 'Add Artist',
+          active: pathname === '/admin/add-artist',
+          href: '/admin/add-artist'
+        },
+        {
+          icon: BsMusicNoteList,
+          label: 'List Artist',
+          active: pathname === '/admin/list-artist',
+          href: '/admin/list-artist'
         }
       ]
     },

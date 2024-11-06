@@ -4,17 +4,9 @@ import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
 import { formatDate } from "@/utils/date";
 import ProtectedRoute from "@/components/protectedRoute";
-import { useEffect } from "react";
 
 const ProfilePage = () => {
-  const { user, logout, checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    const checkUserAuth = async () => {
-      await checkAuth(); // Ensure this returns a promise if needed
-    };
-    checkUserAuth();
-  }, [checkAuth]);
+  const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
     logout();
@@ -44,6 +36,7 @@ const ProfilePage = () => {
               <h3 className='text-xl font-semibold text-green-400 mb-3'>Profile Information</h3>
               <p className='text-gray-300'>Name: {user?.name || "Loading..."}</p>
               <p className='text-gray-300'>Email: {user?.email || "Loading..."}</p>
+              <p className='text-gray-300'>Role: {user?.role || "Loading..."}</p>
             </motion.div>
             <motion.div
               className='p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700'

@@ -32,7 +32,7 @@ const ListPlaylist = () => {
 
   const removePlaylist = async (id: string) => {
     try {
-      const response = await axios.post(`${url}/api/song/remove`, {id})
+      const response = await axios.post(`${url}/api/playlist/remove`, {id})
       if(response.data.success) {
         //setData(response.data.songs)
         await fetchPlaylists();
@@ -49,7 +49,7 @@ const ListPlaylist = () => {
 
   return (
     <div>
-      <p>All Playlists List</p>
+      <p className="text-black text-bold">All Playlists List</p>
       <br />
       <div>
         <div className="sm:grid hidden grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 bg-gray-100 text-black">

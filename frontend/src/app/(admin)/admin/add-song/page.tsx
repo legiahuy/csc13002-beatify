@@ -1,12 +1,5 @@
-"use client";
-
-import { motion } from "framer-motion";
-import { useAuthStore } from "@/store/authStore";
-import { formatDate } from "@/utils/date";
-import ProtectedRoute from "@/components/protectedRoute";
+"use client"
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
-import Button from "@/components/Button"
 import Image from 'next/image'
 import upload_song from '@/assets/upload_song.png'
 import upload_added from '@/assets/upload_added.png'
@@ -21,18 +14,7 @@ interface Playlist {
 }
 
 const AddSong = () => {
-  const { user, logout, checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    const checkUserAuth = async () => {
-      await checkAuth(); // Ensure this returns a promise if needed
-    };
-    checkUserAuth();
-  }, [checkAuth]);
-
-
-  const router = useRouter();
-
+  
   const [image, setImage] = useState<File | null>(null);
   const [song, setSong] = useState<File | null>(null);
   const [name, setName] = useState(""); 
@@ -73,11 +55,6 @@ const AddSong = () => {
     setLoading(false);
   }
 
-  if (user && user.role !== "admin") {
-    router.push("/");
-    return null;
-  }
-
   const loadPlaylistData = async () => {
     try {
       const response = await axios.get(`${url}/api/playlist/list`)
@@ -102,7 +79,6 @@ const AddSong = () => {
       <div className="w-16 h-16 place-self-center border-4 border-gray-400 border-t-purple-800 rounded-full animate-spin"></div>
     </div>
   ) : (
-    <ProtectedRoute>
       <div className="bg-white-900">
         <form onSubmit={onSubmitHandler} className="flex flex-col items-start gap-8 text-black">
           <div className="flex gap-8">
@@ -199,7 +175,6 @@ const AddSong = () => {
           </button>
         </form>
       </div>
-    </ProtectedRoute>
   );
 };
 
