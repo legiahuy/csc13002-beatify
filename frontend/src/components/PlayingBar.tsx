@@ -3,51 +3,80 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaPlay, FaPause, FaStepBackward, FaStepForward } from 'react-icons/fa';
 import { BsShuffle, BsRepeat } from 'react-icons/bs';
-import { FiVolume2 } from 'react-icons/fi';
+import { FiVolume2, FiVolumeX } from 'react-icons/fi';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { HiSpeakerXMark, HiSpeakerWave } from 'react-icons/hi2';
 
 const PlayingBar: React.FC = () => {
-  const { currentSong, isPlaying, togglePlay } = usePlayer();
-  const [currentTime, setCurrentTime] = useState(0);
+  const { 
+    currentSong, 
+    isPlaying, 
+    togglePlay,
+    volume,
+    isMuted,
+    audioRef,
+    setVolume: updateVolumeContext,
+    toggleMute: toggleMuteContext,
+    setCurrentTime: updateCurrentTime
+  } = usePlayer();
+  const [localCurrentTime, setLocalCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(0.5); // Default volume to 50%
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isDraggingVolume, setIsDraggingVolume] = useState(false);
   const volumeBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!currentSong) return;
+    if (!currentSong || !audioRef.current) return;
 
-    if (!audioRef.current || audioRef.current.src !== currentSong.file) {
-      audioRef.current = new Audio(currentSong.file);
-      audioRef.current.volume = volume;
-      audioRef.current.addEventListener("timeupdate", () => {
-        setCurrentTime(audioRef.current!.currentTime);
-      });
-      audioRef.current.addEventListener("loadedmetadata", () => {
-        setDuration(audioRef.current!.duration);
-      });
-    }
+    const handleTimeUpdate = () => {
+      setLocalCurrentTime(audioRef.current?.currentTime || 0);
+    };
 
-    if (isPlaying) {
-      audioRef.current.play();
-    } else {
-      audioRef.current.pause();
-    }
+    const handleLoadedMetadata = () => {
+      setDuration(audioRef.current?.duration || 0);
+    };
+
+    audioRef.current.addEventListener("timeupdate", handleTimeUpdate);
+    audioRef.current.addEventListener("loadedmetadata", handleLoadedMetadata);
 
     return () => {
-      audioRef.current?.pause();
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("timeupdate", handleTimeUpdate);
+        audioRef.current.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      }
     };
-  }, [currentSong, isPlaying]);
+  }, [currentSong, audioRef]);
 
   const handleVolumeClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    if (!volumeBarRef.current) return;
+    
+    const rect = volumeBarRef.current.getBoundingClientRect();
+    const clickPositionX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    const newVolume = clickPositionX / rect.width;
+    updateVolume(newVolume);
+  };
+
+  const handleVolumeDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDraggingVolume(true);
+    handleVolumeClick(e);
+  };
+
+  const handleVolumeDrag = (e: MouseEvent) => {
+    if (!isDraggingVolume || !volumeBarRef.current) return;
+    
+    const rect = volumeBarRef.current.getBoundingClientRect();
     const clickPositionX = e.clientX - rect.left;
-    const clickPositionRatio = clickPositionX / rect.width;
-    setVolume(clickPositionRatio);
-    if (audioRef.current) {
-      audioRef.current.volume = clickPositionRatio;
-    }
+    const boundedX = Math.max(0, Math.min(clickPositionX, rect.width));
+    const newVolume = boundedX / rect.width;
+    updateVolume(newVolume);
+  };
+
+  const handleVolumeDragEnd = () => {
+    setIsDraggingVolume(false);
+  };
+
+  const updateVolume = (newVolume: number) => {
+    const clampedVolume = Math.max(0, Math.min(1, newVolume));
+    updateVolumeContext(clampedVolume);
   };
 
   const formatTime = (time: number) => {
@@ -57,35 +86,15 @@ const PlayingBar: React.FC = () => {
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current || !duration) return;
+    if (!duration || !audioRef.current) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
     const clickPositionX = e.clientX - rect.left;
     const clickPositionRatio = clickPositionX / rect.width;
     const newTime = clickPositionRatio * duration;
-    audioRef.current.currentTime = newTime;
-    setCurrentTime(newTime);
-  };
-
-  const handleVolumeDragStart = () => {
-    setIsDraggingVolume(true);
-  };
-
-  const handleVolumeDragEnd = () => {
-    setIsDraggingVolume(false);
-  };
-
-  const handleVolumeDrag = (e: MouseEvent) => {
-    if (!isDraggingVolume || !volumeBarRef.current) return;
     
-    const rect = volumeBarRef.current.getBoundingClientRect();
-    let clickPositionX = e.clientX - rect.left;
-    
-    let newVolume = Math.max(0, Math.min(1, clickPositionX / rect.width));
-    
-    setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
+    updateCurrentTime(newTime);
+    setLocalCurrentTime(newTime);
   };
 
   useEffect(() => {
@@ -99,6 +108,34 @@ const PlayingBar: React.FC = () => {
       window.removeEventListener('mouseup', handleVolumeDragEnd);
     };
   }, [isDraggingVolume]);
+
+  // Volume control section
+  const VolumeControl = () => {
+    return (
+      <div className="flex items-center gap-x-2">
+        <button onClick={toggleMuteContext}>
+          {isMuted || volume === 0 ? (
+            <HiSpeakerXMark size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+          ) : volume < 0.5 ? (
+            <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+          ) : (
+            <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+          )}
+        </button>
+        <div 
+          ref={volumeBarRef}
+          className="w-[100px] h-1 bg-gray-600 rounded-lg cursor-pointer relative"
+          onClick={handleVolumeClick}
+          onMouseDown={handleVolumeDragStart}
+        >
+          <div 
+            className="h-full bg-white rounded-lg absolute left-0 top-0 transition-all duration-100"
+            style={{ width: `${(isMuted ? 0 : volume) * 100}%` }}
+          />
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="
@@ -153,7 +190,7 @@ const PlayingBar: React.FC = () => {
           {/* Progress bar */}
           <div className="flex items-center space-x-2 mt-2">
             <span className="text-xs text-gray-400 w-10 text-right">
-              {formatTime(currentTime)}
+              {formatTime(localCurrentTime)}
             </span>
             <div
               className="w-[400px] h-1 bg-gray-600 rounded-full relative cursor-pointer"
@@ -161,7 +198,7 @@ const PlayingBar: React.FC = () => {
             >
               <div
                 className="h-full bg-white rounded-full absolute left-0 top-0"
-                style={{ width: `${(currentTime / duration) * 100}%` }}
+                style={{ width: `${(localCurrentTime / duration) * 100}%` }}
               ></div>
             </div>
             <span className="text-xs text-gray-400 w-10">
@@ -171,19 +208,8 @@ const PlayingBar: React.FC = () => {
         </div>
 
         {/* Volume controls - right side - absolute positioning */}
-        <div className="absolute right-4 flex items-center justify-end w-[200px]">
-          <FiVolume2 className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
-          <div
-            ref={volumeBarRef}
-            className="w-24 h-1 bg-gray-600 rounded-full relative cursor-pointer ml-2"
-            onClick={handleVolumeClick}
-            onMouseDown={handleVolumeDragStart}
-          >
-            <div
-              className="h-full bg-white rounded-full absolute left-0 top-0"
-              style={{ width: `${volume * 100}%` }}
-            ></div>
-          </div>
+        <div className="absolute right-4 flex items-center gap-x-4">
+          <VolumeControl />
         </div>
       </div>
     </div>
