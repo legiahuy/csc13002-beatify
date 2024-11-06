@@ -12,6 +12,8 @@ const PlayingBar: React.FC = () => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.5); // Default volume to 50%
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isDraggingVolume, setIsDraggingVolume] = useState(false);
+  const volumeBarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!currentSong) return;
@@ -63,6 +65,40 @@ const PlayingBar: React.FC = () => {
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
+
+  const handleVolumeDragStart = () => {
+    setIsDraggingVolume(true);
+  };
+
+  const handleVolumeDragEnd = () => {
+    setIsDraggingVolume(false);
+  };
+
+  const handleVolumeDrag = (e: MouseEvent) => {
+    if (!isDraggingVolume || !volumeBarRef.current) return;
+    
+    const rect = volumeBarRef.current.getBoundingClientRect();
+    let clickPositionX = e.clientX - rect.left;
+    
+    let newVolume = Math.max(0, Math.min(1, clickPositionX / rect.width));
+    
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+    }
+  };
+
+  useEffect(() => {
+    if (isDraggingVolume) {
+      window.addEventListener('mousemove', handleVolumeDrag);
+      window.addEventListener('mouseup', handleVolumeDragEnd);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleVolumeDrag);
+      window.removeEventListener('mouseup', handleVolumeDragEnd);
+    };
+  }, [isDraggingVolume]);
 
   return (
     <div className="
@@ -138,8 +174,10 @@ const PlayingBar: React.FC = () => {
         <div className="absolute right-4 flex items-center justify-end w-[200px]">
           <FiVolume2 className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
           <div
+            ref={volumeBarRef}
             className="w-24 h-1 bg-gray-600 rounded-full relative cursor-pointer ml-2"
             onClick={handleVolumeClick}
+            onMouseDown={handleVolumeDragStart}
           >
             <div
               className="h-full bg-white rounded-full absolute left-0 top-0"
