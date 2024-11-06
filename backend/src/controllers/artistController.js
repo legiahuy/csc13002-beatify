@@ -45,5 +45,20 @@ const removeArtist = async (req, res) => {
     }
 };
 
-export { addArtist, listArtist, removeArtist }
+const updateCatalog = async (req, res) => {
+    const { artistId, songId } = req.body;
+    
+    try {
+      await artistModel.findByIdAndUpdate(
+        artistId,
+        { $addToSet: { catalog: songId } }, 
+        { new: true }
+      );
+      res.json({ success: true, message: "Catalog updated" });
+    } catch (error) {
+      res.json({ success: false, message: "Error updating catalog" });
+    }
+  };
+
+export { addArtist, listArtist, removeArtist, updateCatalog }
 

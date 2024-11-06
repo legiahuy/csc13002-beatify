@@ -16,6 +16,7 @@ interface Playlist {
 interface Artist {
   name: string;
   _id: string;
+  pfp: string;
 }
 
 const AddSong = () => {
@@ -45,8 +46,19 @@ const AddSong = () => {
       selectedArtists.forEach((id) => formData.append("artist_id[]", id));
   
       const response = await axios.post(`${url}/api/song/add`, formData);
+
+      console.log(response.data)
   
       if (response.data.success) {
+        const songId = response.data.songId; // Assuming response includes the new song ID
+        await Promise.all(
+          selectedArtists.map((artistId) =>
+            axios.patch(`${url}/api/artist/update-catalog`, {
+              artistId,
+              songId,
+            })
+          )
+        );
         toast.success("Song added");
         setName("");
         setDesc("");
@@ -208,18 +220,30 @@ const AddSong = () => {
             ))}
           </select>
           <div className="flex flex-wrap gap-2 mt-2">
-            {selectedArtists.map((id) => (
-              <div key={id} className="flex items-center gap-2">
-                <span>{artistData.find((artist) => artist._id === id)?.name}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveArtist(id)}
-                  className="text-red-500"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
+            {selectedArtists.map((id) => {
+              const artist = artistData.find((artist) => artist._id === id);
+              return artist ? (
+                <div key={id} className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                      <Image
+                        src={artist.pfp}
+                        alt={`${artist.name}'s profile`}
+                        width={40} // Larger width and height to ensure high resolution
+                        height={40}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  <span>{artist.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveArtist(id)}
+                    className="text-red-500"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : null;
+            })}
           </div>
         </div>
 

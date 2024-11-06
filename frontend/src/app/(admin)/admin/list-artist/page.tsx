@@ -62,7 +62,15 @@ const ListArtist = () => {
         {data.length > 0 ? (
           data.map((item, index) => (
             <div key={index} className="grid grid-cols-[1fr_1fr_1fr] sm:grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 text-black">
-              <Image src={item.pfp} alt="" width={100} height={100} />
+              <div className="w-24 h-24 rounded-md overflow-hidden bg-gray-200">
+                <Image
+                  src={item.pfp}
+                  alt={item.name}
+                  width={100}   // Fixed width
+                  height={100}  // Fixed height to create a square
+                  className="object-cover w-full h-full"
+                />
+              </div>
               <p>{item.name}</p>
               <p>{item.desc}</p>
               <p>{item.bgColour}</p>
@@ -70,7 +78,7 @@ const ListArtist = () => {
             </div>
           ))
         ) : (
-          <p>No Artists available.</p>
+          <p className="mt-5 text-black">No Artists available.</p>
         )}
       </div>
     </div>
