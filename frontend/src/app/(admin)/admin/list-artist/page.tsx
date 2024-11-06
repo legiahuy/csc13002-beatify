@@ -8,10 +8,11 @@ import { toast } from "react-toastify";
 export const url = 'http://localhost:4000'
 
 type Artist = {
-  image: string;
+  pfp: string;
   name: string;
   _id: string;
   desc: string;
+  bgColour: string;
 };
 
 const ListArtist = () => {
@@ -55,16 +56,16 @@ const ListArtist = () => {
           <b>Image</b>
           <b>Name</b>
           <b>Description</b>
-          <b>Playlist Colour</b>
+          <b>Background Colour</b>
           <b>Action</b>
           </div>
         {data.length > 0 ? (
           data.map((item, index) => (
             <div key={index} className="grid grid-cols-[1fr_1fr_1fr] sm:grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 text-black">
-              <Image src={item.image} alt="" width={100} height={100} />
+              <Image src={item.pfp} alt="" width={100} height={100} />
               <p>{item.name}</p>
               <p>{item.desc}</p>
-              <p>{item.desc}</p>
+              <p>{item.bgColour}</p>
               <p className="cursor-pointer" onClick={()=>removeArtist(item._id)}>x</p>
             </div>
           ))

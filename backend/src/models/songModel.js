@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 
 const songSchema = new mongoose.Schema({
   name: { type: String, require: true },
-  artist_id: { type: String, require: true },
+  artist_id: [
+    { type: String, require: true }
+  ],
   desc: { type: String, require: true },
   playlist: { type: String, require: true },
   image: { type: String, require: true },

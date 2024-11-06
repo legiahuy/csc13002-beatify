@@ -2,15 +2,15 @@
 
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { BiHomeAlt2 } from 'react-icons/bi';
-import { IoAlbumsOutline } from 'react-icons/io5';
-import { HiOutlineMusicalNote } from 'react-icons/hi2';
-import { RiUserVoiceLine } from 'react-icons/ri';
 import SidebarItem from "./SidebarItem";
 import { PiMusicNotesPlusFill } from "react-icons/pi";
 import { BsMusicNoteList } from "react-icons/bs";
 import { RiPlayListAddFill } from "react-icons/ri";
 import { MdLibraryMusic } from "react-icons/md";
+import { IoPersonAdd } from "react-icons/io5";
+import { IoMdPerson } from "react-icons/io";
+
+
 
 
 interface SidebarProps {
@@ -22,7 +22,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
 
   const sections = useMemo(() => [
     {
-      label: 'CURATOR PANEL',
+      label: 'SONG',
       items: [
         {
           icon: PiMusicNotesPlusFill,
@@ -36,6 +36,11 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
           active: pathname === '/admin/list-song',
           href: '/admin/list-song'
         },
+      ]
+    },
+    { 
+      label: 'PLAYLIST',
+      items: [
         {
           icon: RiPlayListAddFill,
           label: 'Add Playlist',
@@ -48,14 +53,19 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
           active: pathname === '/admin/list-playlist',
           href: '/admin/list-playlist'
         },
+      ]
+    },
+    {
+      label: 'ARTIST',
+      items: [
         {
-          icon: RiPlayListAddFill,
+          icon: IoPersonAdd,
           label: 'Add Artist',
           active: pathname === '/admin/add-artist',
           href: '/admin/add-artist'
         },
         {
-          icon: BsMusicNoteList,
+          icon: IoMdPerson,
           label: 'List Artist',
           active: pathname === '/admin/list-artist',
           href: '/admin/list-artist'
