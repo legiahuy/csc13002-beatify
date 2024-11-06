@@ -11,7 +11,7 @@ export const trendingHits = [
   },
   {
     image: "/images/dung-lam-trai-tim-anh-dau.jpg",
-    name: "Đừng làm trái tim anh đau", 
+    name: "Đừng Làm Trái Tim Anh Đau", 
     artist: "Sơn Tùng M-TP",
     file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
     id: "asjfghdsjkhgjasasdfg",
@@ -21,7 +21,7 @@ export const trendingHits = [
   },
   {
     image: "/images/thienlyoi.jpg",
-    name: "Thiên Lý ơi",
+    name: "Thiên Lý Ơi",
     artist: "Jack - J97", 
     file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
     id: "asjfghdsjkhgjdfg2",
@@ -41,7 +41,7 @@ export const trendingHits = [
   },
   {
     image: "/images/dung-lam-trai-tim-anh-dau.jpg",
-    name: "Đừng làm trái tim anh đau", 
+    name: "Đừng Làm Trái Tim Anh Đau", 
     artist: "Sơn Tùng M-TP",
     file: "https://res.cloudinary.com/dfa8awpwl/video/upload/v1730000345/antjxxm30wr7odatsqst.mp3",
     id: "asjfghdsjkhgsssjdfg",
@@ -65,31 +65,31 @@ export const topArtists = [
   {
     image: "/images/hieuthuhai.jpeg",
     name: "HIEUTHUHAI",
-    title: "Nghệ sĩ",
+    title: "Artist",
     href: "vu"
   },
   {
     image: "/images/sontung.jpg", 
     name: "Sơn Tùng M-TP",
-    title: "Nghệ sĩ",
+    title: "Artist",
     href: "sontung"
   },
   {
     image: "/images/sontung.jpg",
     name: "Jack - J97",
-    title: "Nghệ sĩ",
+    title: "Artist",
     href: "jack"
   },
   {
     image: "/images/hieuthuhai.jpeg",
     name: "HIEUTHUHAI",
-    title: "Nghệ sĩ",
+    title: "Artist",
     href: "vu"
   },
   {
     image: "/images/sontung.jpg", 
     name: "Sơn Tùng M-TP",
-    title: "Nghệ sĩ",
+    title: "Artist",
     href: "sontung"
   },
   {

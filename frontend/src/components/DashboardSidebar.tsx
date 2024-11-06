@@ -10,9 +10,6 @@ import { MdLibraryMusic } from "react-icons/md";
 import { IoPersonAdd } from "react-icons/io5";
 import { IoMdPerson } from "react-icons/io";
 
-
-
-
 interface SidebarProps {
   children: React.ReactNode;
 }
