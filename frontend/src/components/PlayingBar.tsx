@@ -47,7 +47,9 @@ const PlayingBar: React.FC = () => {
   }, [currentSong, audioRef]);
 
   const handleVolumeClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+    if (!volumeBarRef.current) return;
+    
+    const rect = volumeBarRef.current.getBoundingClientRect();
     const clickPositionX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
     const newVolume = clickPositionX / rect.width;
     updateVolume(newVolume);
@@ -62,8 +64,9 @@ const PlayingBar: React.FC = () => {
     if (!isDraggingVolume || !volumeBarRef.current) return;
     
     const rect = volumeBarRef.current.getBoundingClientRect();
-    const clickPositionX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-    const newVolume = clickPositionX / rect.width;
+    const clickPositionX = e.clientX - rect.left;
+    const boundedX = Math.max(0, Math.min(clickPositionX, rect.width));
+    const newVolume = boundedX / rect.width;
     updateVolume(newVolume);
   };
 
@@ -126,7 +129,7 @@ const PlayingBar: React.FC = () => {
           onMouseDown={handleVolumeDragStart}
         >
           <div 
-            className="h-full bg-white rounded-lg absolute left-0 top-0"
+            className="h-full bg-white rounded-lg absolute left-0 top-0 transition-all duration-100"
             style={{ width: `${(isMuted ? 0 : volume) * 100}%` }}
           />
         </div>
