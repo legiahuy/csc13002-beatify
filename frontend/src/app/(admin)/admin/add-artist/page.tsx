@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 export const url = 'http://localhost:4000'
 
-const AddPlaylist = () => {
+const AddArtist = () => {
   const [image, setImage] = useState<File | null>(null);
   const [name, setName] = useState(""); 
   const [desc, setDesc] = useState(""); 
@@ -26,10 +26,10 @@ const AddPlaylist = () => {
       if (image) formData.append('image', image); 
       formData.append('bgColour', colour);
 
-      const response = await axios.post(`${url}/api/playlist/add`, formData)
+      const response = await axios.post(`${url}/api/artist/add`, formData)
 
       if(response.data.success) {
-        toast.success("Playlist added");
+        toast.success("Artist added");
         setName("");
         setDesc("");
         setImage(null);
@@ -78,7 +78,7 @@ const AddPlaylist = () => {
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <p>Playlist name</p>
+            <p>Artist name</p>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -90,7 +90,7 @@ const AddPlaylist = () => {
           </div>
 
           <div className="flex flex-col gap-2.5">
-            <p>Playlist description</p>
+            <p>Artist description</p>
             <input
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
@@ -121,4 +121,4 @@ const AddPlaylist = () => {
   );
 };
 
-export default AddPlaylist;
+export default AddArtist;

@@ -1,8 +1,7 @@
-import Sidebar from "@/components/Sidebar";
-import PlayingBar from "@/components/PlayingBar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import ProtectedRoute from "@/components/protectedRoute";
 
 export default function SiteLayout({
   children,
@@ -10,6 +9,8 @@ export default function SiteLayout({
   children: React.ReactNode
 }) {
   return (
+    <ProtectedRoute roleRequired="admin">
+
     <div className='flex items-start min-h-screen'>
         <ToastContainer />
         <DashboardSidebar>{''}</DashboardSidebar>
@@ -21,6 +22,6 @@ export default function SiteLayout({
         </div>
 
     </div>
-
+    </ProtectedRoute>
   )
 }

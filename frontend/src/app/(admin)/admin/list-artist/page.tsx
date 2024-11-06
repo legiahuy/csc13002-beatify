@@ -7,22 +7,21 @@ import { toast } from "react-toastify";
 
 export const url = 'http://localhost:4000'
 
-type Song = {
+type Artist = {
   image: string;
   name: string;
-  playlist: string;
-  duration: string;
   _id: string;
+  desc: string;
 };
 
-const ListSong = () => {
-  const [data, setData] = useState<Song[]>([]);
+const ListArtist = () => {
+  const [data, setData] = useState<Artist[]>([]);
 
-  const fetchSongs = async() => {
+  const fetchArtists = async() => {
     try {
-      const response = await axios.get(`${url}/api/song/list`)
+      const response = await axios.get(`${url}/api/artist/list`)
       if(response.data.success) {
-        setData(response.data.songs)
+        setData(response.data.artists)
       }
 
     } catch (error) {
@@ -30,12 +29,12 @@ const ListSong = () => {
     }
   }
 
-  const removeSong = async (id: string) => {
+  const removeArtist = async (id: string) => {
     try {
-      const response = await axios.post(`${url}/api/song/remove`, {id})
+      const response = await axios.post(`${url}/api/artist/remove`, {id})
       if(response.data.success) {
         //setData(response.data.songs)
-        await fetchSongs();
+        await fetchArtists();
       }
     } catch (error) {
       toast.error("Error Occured")
@@ -43,38 +42,38 @@ const ListSong = () => {
   }
 
   useEffect(()=>{
-    fetchSongs();
+    fetchArtists();
   },[])
 
 
   return (
     <div>
-      <p className="text-black text-bold">All Songs List</p>
+      <p className="text-black text-bold">All Artists List</p>
       <br />
       <div>
         <div className="sm:grid hidden grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 bg-gray-100 text-black">
           <b>Image</b>
           <b>Name</b>
-          <b>Playlist</b>
-          <b>Duration</b>
+          <b>Description</b>
+          <b>Playlist Colour</b>
           <b>Action</b>
           </div>
         {data.length > 0 ? (
           data.map((item, index) => (
-            <div key={index} className="grid grid-cols-[1fr_1fr_1fr] sm:grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5">
+            <div key={index} className="grid grid-cols-[1fr_1fr_1fr] sm:grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 text-black">
               <Image src={item.image} alt="" width={100} height={100} />
               <p>{item.name}</p>
-              <p>{item.playlist}</p>
-              <p>{item.duration}</p>
-              <p className="cursor-pointer" onClick={()=>removeSong(item._id)}>x</p>
+              <p>{item.desc}</p>
+              <p>{item.desc}</p>
+              <p className="cursor-pointer" onClick={()=>removeArtist(item._id)}>x</p>
             </div>
           ))
         ) : (
-          <p>No songs available.</p>
+          <p>No Artists available.</p>
         )}
       </div>
     </div>
   );
 };
 
-export default ListSong;
+export default ListArtist;
