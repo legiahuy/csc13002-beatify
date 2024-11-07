@@ -5,6 +5,7 @@ import { FaPlay, FaPause, FaStepBackward, FaStepForward } from 'react-icons/fa';
 import { BsShuffle, BsRepeat } from 'react-icons/bs';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { HiSpeakerXMark, HiSpeakerWave } from 'react-icons/hi2';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
 const PlayingBar: React.FC = () => {
   const { 
@@ -22,6 +23,7 @@ const PlayingBar: React.FC = () => {
   const [duration, setDuration] = useState(0);
   const [isDraggingVolume, setIsDraggingVolume] = useState(false);
   const volumeBarRef = useRef<HTMLDivElement>(null);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     if (!currentSong || !audioRef.current) return;
@@ -108,6 +110,10 @@ const PlayingBar: React.FC = () => {
     };
   }, [isDraggingVolume]);
 
+  const toggleFavorite = () => {
+    setIsFavorite(prev => !prev);
+  };
+
   // Volume control section
   const VolumeControl = () => {
     return (
@@ -137,19 +143,9 @@ const PlayingBar: React.FC = () => {
   };
 
   return (
-    <div className="
-      bg-gradient-to-b from-gray-900 to-black 
-      border-t border-gray-800 
-      fixed bottom-0 left-0 right-0
-      z-50 h-20
-    ">
-      <div className="
-        h-full
-        w-full
-        px-4
-        flex 
-        items-center 
-      ">
+    <div className="bg-gradient-to-b from-gray-900 to-black border-t border-gray-800 fixed bottom-0 left-0 right-0 z-50 h-20">
+      <div className="h-full w-full px-4 flex items-center">
+        
         {/* Song info - left side */}
         <div className="absolute left-4 flex items-center w-[300px]">
           <img 
@@ -158,8 +154,15 @@ const PlayingBar: React.FC = () => {
             className="w-14 h-14 rounded-md shadow-lg" 
           />
           <div className="ml-4 overflow-hidden">
-            <h4 className="text-white font-semibold truncate">
+            <h4 className="text-white font-semibold truncate flex items-center gap-2">
               {currentSong?.name || 'Chưa chọn bài hát'}
+              <button onClick={toggleFavorite}>
+                {isFavorite ? (
+                  <FaHeart className="text-red-500" size={20} />
+                ) : (
+                  <FaRegHeart className="text-gray-400 hover:text-white" size={20} />
+                )}
+              </button>
             </h4>
             <p className="text-gray-400 text-sm truncate">
               {currentSong?.artist || 'Chưa có nghệ sĩ'}
@@ -211,8 +214,9 @@ const PlayingBar: React.FC = () => {
           <VolumeControl />
         </div>
       </div>
-    </div>
+    </div>    
   );
 };
 
 export default PlayingBar;
+
