@@ -50,15 +50,6 @@ const AddSong = () => {
       console.log(response.data)
   
       if (response.data.success) {
-        const songId = response.data.songId; // Assuming response includes the new song ID
-        await Promise.all(
-          selectedArtists.map((artistId) =>
-            axios.patch(`${url}/api/artist/update-catalog`, {
-              artistId,
-              songId,
-            })
-          )
-        );
         toast.success("Song added");
         setName("");
         setDesc("");
