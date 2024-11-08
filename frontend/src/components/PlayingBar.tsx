@@ -6,6 +6,7 @@ import { BsShuffle, BsRepeat } from 'react-icons/bs';
 import { usePlayer } from '@/contexts/PlayerContext';
 import { HiSpeakerXMark, HiSpeakerWave } from 'react-icons/hi2';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import Link from 'next/link';
 
 const PlayingBar: React.FC = () => {
   const { 
@@ -115,47 +116,45 @@ const PlayingBar: React.FC = () => {
   };
 
   // Volume control section
-  const VolumeControl = () => {
-    return (
-      <div className="flex items-center gap-x-2">
-        <button onClick={toggleMuteContext}>
-          {isMuted || volume === 0 ? (
-            <HiSpeakerXMark size={24} className="text-gray-400 hover:text-white cursor-pointer" />
-          ) : volume < 0.5 ? (
-            <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
-          ) : (
-            <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
-          )}
-        </button>
+  const VolumeControl = () => (
+    <div className="flex items-center gap-x-2">
+      <button onClick={toggleMuteContext}>
+        {isMuted || volume === 0 ? (
+          <HiSpeakerXMark size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+        ) : volume < 0.5 ? (
+          <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+        ) : (
+          <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+        )}
+      </button>
+      <div 
+        ref={volumeBarRef}
+        className="w-[100px] h-1 bg-gray-600 rounded-lg cursor-pointer relative"
+        onClick={handleVolumeClick}
+        onMouseDown={handleVolumeDragStart}
+      >
         <div 
-          ref={volumeBarRef}
-          className="w-[100px] h-1 bg-gray-600 rounded-lg cursor-pointer relative"
-          onClick={handleVolumeClick}
-          onMouseDown={handleVolumeDragStart}
-        >
-          <div 
-            className="h-full bg-white rounded-lg absolute left-0 top-0 transition-all duration-100"
-            style={{ width: `${(isMuted ? 0 : volume) * 100}%` }}
-          />
-        </div>
+          className="h-full bg-white rounded-lg absolute left-0 top-0 transition-all duration-100"
+          style={{ width: `${(isMuted ? 0 : volume) * 100}%` }}
+        />
       </div>
-    );
-  };
+    </div>
+  );
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black border-t border-gray-800 fixed bottom-0 left-0 right-0 z-50 h-20">
       <div className="h-full w-full px-4 flex items-center">
         
         {/* Song info - left side */}
-        <div className="absolute left-4 flex items-center w-[300px]">
+        <div className="absolute left-4 flex items-center w-[400px]">
           <img 
             src={currentSong?.image || '/default-album.png'} 
             alt="Album cover" 
             className="w-14 h-14 rounded-md shadow-lg" 
           />
           <div className="ml-4 overflow-hidden">
-            <h4 className="text-white font-semibold truncate flex items-center gap-2">
-              {currentSong?.name || 'Chưa chọn bài hát'}
+            <h4 className="text-white font-semibold truncate flex items-center gap-2 ">
+              <Link href={`/song/${currentSong?._id}`}>{currentSong?.name || 'Chưa chọn bài hát'}</Link>
               <button onClick={toggleFavorite}>
                 {isFavorite ? (
                   <FaHeart className="text-red-500" size={20} />
@@ -165,7 +164,21 @@ const PlayingBar: React.FC = () => {
               </button>
             </h4>
             <p className="text-gray-400 text-sm truncate">
-              {currentSong?.artist || 'Chưa có nghệ sĩ'}
+              {typeof currentSong?.artist === 'string' && currentSong.artist ? (
+                currentSong.artist.split(',').map((artist, index) => (
+                  <span key={index}>
+                    <Link href={`/artist/${artist.trim()}`} className="hover:underline">{artist.trim()}</Link>
+                    {index < currentSong.artist.split(',').length - 1 && ', '}
+                  </span>
+                ))
+              ) : Array.isArray(currentSong?.artist) && currentSong.artist.length > 0 ? (
+                currentSong.artist.map((artist, index) => (
+                  <span key={index}>
+                    <Link href={`/artist/${artist.trim()}`} className="hover:underline">{artist.trim()}</Link>
+                    {index < currentSong.artist.length - 1 && ', '}
+                  </span>
+                ))
+              ) : 'Chưa có nghệ sĩ'}
             </p>
           </div>
         </div>
@@ -201,7 +214,7 @@ const PlayingBar: React.FC = () => {
               <div
                 className="h-full bg-white rounded-full absolute left-0 top-0"
                 style={{ width: `${(localCurrentTime / duration) * 100}%` }}
-              ></div>
+              />
             </div>
             <span className="text-xs text-gray-400 w-10">
               {formatTime(duration)}
@@ -209,14 +222,13 @@ const PlayingBar: React.FC = () => {
           </div>
         </div>
 
-        {/* Volume controls - right side - absolute positioning */}
-        <div className="absolute right-4 flex items-center gap-x-4">
+        {/* Volume control - right side */}
+        <div className="absolute right-4">
           <VolumeControl />
         </div>
       </div>
-    </div>    
+    </div>
   );
 };
 
 export default PlayingBar;
-

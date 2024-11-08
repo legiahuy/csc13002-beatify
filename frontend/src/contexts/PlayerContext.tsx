@@ -1,9 +1,20 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
-import { trendingHits } from '@/data/songs';
+import axios from 'axios';
 
 interface Song {
+  image: string;
+  name: string;
+  file: string;
+  desc: string;
+  _id: string;
+  playlist: string;
+  artist_id: string[];
+  duration: string;
+}
+
+interface Playlist {
   image: string;
   name: string;
   artist: string;
@@ -12,6 +23,14 @@ interface Song {
   year?: string;
   duration?: string;
   id: string;
+}
+
+interface Artist {
+  pfp: string;
+  name: string;
+  desc: string;
+  bgColour: string;
+  _id: string;
 }
 
 interface PlayerContextType {
@@ -26,16 +45,27 @@ interface PlayerContextType {
   setVolume: (volume: number) => void;
   toggleMute: () => void;
   setCurrentTime: (time: number) => void;
+  getSongsData: () => Promise<void>; // Function for fetching songs data
+  getPlaylistsData: () => Promise<void>; // Function for fetching playlists data
+  getArtistsData: () => Promise<void>;
+  songsData: Song[] | null; // Added songsData
+  playlistsData: Playlist[] | null; // Added playlistsData
+  artistsData: Artist[] | null;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
+  const [songsData, setSongsData] = useState<Song[] | null>(null);
+  const [playlistsData, setPlaylistsData] = useState<Playlist[] | null>(null);
+  const [artistsData, setArtistsData] = useState<Artist[] | null>(null);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const url = "http://localhost:4000";
 
   useEffect(() => {
     if (audioRef.current) {
@@ -68,7 +98,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       audioRef.current.pause();
     }
 
-    if (!audioRef.current || currentSong?.id !== song.id) {
+    if (!audioRef.current || currentSong?._id !== song._id) {
       audioRef.current = new Audio(song.file);
       audioRef.current.volume = isMuted ? 0 : volume;
       audioRef.current.onended = () => setIsPlaying(false);
@@ -103,8 +133,38 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Cleanup khi unmount
+  const getSongsData = async () => {
+    try {
+      const response = await axios.get(`${url}/api/song/list`);
+      setSongsData(response.data.songs);
+      setCurrentSong(response.data.songs[0]);
+    } catch (error) {
+      console.error("Error fetching songs data:", error);
+    }
+  };
+
+  const getPlaylistsData = async () => {
+    try {
+      const response = await axios.get(`${url}/api/playlist/list`);
+      setPlaylistsData(response.data.playlists);
+    } catch (error) {
+      console.error("Error fetching playlists data:", error);
+    }
+  };
+
+  const getArtistsData = async () => {
+    try {
+      const response = await axios.get(`${url}/api/artist/list`);
+      setArtistsData(response.data.artists);
+    } catch (error) {
+      console.error("Error fetching artists data:", error);
+    }
+  };
+
   useEffect(() => {
+    getSongsData();
+    getPlaylistsData();
+    getArtistsData();
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -125,7 +185,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       togglePlay,
       setVolume: handleSetVolume,
       toggleMute: handleToggleMute,
-      setCurrentTime
+      setCurrentTime,
+      songsData,
+      playlistsData,
+      artistsData,
+      getSongsData,
+      getPlaylistsData,
+      getArtistsData,
     }}>
       {children}
     </PlayerContext.Provider>

@@ -43,8 +43,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         {
           icon: RiUserVoiceLine,
           label: 'Artists',
-          active: pathname === '/artists',
-          href: '/artists'
+          active: pathname === '/artist',
+          href: '/artist'
         }
       ]
     },

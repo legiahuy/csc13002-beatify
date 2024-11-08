@@ -6,6 +6,7 @@ import Sidebar from '@/components/Sidebar'
 import { PlayerProvider } from '@/contexts/PlayerContext'
 
 
+
 const font = Figtree({ subsets: ['latin']})
 
 const geistSans = localFont({
@@ -31,7 +32,6 @@ export default function RootLayout({
 }) {
   return (
       <html lang="en">
-        
         <PlayerProvider>
           <body>
             {children}

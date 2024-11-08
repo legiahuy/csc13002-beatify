@@ -3,35 +3,34 @@
 import { useRouter } from 'next/navigation'
 import Image from "next/image"
 import { FaPlay } from "react-icons/fa"
-import Link from 'next/link'  // Sửa lại cách import
+import Link from 'next/link'
 import { usePlayer } from '@/contexts/PlayerContext';
 
 interface ListItemProps {
   image: string;
   name: string;
-  id: string;
-  file:string;
-  artist: string;
-  key: string,
+  _id: string;
+  file: string;
+  artist: string[]; // Expecting an array of artist names
 }
 
 const ListItem: React.FC<ListItemProps> = ({
   image,
   name,
-  id,
+  _id,
   file,
-  artist
+  artist, // Accepting artist as an array of strings
 }: ListItemProps) => {
   const { playSong } = usePlayer();
-  
+
   const handlePlay = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
-    playSong({ file, name, artist, image, id });
+    playSong({ file, name, artist, image, _id });
   };
 
   return (
-    <Link href={`/songs/${id}`}> {/* Thêm /songs/ vào trước href */}
+    <Link href={`/song/${_id}`}>
       <div className="
         relative 
         group 
@@ -62,7 +61,7 @@ const ListItem: React.FC<ListItemProps> = ({
             fill
             alt="Image"
           />
-          {/* Tách button play ra khỏi Link */}
+          {/* Play Button */}
           <button
             onClick={handlePlay}
             className="
@@ -91,7 +90,7 @@ const ListItem: React.FC<ListItemProps> = ({
         <div className="flex flex-col items-start w-full pt-4 gap-y-1">
           <p className="font-semibold truncate w-full text-white">{name}</p>
           <p className="text-neutral-400 text-sm pb-4 w-full truncate">
-            {artist}
+            {artist.join(', ')} {/* Join artist names with commas */}
           </p>
         </div>
       </div>
