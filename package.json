@@ -3,6 +3,8 @@
     "framer-motion": "^11.11.11",
     "lucide-react": "^0.454.0",
     "mailtrap": "^3.4.0",
-    "react-router-dom": "^6.27.0"
+    "react-router-dom": "^6.27.0",
+    "react-toastify": "^10.0.6",
+    "zustand": "^5.0.1"
   }
 }

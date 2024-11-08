@@ -42,7 +42,8 @@ export default function SiteLayout({
     <div className="h-full">
       <ToastContainer />
       <div className="flex h-full">
-        <Sidebar>{''}</Sidebar>
+        {/* Truyền `user` vào Sidebar */}
+        <Sidebar user={user}>{''}</Sidebar>
         <div className="
           bg-neutral-900
           rounded-lg
@@ -56,10 +57,11 @@ export default function SiteLayout({
           <main className="h-[91%] flex-1 overflow-y-auto">
             {children}  {/* This is where your page content will be rendered */}
           </main>
-        </Header>
+         </Header>
         </div>
       </div>
       <PlayingBar /> 
     </div>
   );
 }
+
