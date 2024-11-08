@@ -6,7 +6,7 @@ import { usePlayer } from '@/contexts/PlayerContext';
 
 const DisplayHome = () => {
 
-    const { songsData, artistsData } = usePlayer();
+    const { songsData, artistsData, playlistsData } = usePlayer();
 
     // Utility function to get artist names by IDs
     const getArtistNames = (artistIds: string[]) => {
@@ -84,7 +84,47 @@ const DisplayHome = () => {
                     ))}
                 </div>
             </div>
-        </div>
+      
+
+            {/* Playlists Section */}
+            <div className="mb-6">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-white text-2xl font-semibold">
+                        Playlists
+                    </h1>
+                    <Link 
+                        href="/playlists"
+                        className="text-neutral-400 hover:text-white flex items-center gap-x-1 cursor-pointer transition text-sm font-medium"
+                    >
+                        Show all
+                        <BiChevronRight size={20} />
+                    </Link>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+                    {playlistsData?.slice(0, 5).map((playlist) => (
+                        <div key={playlist.id} className="flex flex-col items-center">
+                            <Link href={`/playlist/${playlist.id}`}>
+                                <div className="relative aspect-square w-[150px] sm:w-[180px] overflow-hidden cursor-pointer hover:opacity-80 transition">
+                                    <Image
+                                        src={playlist.image}
+                                        fill
+                                        alt={playlist.name}
+                                        className="object-cover"
+                                    />
+                                </div>
+                            </Link>
+                            <p className="text-white mt-4 text-lg font-medium">{playlist.name}</p>
+                            <p className="text-neutral-400 text-sm">{playlist.artist}</p>
+                            
+                            {/* Optional Fields */}
+                            {playlist.type && <p className="text-neutral-500 text-xs mt-1">{playlist.type}</p>}
+                            {playlist.year && <p className="text-neutral-500 text-xs">{playlist.year}</p>}
+                            {playlist.duration && <p className="text-neutral-500 text-xs">{playlist.duration}</p>}
+                        </div>
+                    ))}
+                </div>
+            </div>
+    </div>
     );
 }
 
