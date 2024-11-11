@@ -14,44 +14,10 @@ interface SidebarProps {
   children: React.ReactNode;
 }
 
-const DashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
+const AdminDashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
   const pathname = usePathname();
 
   const sections = useMemo(() => [
-    {
-      label: 'SONG',
-      items: [
-        {
-          icon: PiMusicNotesPlusFill,
-          label: 'Add Song',
-          active: pathname === '/admin/add-song',
-          href: '/admin/add-song'
-        },
-        {
-          icon: MdLibraryMusic,
-          label: 'List Song',
-          active: pathname === '/admin/list-song',
-          href: '/admin/list-song'
-        },
-      ]
-    },
-    { 
-      label: 'PLAYLIST',
-      items: [
-        {
-          icon: RiPlayListAddFill,
-          label: 'Add Playlist',
-          active: pathname === '/admin/add-playlist',
-          href: '/admin/add-playlist'
-        },
-        {
-          icon: BsMusicNoteList,
-          label: 'List Playlist',
-          active: pathname === '/admin/list-playlist',
-          href: '/admin/list-playlist'
-        },
-      ]
-    },
     {
       label: 'ARTIST',
       items: [
@@ -66,6 +32,23 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
           label: 'List Artist',
           active: pathname === '/admin/list-artist',
           href: '/admin/list-artist'
+        }
+      ]
+    },
+    {
+      label: 'USER',
+      items: [
+        {
+          icon: IoPersonAdd,
+          label: 'Add User',
+          active: pathname === '/admin/add-user',
+          href: '/admin/add-user'
+        },
+        {
+          icon: IoMdPerson,
+          label: 'List User',
+          active: pathname === '/admin/list-user',
+          href: '/admin/list-user'
         }
       ]
     },
@@ -113,4 +96,4 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
   );
 }
 
-export default DashboardSidebar;
+export default AdminDashboardSidebar;

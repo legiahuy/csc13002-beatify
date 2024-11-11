@@ -8,6 +8,7 @@ import artistRouter from './src/routes/artistRoute.js';
 import authRouter from './src/routes/authRoute.js'
 import connectDB from './src/config/mongodb.js';
 import connectCloudinary from './src/config/cloudinary.js';
+import userRouter from './src/routes/userRoute.js';
 
 // app config
 const app = express();
@@ -25,6 +26,7 @@ app.use(cors({ origin: "http://localhost:3000", credentials: true}));
 app.use("/api/song", songRouter);
 app.use("/api/playlist", playlistRouter);
 app.use("/api/artist", artistRouter);
+app.use("/api/user", userRouter);
 app.get('/', (req, res)=> res.send("API working."))
 
 app.use("/api/auth", authRouter);

@@ -1,6 +1,6 @@
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import AdminDashboardSidebar from "@/components/AdminDashboardSidebar";
+import CuratorDashboardSidebar from "@/components/CuratorDashboardSidebar";
 import ProtectedRoute from "@/components/protectedRoute";
 
 export default function SiteLayout({
@@ -13,7 +13,7 @@ export default function SiteLayout({
 
     <div className='flex items-start min-h-screen'>
         <ToastContainer />
-        <AdminDashboardSidebar>{''}</AdminDashboardSidebar>
+        <CuratorDashboardSidebar>{''}</CuratorDashboardSidebar>
         <div className='flex-1 h-screen overflow-y-scroll bg-[#F3FFF7]'>
             
             <div className='pt-8 pl-5 sm:pt-12 sm:pl-12'>
