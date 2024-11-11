@@ -18,7 +18,8 @@ const PlayingBar: React.FC = () => {
     audioRef,
     setVolume: updateVolumeContext,
     toggleMute: toggleMuteContext,
-    setCurrentTime: updateCurrentTime
+    setCurrentTime: updateCurrentTime,
+    artistsData
   } = usePlayer();
   const [localCurrentTime, setLocalCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -115,6 +116,17 @@ const PlayingBar: React.FC = () => {
     setIsFavorite(prev => !prev);
   };
 
+  // Utility function to get artist names and IDs
+  const getArtistInfo = (artistIds: string[]) => {
+    return artistIds.map(id => {
+      const artist = artistsData?.find(artist => artist._id === id);
+      return artist ? {
+        id: artist._id,
+        name: artist.name
+      } : null;
+    }).filter(artist => artist !== null);
+  };
+
   // Volume control section
   const VolumeControl = () => (
     <div className="flex items-center gap-x-2">
@@ -154,7 +166,9 @@ const PlayingBar: React.FC = () => {
           />
           <div className="ml-4 overflow-hidden">
             <h4 className="text-white font-semibold truncate flex items-center gap-2 ">
-              <Link href={`/song/${currentSong?._id}`}>{currentSong?.name || 'Chưa chọn bài hát'}</Link>
+              <Link href={`/song/${currentSong?._id}`}>
+                {currentSong?.name || 'Chưa chọn bài hát'}
+              </Link>
               <button onClick={toggleFavorite}>
                 {isFavorite ? (
                   <FaHeart className="text-red-500" size={20} />
@@ -164,21 +178,18 @@ const PlayingBar: React.FC = () => {
               </button>
             </h4>
             <p className="text-gray-400 text-sm truncate">
-              {typeof currentSong?.artist === 'string' && currentSong.artist ? (
-                currentSong.artist.split(',').map((artist, index) => (
-                  <span key={index}>
-                    <Link href={`/artist/${artist.trim()}`} className="hover:underline">{artist.trim()}</Link>
-                    {index < currentSong.artist.split(',').length - 1 && ', '}
+              {currentSong?.artist_id ? (
+                getArtistInfo(currentSong.artist_id).map((artist, index) => (
+                  <span key={artist?.id}>
+                    <Link href={`/artist/${artist?.id}`} className="hover:underline">
+                      {artist?.name}
+                    </Link>
+                    {index < currentSong.artist_id.length - 1 && ', '}
                   </span>
                 ))
-              ) : Array.isArray(currentSong?.artist) && currentSong.artist.length > 0 ? (
-                currentSong.artist.map((artist, index) => (
-                  <span key={index}>
-                    <Link href={`/artist/${artist.trim()}`} className="hover:underline">{artist.trim()}</Link>
-                    {index < currentSong.artist.length - 1 && ', '}
-                  </span>
-                ))
-              ) : 'Chưa có nghệ sĩ'}
+              ) : (
+                'Chưa có nghệ sĩ'
+              )}
             </p>
           </div>
         </div>

@@ -21,12 +21,17 @@ const ListItem: React.FC<ListItemProps> = ({
   file,
   artist, // Accepting artist as an array of strings
 }: ListItemProps) => {
-  const { playSong } = usePlayer();
+  const { playSong, songsData } = usePlayer();
 
   const handlePlay = (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
-    playSong({ file, name, artist, image, _id });
+    
+    // Find the complete song data from songsData
+    const songData = songsData?.find(song => song._id === _id);
+    if (songData) {
+      playSong(songData);
+    }
   };
 
   return (

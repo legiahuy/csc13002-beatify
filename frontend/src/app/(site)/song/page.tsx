@@ -4,8 +4,15 @@ import ListItem from "@/components/ListItem";
 import { usePlayer } from "@/contexts/PlayerContext";
 
 export default function Trending() {
+  const { songsData, artistsData } = usePlayer();
 
-  const { songsData } = usePlayer();
+  // Utility function to get artist names by IDs
+  const getArtistNames = (artistIds: string[]) => {
+    return artistIds.map(id => {
+      const artist = artistsData?.find(artist => artist._id === id);
+      return artist ? artist.name : 'Unknown Artist';
+    });
+  };
 
   return (
     <div className="rounded-lg h-full w-full overflow-hidden overflow-y-auto">
@@ -28,7 +35,7 @@ export default function Trending() {
                 image={item.image}
                 name={item.name}
                 file={item.file}
-                artist={item.artist}
+                artist={getArtistNames(item.artist_id)} // Convert artist IDs to names
                 key={item._id}
               />
             ))}
