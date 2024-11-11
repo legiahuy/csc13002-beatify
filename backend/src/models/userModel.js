@@ -32,12 +32,20 @@ const userSchema = new mongoose.Schema({
         type:Boolean,
         default: false
     },
+    pfp: { 
+        type: String, 
+        require: true 
+    },
+
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,
     verificationTokenExpiresAt: Date,
 }, {timestamps: true});
 
-export const User = mongoose.model('User', userSchema);
+
+const User = mongoose.model('User', userSchema);
+
+export default User;
 
 

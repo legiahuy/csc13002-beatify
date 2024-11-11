@@ -23,6 +23,7 @@ const addArtist = async (req, res) => {
     } catch (error) {
         // Handle error
         res.json({success:false});
+        console.log(error)
     }
 };
 
