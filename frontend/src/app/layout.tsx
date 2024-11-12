@@ -1,8 +1,8 @@
+import "react-toastify/dist/ReactToastify.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import {Figtree} from 'next/font/google'
-import Sidebar from '@/components/Sidebar'
 import { PlayerProvider } from '@/contexts/PlayerContext'
 
 

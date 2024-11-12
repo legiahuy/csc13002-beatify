@@ -8,11 +8,15 @@ import { HiOutlineMusicalNote } from 'react-icons/hi2';
 import { RiUserVoiceLine } from 'react-icons/ri';
 import { MdOutlineHistory } from 'react-icons/md';
 import { IoHeartOutline, IoAddOutline } from 'react-icons/io5';
+import { MdAdminPanelSettings } from "react-icons/md";
+
 import SidebarItem from "./SidebarItem";
+import Link from "next/link"; 
+
 
 interface SidebarProps {
   children: React.ReactNode;
-  user: { name: string; image: string } | null;  // Nhận thêm prop `user`
+  user: { name: string; image: string; role: string } | null;  // Nhận thêm prop `user`
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
@@ -20,6 +24,17 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
 
   // Định nghĩa các mục trong Sidebar
   const sections = useMemo(() => [
+    user && user.role==="admin" && {
+      label: 'ADMIN',
+      items: [
+        {
+          icon: MdAdminPanelSettings,
+          label: 'Dashboard',
+          active: pathname === '/admin',
+          href: '/admin'
+        }
+      ]
+    },
     {
       label: 'MENU',
       items: [
@@ -91,10 +106,10 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
     <div className="flex h-full">
       <div className="hidden md:flex flex-col w-[260px] bg-[#0A0A0A] h-full">
         {/* Logo Section */}
-        <div className="flex items-center gap-x-2 px-6 h-[80px]">
+        <Link href="/" className="flex items-center gap-x-2 px-6 h-[80px]">
           <span className="text-white text-2xl">♪</span>
           <span className="text-white font-bold">BEATIFY</span>
-        </div>
+        </Link>
       
         {/* Navigation Sections */}
         <div className="flex flex-col flex-1">
