@@ -3,12 +3,9 @@
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 import SidebarItem from "./SidebarItem";
-import { PiMusicNotesPlusFill } from "react-icons/pi";
-import { BsMusicNoteList } from "react-icons/bs";
-import { RiPlayListAddFill } from "react-icons/ri";
-import { MdLibraryMusic } from "react-icons/md";
 import { IoPersonAdd } from "react-icons/io5";
 import { IoMdPerson } from "react-icons/io";
+import Link from "next/link";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -58,10 +55,10 @@ const AdminDashboardSidebar: React.FC<SidebarProps> = ({ children }) => {
     <div className="flex h-full">
       <div className="hidden md:flex flex-col w-[260px] bg-[#0A0A0A] h-full">
         {/* Logo Section */}
-        <div className="flex items-center gap-x-2 px-6 h-[80px]">
+        <Link href="/" className="flex items-center gap-x-2 px-6 h-[80px]">
           <span className="text-white text-2xl">♪</span>
           <span className="text-white font-bold">BEATIFY</span>
-        </div>
+        </Link>
         
         {/* Navigation Sections */}
         <div className="flex flex-col flex-1">

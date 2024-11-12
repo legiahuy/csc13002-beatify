@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 export const url = 'http://localhost:4000';
 
 const useAuth = () => {
-  const [user, setUser] = useState<{ name: string; image: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; image: string; role: string } | null>(null);
 
   const fetchUser = async () => {
     try {

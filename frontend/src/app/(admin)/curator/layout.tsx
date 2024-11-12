@@ -9,7 +9,7 @@ export default function SiteLayout({
   children: React.ReactNode
 }) {
   return (
-    <ProtectedRoute roleRequired="admin">
+    <ProtectedRoute roleRequired={["curator", "admin"]}>
 
     <div className='flex items-start min-h-screen'>
         <ToastContainer />
