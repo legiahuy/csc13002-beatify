@@ -1,6 +1,5 @@
 "use client"
 import Image from "next/image";
-import { topArtists } from "@/data/songs";
 import { usePlayer } from '@/contexts/PlayerContext';
 import Link from 'next/link';
 

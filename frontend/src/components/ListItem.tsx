@@ -30,7 +30,8 @@ const ListItem: React.FC<ListItemProps> = ({
     // Find the complete song data from songsData
     const songData = songsData?.find(song => song._id === _id);
     if (songData) {
-      playSong(songData);
+      //playSong(songData);
+      playSong(songData, { type: "single", id: songData._id });
     }
   };
 

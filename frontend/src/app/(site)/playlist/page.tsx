@@ -11,7 +11,7 @@ interface Playlist {
   type?: string;
   year?: string;
   duration?: string;
-  id: string;
+  _id: string;
 }
 
 export default function Playlists() {
@@ -32,8 +32,8 @@ export default function Playlists() {
           gap-4
         ">
           {playlistsData?.map((playlist: Playlist) => (
-            <div className="flex flex-col items-center" key={playlist.id}>
-              <Link href={`/playlist/${playlist.id}`} className="flex flex-col items-center">
+            <div className="flex flex-col items-center" key={playlist._id}>
+              <Link href={`/playlist/${playlist._id}`} className="flex flex-col items-center">
                 <div className="
                   relative 
                   aspect-square

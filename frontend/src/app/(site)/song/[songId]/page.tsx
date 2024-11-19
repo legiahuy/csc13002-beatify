@@ -95,7 +95,7 @@ export default function SongPage({ params }: SongPageProps) {
               if (isCurrentSong) {
                 togglePlay();
               } else {
-                playSong(song);
+                playSong(song, { type: "single", id: song._id });
               }
             }}
             className="bg-green-500 rounded-full w-14 h-14 flex items-center justify-center hover:scale-105 transition"
@@ -124,7 +124,7 @@ export default function SongPage({ params }: SongPageProps) {
                     if (isCurrentSong) {
                       togglePlay();
                     } else {
-                      playSong(song);
+                      playSong(song, { type: "single", id: song._id });
                     }
                   }}
                 >

@@ -102,8 +102,8 @@ const DisplayHome = () => {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
                     {playlistsData?.slice(0, 5).map((playlist) => (
-                        <div key={playlist.id} className="flex flex-col items-center">
-                            <Link href={`/playlist/${playlist.id}`}>
+                        <div key={playlist._id} className="flex flex-col items-center">
+                            <Link href={`/playlist/${playlist._id}`}>
                                 <div className="relative aspect-square w-[150px] sm:w-[180px] overflow-hidden cursor-pointer hover:opacity-80 transition">
                                     <Image
                                         src={playlist.image}

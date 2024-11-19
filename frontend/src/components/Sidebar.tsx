@@ -53,8 +53,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
         {
           icon: IoAlbumsOutline,
           label: 'Playlists',
-          active: pathname === '/playlists',
-          href: '/playlists'
+          active: pathname === '/playlist',
+          href: '/playlist'
         },
         {
           icon: RiUserVoiceLine,
