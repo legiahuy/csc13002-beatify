@@ -15,9 +15,11 @@ const PlayingBar: React.FC = () => {
     togglePlay,
     volume,
     isMuted,
+    isRandom,
     audioRef,
     setVolume: updateVolumeContext,
     toggleMute: toggleMuteContext,
+    toggleRandom: toggleRandomContext,
     setCurrentTime: updateCurrentTime,
     artistsData,
     playNextSong, // New
@@ -174,7 +176,12 @@ const PlayingBar: React.FC = () => {
         {/* Controls - center */}
         <div className="mx-auto flex flex-col items-center justify-center">
           <div className="flex items-center justify-center space-x-6">
-            <BsShuffle className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
+            <BsShuffle 
+              className={`cursor-pointer transition-colors ${
+                isRandom ? "text-white" : "text-gray-400 hover:text-white"
+              }`}
+              onClick={toggleRandomContext}
+            />
             <FaStepBackward
               className="text-gray-400 hover:text-white cursor-pointer transition-colors"
               onClick={playPreviousSong}

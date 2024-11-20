@@ -40,12 +40,14 @@ interface PlayerContextType {
   isPlaying: boolean;
   volume: number;
   isMuted: boolean;
+  isRandom: boolean;
   audioRef: React.RefObject<HTMLAudioElement>;
   playSong: (song: Song, scope: { type: "artist" | "playlist" | "single"; id: string }) => void;
   pauseSong: () => void;
   togglePlay: () => void;
   setVolume: (volume: number) => void;
   toggleMute: () => void;
+  toggleRandom: () => void;
   setCurrentTime: (time: number) => void;
   playNextSong: () => void;
   playPreviousSong: () => void;
@@ -103,6 +105,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const handleToggleRandom = () => {
+    setIsRandom(!isRandom);
+  }
+
   
   const playSong = (song: Song, scope: { type: "artist" | "playlist" | "single"; id: string }) => {
     if (audioRef.current) {
@@ -123,9 +129,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   
   const playNextSong = () => {
     if (!currentSong || !songsData) return;
-
+  
     let songList: Song[] = [];
-
+  
     if (navigationScope.type === "playlist" && playlistsData) {
       const playlist = playlistsData.find((pl) => pl._id === navigationScope.id);
       if (playlist) {
@@ -139,13 +145,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     } else if (navigationScope.type === "single") {
       songList = [currentSong]; // Only the current song
     }
-
+  
     const currentIndex = songList.findIndex((song) => song._id === currentSong._id);
-
+  
     if (isRandom) {
-      // If random is enabled, play a random song
-      const randomIndex = Math.floor(Math.random() * songList.length);
-      playSong(songList[randomIndex], navigationScope);
+      // Exclude the current song from the random pool
+      const availableSongs = songList.filter((song) => song._id !== currentSong._id);
+      if (availableSongs.length > 0) {
+        const randomIndex = Math.floor(Math.random() * availableSongs.length);
+        playSong(availableSongs[randomIndex], navigationScope);
+      }
     } else {
       if (currentIndex !== -1) {
         // If not random, play the next song sequentially
@@ -269,12 +278,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         isPlaying,
         volume,
         isMuted,
+        isRandom,
         audioRef,
         playSong,
         pauseSong,
         togglePlay,
         setVolume: handleSetVolume,
         toggleMute: handleToggleMute,
+        toggleRandom: handleToggleRandom,
         setCurrentTime,
         songsData,
         playlistsData,
