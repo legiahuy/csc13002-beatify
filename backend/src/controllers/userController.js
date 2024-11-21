@@ -83,4 +83,74 @@ const removeUser = async (req, res) => {
     }
 };
 
-export { addUser, listUser, removeUser };
+
+// Controller thêm hoặc xóa bài hát khỏi playlist
+const togglePlaylist = async (req, res) => {
+    try {
+        const { userId, songId } = req.body;
+
+        if (!userId || !songId) {
+            return res.status(400).json({ success: false, message: "User ID and Song ID are required!" });
+        }
+
+        // Tìm người dùng
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Kiểm tra bài hát trong playlist
+        const songIndex = user.playlist.findIndex((song) => song === songId);
+
+        if (songIndex > -1) {
+            // Nếu bài hát đã có, xóa khỏi playlist
+            user.playlist.splice(songIndex, 1);
+            await user.save();
+            return res.status(200).json({ 
+                success: true, 
+                message: "Song removed from playlist", 
+                playlist: user.playlist 
+            });
+        } else {
+            // Nếu bài hát chưa có, thêm vào playlist
+            user.playlist.push(songId);
+            await user.save();
+            return res.status(200).json({ 
+                success: true, 
+                message: "Song added to playlist", 
+                playlist: user.playlist 
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+const likeSong = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const songId = req.params.id;
+
+        if (user.playlist.includes(songId)) {
+            const index = user.playlist.indexOf(songId);
+            user.playlist.splice(index, 1);
+            await user.save();
+            return res.json({ success: true, message: "Removed from playlist" });
+        }
+
+        user.playlist.push(songId);
+        await user.save();
+
+        return res.json({ success: true, message: "Added to playlist" });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export { addUser, listUser, removeUser, togglePlaylist, likeSong };
