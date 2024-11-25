@@ -9,6 +9,7 @@ import authRouter from './src/routes/authRoute.js'
 import connectDB from './src/config/mongodb.js';
 import connectCloudinary from './src/config/cloudinary.js';
 import userRouter from './src/routes/userRoute.js';
+import userPlaylistRouter from './src/routes/userPlaylistRoute.js';
 
 // app config
 const app = express();
@@ -27,6 +28,7 @@ app.use("/api/song", songRouter);
 app.use("/api/playlist", playlistRouter);
 app.use("/api/artist", artistRouter);
 app.use("/api/user", userRouter);
+app.use("/api/userPlaylist",userPlaylistRouter)
 app.get('/', (req, res)=> res.send("API working."))
 
 app.use("/api/auth", authRouter);

@@ -1,51 +1,58 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-    email: {
-        type:String,
-        required:true,
-        unique:true
-    },
-    password: {
-        type:String,
-        required:true
-    },
-    name: {
-        type:String,
-        required:true
-    },
-    role: {
-        type:String,
-        default: "user"
-    },
-    playlist:[ 
-        {
+const userSchema = new mongoose.Schema(
+    {
+        email: {
             type: String,
-            required:true,
+            required: [true, "Email is required"],
+            unique: true,
         },
-    ],
-    lastLogin: {
-        type:Date,
-        default: Date.now
+        password: {
+            type: String,
+            required: [true, "Password is required"],
+        },
+        name: {
+            type: String,
+            required: [true, "Name is required"],
+        },
+        role: {
+            type: String,
+            enum: ["user", "admin"], // Chỉ cho phép giá trị "user" hoặc "admin"
+            default: "user",
+        },
+        playlists: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "UserPlaylist", // Tham chiếu đến playlist của user
+            },
+        ],
+        lastLogin: {
+            type: Date,
+            default: Date.now, // Thời gian đăng nhập cuối cùng
+        },
+        isVerified: {
+            type: Boolean,
+            default: false,
+        },
+        pfp: {
+            type: String, // URL của ảnh đại diện (profile picture)
+        },
+        resetPasswordToken: {
+            type: String, // Token dùng để reset mật khẩu
+        },
+        resetPasswordExpiresAt: {
+            type: Date, // Thời gian hết hạn token reset mật khẩu
+        },
+        verificationToken: {
+            type: String, // Token dùng để xác minh email
+        },
+        verificationTokenExpiresAt: {
+            type: Date, // Thời gian hết hạn token xác minh email
+        },
     },
-    isVerified: {
-        type:Boolean,
-        default: false
-    },
-    pfp: { 
-        type: String, 
-        require: true 
-    },
+    { timestamps: true } // Tự động thêm createdAt và updatedAt
+);
 
-    resetPasswordToken: String,
-    resetPasswordExpiresAt: Date,
-    verificationToken: String,
-    verificationTokenExpiresAt: Date,
-}, {timestamps: true});
-
-
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;
-
-

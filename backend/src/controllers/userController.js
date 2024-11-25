@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import bcryptjs from 'bcryptjs';
 import User from '../models/userModel.js';
+import UserPlaylist from "../models/userPlaylistModel.js";
 
 // Controller thêm user mới
 const addUser = async (req, res) => {
@@ -42,7 +43,18 @@ const addUser = async (req, res) => {
 
         const user = new User(userData);
         await user.save();
+        
+        const likedPlaylist = new UserPlaylist({
+            name: "Liked Songs",
+            owner: user._id,
+            songs: [],
+        });
 
+        await likedPlaylist.save();
+
+        // Thêm playlist vào danh sách `playlists` của user
+        user.playlists.push(likedPlaylist._id);
+        await user.save();
 
         // Gửi email xác thực
 
