@@ -9,6 +9,8 @@ import { RiUserVoiceLine } from 'react-icons/ri';
 import { MdOutlineHistory } from 'react-icons/md';
 import { IoHeartOutline, IoAddOutline } from 'react-icons/io5';
 import { MdAdminPanelSettings } from "react-icons/md";
+import { MdOutlinePlaylistAdd } from "react-icons/md";
+
 
 import SidebarItem from "./SidebarItem";
 import Link from "next/link"; 
@@ -25,13 +27,30 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
   // Định nghĩa các mục trong Sidebar
   const sections = useMemo(() => [
     user && user.role==="admin" && {
-      label: 'ADMIN',
+      label: 'DASHBOARD',
       items: [
         {
           icon: MdAdminPanelSettings,
-          label: 'Dashboard',
+          label: 'Admin',
           active: pathname === '/admin',
           href: '/admin'
+        },
+        {
+          icon: MdOutlinePlaylistAdd,
+          label: 'Curator',
+          active: pathname === '/curator',
+          href: '/curator'
+        }
+      ]
+    },
+    user && user.role==="curator" && {
+      label: 'Dashboard',
+      items: [
+        {
+          icon: MdOutlinePlaylistAdd,
+          label: 'Curator',
+          active: pathname === '/curator',
+          href: '/curator'
         }
       ]
     },
@@ -43,12 +62,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
           label: 'Home',
           active: pathname === '/',
           href: '/'
-        },
-        {
-          icon: HiOutlineMusicalNote,
-          label: 'Genres',
-          active: pathname === '/genres',
-          href: '/genres'
         },
         {
           icon: IoAlbumsOutline,
@@ -73,12 +86,6 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
           label: 'Recent',
           active: pathname === '/recent',
           href: '/recent'
-        },
-        {
-          icon: IoAlbumsOutline,
-          label: 'Albums',
-          active: pathname === '/my-albums',
-          href: '/my-albums'
         },
         {
           icon: IoHeartOutline,
