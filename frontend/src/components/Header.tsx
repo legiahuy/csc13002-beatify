@@ -12,15 +12,15 @@ import Button from "./Button"
 
 import { twMerge } from "tailwind-merge" 
 
-interface HeaderProps {
-  children: React.ReactNode;
-  className?: string;
+interface User {
+  name: string;
+  image: string;
 }
 
 interface HeaderProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
-  user: { name: string; image: string } | null;  // Add user prop
+  user: User | null;
 }
 
 const Header:React.FC<HeaderProps> = ({
@@ -42,7 +42,7 @@ const Header:React.FC<HeaderProps> = ({
     // Handle logout in the future
   }
   return (
-    <div className={twMerge(`sticky top-0 z-50 h-fit bg-gradient-to-b from-cyan-800 p-6`)}>
+    <div className={twMerge(`sticky top-0 z-50 h-fit bg-gradient-to-b from-cyan-800`)}>
       <div className="w-full mb-4 flex items-center justify-between gap-x-4">
         <div className="hidden md:flex gap-x-2 items-center flex-shrink-0">
         <button
