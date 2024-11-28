@@ -15,12 +15,15 @@ const useAuth = () => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`${url}/api/auth/check-auth`);
+      const response = await axios.get(`${url}/api/auth/check-auth`, {
+        withCredentials: true
+      });
       if (response.data.success) {
         setUser(response.data.user);
       }
     } catch (error) {
       console.log("Error Occurred");
+      setUser(null);
     }
   };
 
