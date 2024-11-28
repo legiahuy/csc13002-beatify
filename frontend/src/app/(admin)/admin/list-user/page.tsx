@@ -71,7 +71,11 @@ const ListUser = () => {
               <p>{item.name}</p>
               <p>{item.email}</p>
               <p>{item.role}</p>
-              <p className="cursor-pointer" onClick={() => removeUser(item._id)}>x</p>
+              <p className="cursor-pointer" onClick={() => {
+                if (window.confirm("Are you sure you want to remove this user?")) {
+                  removeUser(item._id);
+                }
+              }}>x</p>
             </div>
           ))
         ) : (

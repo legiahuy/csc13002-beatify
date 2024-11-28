@@ -68,8 +68,12 @@ const ListPlaylist = () => {
               <p>{item.name}</p>
               <p>{item.desc}</p>
               <p>{item.bgColour}</p>
-              <p className="cursor-pointer" onClick={()=>removePlaylist(item._id)}>x</p>
-            </div>
+              <p className="cursor-pointer" onClick={() => {
+                if (window.confirm("Are you sure you want to remove this playlist?")) {
+                  removePlaylist(item._id);
+                }
+              }}>x</p>
+              </div>
           ))
         ) : (
           <p className="mt-5 text-black">No Playlists available.</p>

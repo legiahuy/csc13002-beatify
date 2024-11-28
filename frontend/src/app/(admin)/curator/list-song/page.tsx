@@ -68,7 +68,11 @@ const ListSong = () => {
               <p>{item.name}</p>
               <p>{item.playlist}</p>
               <p>{item.duration}</p>
-              <p className="cursor-pointer" onClick={()=>removeSong(item._id)}>x</p>
+              <p className="cursor-pointer" onClick={() => {
+                if (window.confirm("Are you sure you want to remove this song?")) {
+                  removeSong(item._id);
+                }
+              }}>x</p>
             </div>
           ))
         ) : (
