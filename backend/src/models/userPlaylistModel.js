@@ -8,7 +8,7 @@ const userPlaylistSchema = new mongoose.Schema({
     songs: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Song"
+            ref: "song"
         }
     ],
     owner: {
