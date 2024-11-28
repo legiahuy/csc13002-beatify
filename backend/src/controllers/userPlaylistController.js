@@ -144,7 +144,8 @@ const deletePlaylist = async (req, res) => {
             return res.status(403).json({ success: false, message: "You do not own this playlist" });
         }
 
-        await playlist.delete();
+        await UserPlaylist.findByIdAndDelete(playlistId);
+
 
         // Xóa playlist khỏi user
         const user = await User.findById(owner);
