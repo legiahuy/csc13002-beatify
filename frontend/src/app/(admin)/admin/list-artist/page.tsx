@@ -74,7 +74,11 @@ const ListArtist = () => {
               <p>{item.name}</p>
               <p>{item.desc}</p>
               <p>{item.bgColour}</p>
-              <p className="cursor-pointer" onClick={()=>removeArtist(item._id)}>x</p>
+              <p className="cursor-pointer" onClick={() => {
+                if (window.confirm("Are you sure you want to remove this artist?")) {
+                  removeArtist(item._id);
+                }
+              }}>x</p>
             </div>
           ))
         ) : (
