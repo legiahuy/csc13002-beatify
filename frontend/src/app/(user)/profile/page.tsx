@@ -4,80 +4,118 @@ import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
 import { formatDate } from "@/utils/date";
 import ProtectedRoute from "@/components/protectedRoute";
+import Image from "next/image";
+import Link from "next/link";
+import { BiChevronRight } from "react-icons/bi";
+import { usePlayer } from '@/contexts/PlayerContext';
 
 const ProfilePage = () => {
-  const { user, logout } = useAuthStore();
-
+  const { user, logout } = useAuthStore(); // Assuming playlistsData is available in the auth store
+  const { songsData, artistsData, playlistsData } = usePlayer();
   const handleLogout = () => {
     logout();
   };
 
+  // Ensure the bgColour is a valid CSS color or fallback to a default one
+  const bgColor = user?.bgColour || "Grey"; // Fallback to gray if no color is provided
+
   return (
     <ProtectedRoute>
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div
+        className="h-half w-[99.5%] rounded-lg overflow-hidden overflow-y-auto relative"
+        style={{
+          background: `linear-gradient(180deg, ${bgColor} 0%, rgba(0, 0, 0, 0.7) 100%)`,
+        }}
+      >
+        {/* Logout Button */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.5 }}
-          className='max-w-md w-full mx-auto mt-10 p-8 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800'
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="absolute top-4 right-4 z-10"
         >
-          <h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-600 text-transparent bg-clip-text'>
-            Dashboard
-          </h2>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleLogout}
+            className="w-32 py-2 px-4 bg-white text-black font-bold rounded-lg shadow-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+          >
+            Logout
+          </motion.button>
+        </motion.div>
 
-          <div className='space-y-6'>
-            <motion.div
-              className='p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700'
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h3 className='text-xl font-semibold text-green-400 mb-3'>Profile Information</h3>
-              <p className='text-gray-300'>Name: {user?.name || "Loading..."}</p>
-              <p className='text-gray-300'>Email: {user?.email || "Loading..."}</p>
-              <p className='text-gray-300'>Role: {user?.role || "Loading..."}</p>
-            </motion.div>
-            <motion.div
-              className='p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700'
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <h3 className='text-xl font-semibold text-green-400 mb-3'>Account Activity</h3>
-              <p className='text-gray-300'>
-                <span className='font-bold'>Joined: </span>
-                {user && new Date(user.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <p className='text-gray-300'>
-                <span className='font-bold'>Last Login: </span>
-                {user && formatDate(user.lastLogin)}
-              </p>
-            </motion.div>
+        {/* User Profile */}
+        <div className="flex flex-col md:flex-row items-center gap-x-7 mb-8 p-6">
+        <div className="relative h-64 w-64 border-4 border-white rounded-full overflow-hidden">
+            <Image
+              className="object-cover rounded-full"
+              fill
+              src={user?.pfp || "/default-profile.png"} // Fallback image if pfp is not available
+              alt={user?.name || "User Profile"}
+            />
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className='mt-4'
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleLogout}
-              className='w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
-                          font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700
-                          focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900'
+          <div className="flex flex-col gap-y-2 mt-4 md:mt-0">
+            <h1 className="text-white text-6xl font-bold">{user?.name}</h1>
+            <p className="text-gray-300 text-sm font-semibold">{user?.email}</p>
+            <p className="text-gray-300 text-sm font-semibold">{user?.role}</p>
+            <p className="text-gray-300 text-sm">
+              <span className="font-bold">Joined: </span>
+              {user && new Date(user.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+            <p className="text-gray-300 text-sm">
+              <span className="font-bold">Last Login: </span>
+              {user && formatDate(user.lastLogin)}
+            </p>
+          </div>
+        </div>
+
+        {/* Playlists Section */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-white text-2xl font-semibold">Playlists</h1>
+            <Link
+              href="/playlists"
+              className="text-neutral-400 hover:text-white flex items-center gap-x-1 cursor-pointer transition text-sm font-medium"
             >
-              Logout
-            </motion.button>
-          </motion.div>
-        </motion.div>
+              Show all
+              <BiChevronRight size={20} />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1">
+            {playlistsData?.slice(0, 5).map((playlist) => (
+              <div key={playlist._id} className="flex flex-col items-center">
+                <Link href={`/playlist/${playlist._id}`}>
+                  <div className="relative aspect-square w-[150px] sm:w-[180px] overflow-hidden cursor-pointer hover:opacity-80 transition">
+                    <Image
+                      src={playlist.image}
+                      fill
+                      alt={playlist.name}
+                      className="object-cover"
+                    />
+                  </div>
+                </Link>
+                <p className="text-white mt-4 text-lg font-medium">{playlist.name}</p>
+                <p className="text-neutral-400 text-sm">{playlist.artist}</p>
+
+                {/* Optional Fields */}
+                {playlist.type && (
+                  <p className="text-neutral-500 text-xs mt-1">{playlist.type}</p>
+                )}
+                {playlist.year && (
+                  <p className="text-neutral-500 text-xs">{playlist.year}</p>
+                )}
+                {playlist.duration && (
+                  <p className="text-neutral-500 text-xs">{playlist.duration}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </ProtectedRoute>
   );
