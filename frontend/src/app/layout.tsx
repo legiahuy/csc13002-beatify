@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import {Figtree} from 'next/font/google'
-import { PlayerProvider } from '@/contexts/PlayerContext'
 
 
 
@@ -31,12 +30,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-      <html lang="en">
-        <PlayerProvider>
-          <body>
-            {children}
-          </body>
-        </PlayerProvider>
-      </html>
+    <html lang="en">
+      <body>
+        {children}
+      </body>
+    </html>
   );
 }

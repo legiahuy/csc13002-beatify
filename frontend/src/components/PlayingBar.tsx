@@ -7,6 +7,7 @@ import { usePlayer } from "@/contexts/PlayerContext";
 import { HiSpeakerXMark, HiSpeakerWave } from "react-icons/hi2";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import Link from "next/link";
+import axios from "axios";
 
 const PlayingBar: React.FC = () => {
   const {
@@ -22,15 +23,22 @@ const PlayingBar: React.FC = () => {
     toggleRandom: toggleRandomContext,
     setCurrentTime: updateCurrentTime,
     artistsData,
-    playNextSong, // New
-    playPreviousSong, // New
+    userPlaylistsData,
+    playNextSong,
+    playPreviousSong,
+    user,
+    getUserPlaylistsData,
   } = usePlayer();
 
   const [localCurrentTime, setLocalCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isDraggingVolume, setIsDraggingVolume] = useState(false);
   const volumeBarRef = useRef<HTMLDivElement>(null);
-  const [isFavorite, setIsFavorite] = useState(false);
+
+  const likedSongsPlaylist = userPlaylistsData?.[0];
+  const isCurrentSongLiked = currentSong 
+    ? likedSongsPlaylist?.songs.some(song => song._id === currentSong._id)
+    : false;
 
   useEffect(() => {
     if (!currentSong || !audioRef.current) return;
@@ -117,8 +125,21 @@ const PlayingBar: React.FC = () => {
     };
   }, [isDraggingVolume]);
 
-  const toggleFavorite = () => {
-    setIsFavorite((prev) => !prev);
+  const toggleFavorite = async () => {
+    if (!currentSong || !user?._id) return;
+
+    try {
+      const response = await axios.post('http://localhost:4000/api/userPlaylist/toggleLikedSong', {
+        userId: user._id,
+        songId: currentSong._id
+      });
+
+      if (response.data.success) {
+        await getUserPlaylistsData();
+      }
+    } catch (error) {
+      console.error('Error toggling favorite song:', error);
+    }
   };
 
   const getArtistInfo = (artistIds: string[]) => {
@@ -141,7 +162,7 @@ const PlayingBar: React.FC = () => {
         {/* Song info - left side */}
         <div className="absolute left-4 flex items-center w-[400px]">
           <img
-            src={currentSong?.image || "/default-album.png"}
+            src={currentSong?.image || "/images/default-profile.jfif"}
             alt="Album cover"
             className="w-14 h-14 rounded-md shadow-lg"
           />
@@ -151,7 +172,7 @@ const PlayingBar: React.FC = () => {
                 {currentSong?.name || "No song selected"}
               </Link>
               <button onClick={toggleFavorite}>
-                {isFavorite ? (
+                {isCurrentSongLiked ? (
                   <FaHeart className="text-red-500" size={20} />
                 ) : (
                   <FaRegHeart className="text-gray-400 hover:text-white" size={20} />

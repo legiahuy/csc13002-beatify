@@ -2,6 +2,9 @@ import bcryptjs from "bcryptjs"
 import crypto from "crypto"
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js"
 import  User  from "../models/userModel.js";
+import UserPlaylist from "../models/userPlaylistModel.js";
+
+
 import { 
     sendVerificationEmail, 
     sendWelcomeEmail, 
@@ -35,6 +38,7 @@ export const signup = async (req, res) => {
             name,
             verificationToken,
             verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
+            playlist: [] // Khởi tạo playlist trống
         })
 
         await user.save();
@@ -42,6 +46,18 @@ export const signup = async (req, res) => {
         // jwt
 
         generateTokenAndSetCookie(res,user)
+
+        const likedPlaylist = new UserPlaylist({
+            name: "Liked Songs",
+            owner: user._id,
+            songs: [],
+        });
+
+        await likedPlaylist.save();
+
+        // Thêm playlist vào danh sách `playlists` của user
+        user.playlists.push(likedPlaylist._id);
+        await user.save();
 
         await sendVerificationEmail(user.email, verificationToken)
 
