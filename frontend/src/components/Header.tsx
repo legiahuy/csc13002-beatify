@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx";
 import { BiSearch } from "react-icons/bi";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaUserCircle } from "react-icons/fa";
 
 
@@ -11,6 +11,7 @@ import Button from "./Button"
 
 
 import { twMerge } from "tailwind-merge" 
+import { useAuthStore } from "@/store/authStore";
 
 interface User {
   name: string;
@@ -29,18 +30,35 @@ const Header:React.FC<HeaderProps> = ({
   className
 }) => {
   const router = useRouter();
+  const { logout } = useAuthStore();
   
   //console.log(user);
   const [searchValue, setSearchValue] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(`/search?q=${searchValue}`);
   }
 
-  const HandleLogout = () => {
-    // Handle logout in the future
+  const HandleLogout = async () => {
+    await logout();  // Make sure to wait for logout to complete
+    window.location.href = '/';  // Force a full page reload and redirect to home
   }
+  
   return (
     <div className={twMerge(`sticky top-0 z-50 h-fit bg-gradient-to-b from-cyan-800`)}>
       <div className="w-full mb-4 flex items-center justify-between gap-x-4">
@@ -127,11 +145,39 @@ const Header:React.FC<HeaderProps> = ({
 
         <div className="flex justify-end items-center gap-x-4 flex-shrink-0">
           {user ? (
-            <div onClick={() => router.push('/profile')} className="cursor-pointer">
-              <FaUserCircle
-                size={40}  // Icon size
-                className="rounded-full bg-neutral-500 text-white"  // Styling the icon to appear as a circle with background color
-              />
+            <div className="relative" ref={menuRef}>
+              <div onClick={() => setIsMenuOpen(!isMenuOpen)} className="cursor-pointer">
+                <FaUserCircle
+                  size={40}
+                  className="rounded-full bg-neutral-500 text-white"
+                />
+              </div>
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-neutral-900 ring-1 ring-black ring-opacity-5 z-[51]">
+                  <div className="py-1" role="menu">
+                    <button
+                      onClick={() => {
+                        router.push('/profile');
+                        setIsMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-neutral-800"
+                      role="menuitem"
+                    >
+                      Profile
+                    </button>
+                    <button
+                      onClick={() => {
+                        HandleLogout();
+                        setIsMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-neutral-800"
+                      role="menuitem"
+                    >
+                      Log out
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <>

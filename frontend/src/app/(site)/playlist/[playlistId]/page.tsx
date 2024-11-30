@@ -5,6 +5,8 @@ import { FaPlay, FaPause } from "react-icons/fa";
 import Link from "next/link";
 import { usePlayer } from "@/contexts/PlayerContext";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface PlaylistPageProps {
   params: {
@@ -13,7 +15,15 @@ interface PlaylistPageProps {
 }
 
 export default function PlaylistPage({ params }: PlaylistPageProps) {
-  const { songsData, playlistsData, playSong, currentSong, isPlaying, togglePlay } = usePlayer();
+  const { songsData, playlistsData, playSong, currentSong, isPlaying, togglePlay, userPlaylistsData } = usePlayer();
+  const router = useRouter();
+
+  // Check if this is the liked songs playlist and redirect
+  useEffect(() => {
+    if (userPlaylistsData?.[0]?._id === params.playlistId) {
+      router.push('/liked-songs');
+    }
+  }, [userPlaylistsData, params.playlistId, router]);
 
   if (!songsData || !playlistsData) {
     return (

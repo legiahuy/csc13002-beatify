@@ -89,9 +89,9 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
         },
         {
           icon: IoHeartOutline,
-          label: 'Favourites',
-          active: pathname === '/favourites',
-          href: '/favourites'
+          label: 'Liked Songs',
+          active: pathname === '/liked-songs',
+          href: '/liked-songs'
         }
       ]
     },

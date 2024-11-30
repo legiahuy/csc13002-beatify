@@ -35,6 +35,15 @@ interface Artist {
   _id: string;
 }
 
+interface UserPlaylist {
+  _id: string;
+  name: string;
+  songs: Song[];
+  owner: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface PlayerContextType {
   currentSong: Song | null;
   isPlaying: boolean;
@@ -47,6 +56,7 @@ interface PlayerContextType {
   togglePlay: () => void;
   setVolume: (volume: number) => void;
   toggleMute: () => void;
+  toggleFavourite: () => void;
   toggleRandom: () => void;
   setCurrentTime: (time: number) => void;
   playNextSong: () => void;
@@ -57,11 +67,19 @@ interface PlayerContextType {
   songsData: Song[] | null;
   playlistsData: Playlist[] | null;
   artistsData: Artist[] | null;
+  user: any | null;
+  getUserPlaylistsData: () => Promise<void>;
+  userPlaylistsData: UserPlaylist[] | null;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
-export function PlayerProvider({ children }: { children: ReactNode }) {
+interface PlayerProviderProps {
+  children: ReactNode;
+  user: any | null;
+}
+
+export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const [songsData, setSongsData] = useState<Song[] | null>(null);
   const [playlistsData, setPlaylistsData] = useState<Playlist[] | null>(null);
   const [artistsData, setArtistsData] = useState<Artist[] | null>(null);
@@ -71,11 +89,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isRandom, setIsRandom] = useState(false);
+
   const [navigationScope, setNavigationScope] = useState<{
     type: "artist" | "playlist" | "single";
     id: string;
   }>({ type: "single", id: "" });
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [userPlaylistsData, setUserPlaylistsData] = useState<UserPlaylist[] | null>(null);
 
   const url = "http://localhost:4000";
 
@@ -105,6 +125,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const handleToggleFavourite = () => {
+    
+  };
+
   const handleToggleRandom = () => {
     setIsRandom(!isRandom);
   }
@@ -132,10 +156,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   
     let songList: Song[] = [];
   
-    if (navigationScope.type === "playlist" && playlistsData) {
-      const playlist = playlistsData.find((pl) => pl._id === navigationScope.id);
-      if (playlist) {
-        songList = songsData.filter((song) => song.playlist.includes(playlist.name));
+    if (navigationScope.type === "playlist") {
+      if (navigationScope.id === "liked-songs" && userPlaylistsData?.[0]) {
+        // If we're in the liked songs playlist
+        songList = userPlaylistsData[0].songs;
+        console.log("songList: ", songList);
+      } else if (playlistsData) {
+        // For regular playlists
+        const playlist = playlistsData.find((pl) => pl._id === navigationScope.id);
+        if (playlist) {
+          songList = songsData.filter((song) => song.playlist.includes(playlist.name));
+          console.log("songList: ", songList);
+        }
       }
     } else if (navigationScope.type === "artist" && artistsData) {
       const artist = artistsData.find((ar) => ar._id === navigationScope.id);
@@ -143,13 +175,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         songList = songsData.filter((song) => song.artist_id.includes(artist._id));
       }
     } else if (navigationScope.type === "single") {
-      songList = [currentSong]; // Only the current song
+      songList = [currentSong];
     }
   
     const currentIndex = songList.findIndex((song) => song._id === currentSong._id);
   
     if (isRandom) {
-      // Exclude the current song from the random pool
       const availableSongs = songList.filter((song) => song._id !== currentSong._id);
       if (availableSongs.length > 0) {
         const randomIndex = Math.floor(Math.random() * availableSongs.length);
@@ -157,7 +188,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       }
     } else {
       if (currentIndex !== -1) {
-        // If not random, play the next song sequentially
         if (currentIndex < songList.length - 1) {
           playSong(songList[currentIndex + 1], navigationScope);
         } else {
@@ -172,10 +202,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
     let songList: Song[] = [];
 
-    if (navigationScope.type === "playlist" && playlistsData) {
-      const playlist = playlistsData.find((pl) => pl._id === navigationScope.id);
-      if (playlist) {
-        songList = songsData.filter((song) => song.playlist.includes(playlist.name));
+    if (navigationScope.type === "playlist") {
+      if (navigationScope.id === "liked-songs" && userPlaylistsData?.[0]) {
+        // If we're in the liked songs playlist
+        songList = userPlaylistsData[0].songs;
+      } else if (playlistsData) {
+        // For regular playlists
+        const playlist = playlistsData.find((pl) => pl._id === navigationScope.id);
+        if (playlist) {
+          songList = songsData.filter((song) => song.playlist.includes(playlist.name));
+        }
       }
     } else if (navigationScope.type === "artist" && artistsData) {
       const artist = artistsData.find((ar) => ar._id === navigationScope.id);
@@ -183,14 +219,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         songList = songsData.filter((song) => song.artist_id.includes(artist._id));
       }
     } else if (navigationScope.type === "single") {
-      songList = [currentSong]; // Only the current song
+      songList = [currentSong];
     }
 
     const currentIndex = songList.findIndex((song) => song._id === currentSong._id);
 
     if (currentIndex !== -1) {
       if (currentIndex > 0) {
-        playSong(songList[currentIndex - 1], navigationScope); // Play previous song
+        playSong(songList[currentIndex - 1], navigationScope);
       } else {
         playSong(songList[songList.length - 1], navigationScope); // Loop back to the last song
       }
@@ -259,6 +295,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const getUserPlaylistsData = async () => {
+    if (!user?._id) return;
+    try {
+      const response = await axios.post(`${url}/api/userPlaylist/list`, {
+        "owner": user?._id  
+      });
+      setUserPlaylistsData(response.data.playlists);
+    } catch (error) {
+      console.error("Error fetching user playlists:", error);
+    }
+  };
+
   useEffect(() => {
     getSongsData();
     getPlaylistsData();
@@ -270,6 +318,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (user?._id) {
+      getUserPlaylistsData();
+    }
+  }, [user]);
 
   return (
     <PlayerContext.Provider
@@ -285,6 +339,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         togglePlay,
         setVolume: handleSetVolume,
         toggleMute: handleToggleMute,
+        toggleFavourite: handleToggleFavourite,
         toggleRandom: handleToggleRandom,
         setCurrentTime,
         songsData,
@@ -295,7 +350,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         getSongsData,
         getPlaylistsData,
         getArtistsData,
-        
+        getUserPlaylistsData,
+        userPlaylistsData,
+        user
       }}
     >
       {children}

@@ -5,7 +5,7 @@ const userPlaylistRouter = express.Router();
 
 userPlaylistRouter.post("/create", createPlaylist);
 userPlaylistRouter.post("/toggle", toggleSongInPlaylist);
-userPlaylistRouter.get("/list", listPlaylists);
+userPlaylistRouter.post("/list", listPlaylists);
 userPlaylistRouter.post("/delete", deletePlaylist);
 userPlaylistRouter.post("/toggleLikedSong", toggleLikedSong); 
 export default userPlaylistRouter;
