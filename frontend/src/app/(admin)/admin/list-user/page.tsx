@@ -13,6 +13,7 @@ type User = {
   _id: string;
   email: string;
   role: string;
+  plan: string;
 };
 
 const ListUser = () => {
@@ -49,19 +50,20 @@ const ListUser = () => {
       <p className="text-black text-bold">All Users List</p>
       <br />
       <div>
-        <div className="sm:grid hidden grid-cols-[0.5fr_1fr_1fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 bg-gray-100 text-black">
+        <div className="sm:grid hidden grid-cols-[0.5fr_1fr_1fr_1fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 bg-gray-100 text-black">
           <b>Image</b>
           <b>Name</b>
           <b>Email</b>
           <b>Role</b>
+          <b>Plan</b>
           <b>Action</b>
         </div>
         {data.length > 0 ? (
           data.map((item, index) => (
-            <div key={index} className="grid grid-cols-[1fr_1fr_1fr] sm:grid-cols-[0.5fr_1fr_1fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 text-black">
+            <div key={index} className="grid grid-cols-[1fr_1fr_1fr] sm:grid-cols-[0.5fr_1fr_1fr_1fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 text-black">
               <div className="w-24 h-24 rounded-md overflow-hidden bg-gray-200">
                 <Image
-                  src={item.pfp}
+                  src={item.pfp || "/images/default-profile.jfif"}
                   alt={item.name}
                   width={100}
                   height={100}
@@ -71,6 +73,7 @@ const ListUser = () => {
               <p>{item.name}</p>
               <p>{item.email}</p>
               <p>{item.role}</p>
+              <p>{item.plan}</p>
               <p className="cursor-pointer" onClick={() => {
                 if (window.confirm("Are you sure you want to remove this user?")) {
                   removeUser(item._id);

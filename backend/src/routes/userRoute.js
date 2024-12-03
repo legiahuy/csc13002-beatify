@@ -1,5 +1,5 @@
 import express from 'express';
-import { addUser, listUser, removeUser,togglePlaylist, likeSong } from '../controllers/userController.js';
+import { addUser, listUser, removeUser,togglePlaylist, likeSong} from '../controllers/userController.js';
 import upload from '../middleware/multer.js';
 
 const userRouter = express.Router();

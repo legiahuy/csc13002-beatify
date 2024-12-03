@@ -17,8 +17,13 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ["user", "admin"], // Chỉ cho phép giá trị "user" hoặc "admin"
+            enum: ["user", "admin", "curator"],
             default: "user",
+        },
+        plan: {
+            type: String,
+            enum: ["free", "premium"],
+            default: "free",
         },
         playlists: [
             {
@@ -39,6 +44,10 @@ const userSchema = new mongoose.Schema(
         },
         resetPasswordToken: {
             type: String, // Token dùng để reset mật khẩu
+        },
+        planExpires: {
+            type: Date, 
+            default: null,
         },
         resetPasswordExpiresAt: {
             type: Date, // Thời gian hết hạn token reset mật khẩu

@@ -16,6 +16,7 @@ import { useAuthStore } from "@/store/authStore";
 interface User {
   name: string;
   image: string;
+  plan: string;
 }
 
 interface HeaderProps {
@@ -145,39 +146,49 @@ const Header:React.FC<HeaderProps> = ({
 
         <div className="flex justify-end items-center gap-x-4 flex-shrink-0">
           {user ? (
-            <div className="relative" ref={menuRef}>
-              <div onClick={() => setIsMenuOpen(!isMenuOpen)} className="cursor-pointer">
-                <FaUserCircle
-                  size={40}
-                  className="rounded-full bg-neutral-500 text-white"
-                />
-              </div>
-              {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-neutral-900 ring-1 ring-black ring-opacity-5 z-[51]">
-                  <div className="py-1" role="menu">
-                    <button
-                      onClick={() => {
-                        router.push('/profile');
-                        setIsMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-neutral-800"
-                      role="menuitem"
-                    >
-                      Profile
-                    </button>
-                    <button
-                      onClick={() => {
-                        HandleLogout();
-                        setIsMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-neutral-800"
-                      role="menuitem"
-                    >
-                      Log out
-                    </button>
-                  </div>
-                </div>
+            <div className="flex items-center gap-x-4">
+              {!user.plan.includes('premium') && (
+                <Button
+                  onClick={() => router.push('/premium')}
+                  className="bg-white px-6 py-2"
+                >
+                  Get Premium
+                </Button>
               )}
+              <div className="relative" ref={menuRef}>
+                <div onClick={() => setIsMenuOpen(!isMenuOpen)} className="cursor-pointer">
+                  <FaUserCircle
+                    size={40}
+                    className="rounded-full bg-neutral-500 text-white"
+                  />
+                </div>
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-neutral-900 ring-1 ring-black ring-opacity-5 z-[51]">
+                    <div className="py-1" role="menu">
+                      <button
+                        onClick={() => {
+                          router.push('/profile');
+                          setIsMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-neutral-800"
+                        role="menuitem"
+                      >
+                        Profile
+                      </button>
+                      <button
+                        onClick={() => {
+                          HandleLogout();
+                          setIsMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-neutral-800"
+                        role="menuitem"
+                      >
+                        Log out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <>

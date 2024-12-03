@@ -6,7 +6,7 @@ import {
     verifyEmail, 
     forgotPassword, 
     resetPassword, 
-    checkAuth 
+    checkAuth,
 } from '../controllers/authController.js'
 import { verifyToken } from "../middleware/verifyToken.js";
 

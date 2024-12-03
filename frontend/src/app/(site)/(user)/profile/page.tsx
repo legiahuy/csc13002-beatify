@@ -36,6 +36,20 @@ const ProfilePage = () => {
               {user?.role}
             </p>
             <p className="text-gray-300 text-sm">
+              <span className="font-bold">Plan: </span>
+              {user?.plan}
+            </p>
+            {user?.plan === "premium" && (
+              <p className="text-gray-300 text-sm">
+                <span className="font-bold">Plan Expires: </span>
+                {new Date(user.planExpires).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            )}
+            <p className="text-gray-300 text-sm">
               <span className="font-bold">Joined: </span>
               {user && new Date(user.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",

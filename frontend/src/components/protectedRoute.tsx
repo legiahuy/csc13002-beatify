@@ -39,7 +39,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, roleRequired 
 
   if (isCheckingAuth) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen">
         <Loader className='animate-spin' size={24} />
       </div>
     );

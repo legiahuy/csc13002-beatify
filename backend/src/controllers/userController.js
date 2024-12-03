@@ -35,6 +35,7 @@ const addUser = async (req, res) => {
             password: hashedPassword,
             name,
             role,
+            plan: "free",
             verificationToken,
             verificationTokenExpiresAt,
             pfp: imageUpload.secure_url,
@@ -88,8 +89,14 @@ const listUser = async (req, res) => {
 const removeUser = async (req, res) => {
     try {
         const { id } = req.body;
+
+        // Find and delete all playlists associated with the user
+        await UserPlaylist.deleteMany({ owner: id });
+
+        // Delete the user
         await User.findByIdAndDelete(id);
-        res.json({ success: true, message: "User removed" });
+
+        res.json({ success: true, message: "User and associated playlists removed" });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -165,4 +172,6 @@ const likeSong = async (req, res) => {
     }
 };
 
-export { addUser, listUser, removeUser, togglePlaylist, likeSong };
+
+
+export { addUser, listUser, removeUser, togglePlaylist, likeSong};
