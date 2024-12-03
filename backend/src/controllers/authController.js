@@ -9,7 +9,7 @@ import {
     sendVerificationEmail, 
     sendWelcomeEmail, 
     sendPasswordResetEmail, 
-    sendResetSuccessEmail 
+    sendResetSuccessEmail
 } from "../../mailtrap/emails.js";
 
 
@@ -36,6 +36,8 @@ export const signup = async (req, res) => {
             email,
             password: hashedPassword,
             name,
+            plan: "free",
+            role: "user",
             verificationToken,
             verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
             playlist: [] // Khởi tạo playlist trống
@@ -213,6 +215,11 @@ export const checkAuth = async (req, res) => {
         const user = await User.findById(req.userId).select("-password");
         if(!user) {
             return res.status(400).json({success:false, message: "User not found"});
+        }
+        if (user.plan === "premium" && user.planExpires && new Date(user.planExpires) < new Date()) {
+            user.plan = "free";
+            user.planExpires = null;
+            await user.save();
         }
         res.status(200).json({success:true, user });
     }

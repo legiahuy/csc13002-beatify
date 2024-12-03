@@ -13,7 +13,7 @@ import { PlayerProvider } from '@/contexts/PlayerContext'
 export const url = 'http://localhost:4000';
 
 const useAuth = () => {
-  const [user, setUser] = useState<{ name: string; image: string; role: string; _id: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; image: string; role: string; _id: string; plan: string } | null>(null);
 
   const fetchUser = async () => {
     try {
@@ -22,6 +22,7 @@ const useAuth = () => {
       });
       if (response.data.success) {
         setUser(response.data.user);
+        console.log(response.data.user);
       }
     } catch (error) {
       console.log("Error Occurred");
