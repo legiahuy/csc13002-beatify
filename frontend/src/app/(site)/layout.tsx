@@ -51,7 +51,7 @@ export default function SiteLayout({
         <div className="flex h-full">
           <Sidebar user={user}>{''}</Sidebar>
           <div className="
-            bg-neutral-900
+            bg-gradient-to-b from-cyan-800
             rounded-lg
             h-full
             w-[99.5%]
@@ -59,8 +59,8 @@ export default function SiteLayout({
             overflow-y-auto
             pb-20  
           ">
-            <Header className="flex-shrink-0" user={user}>
-              <main className="h-[91%] flex-1 overflow-y-auto">
+            <Header className="flex-shrink-0 p-6" user={user}>
+              <main className="h-[91%] flex-1 overflow-y-auto p-6">
                 {children}
               </main>
             </Header>
