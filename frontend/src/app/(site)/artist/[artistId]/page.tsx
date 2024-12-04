@@ -4,6 +4,8 @@ import Image from "next/image";
 import { FaPlay, FaPause } from "react-icons/fa";
 import Link from "next/link";
 import { usePlayer } from "@/contexts/PlayerContext";
+import { useLayout } from "@/contexts/LayoutContext";
+import { useEffect } from "react";
 
 interface ArtistPageProps {
   params: {
@@ -13,6 +15,14 @@ interface ArtistPageProps {
 
 export default function ArtistPage({ params }: ArtistPageProps) {
   const { songsData, artistsData, playSong, currentSong, isPlaying, togglePlay } = usePlayer();
+  const { setGradient } = useLayout();
+
+  useEffect(() => {
+    const artist = artistsData?.find((a: any) => a._id === params.artistId);
+    const gradientColor = artist?.bgColour || '#164e63';
+    setGradient(gradientColor);
+    return () => setGradient('#164e63'); // Reset when leaving page
+  }, [setGradient, artistsData, params.artistId]);
 
   if (!songsData || !artistsData) {
     return (
