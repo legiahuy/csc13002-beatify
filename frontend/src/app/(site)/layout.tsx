@@ -5,9 +5,11 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { twMerge } from "tailwind-merge";
+
 import Header from "@/components/Header";
 import { PlayerProvider } from '@/contexts/PlayerContext'
-
+import { LayoutProvider, useLayout } from '@/contexts/LayoutContext';
 
 
 export const url = 'http://localhost:4000';
@@ -37,6 +39,29 @@ const useAuth = () => {
   return { user };
 };
 
+// Separate component that uses the layout context
+const LayoutContent = ({ children, user }: { children: React.ReactNode; user: any }) => {
+  const { gradient } = useLayout();
+  return (
+    <div className="h-full">
+      <ToastContainer />
+      <div className="flex h-full">
+        <Sidebar user={user}>{''}</Sidebar>
+        
+        <div className={twMerge(`bg-gradient-to-b from-[${gradient.trim()}] to-[#000000] rounded-lg h-full w-[99.5%] overflow-hidden overflow-y-auto pb-20`)}>
+          <Header className="flex-shrink-0 p-6" user={user}>
+            <main className="h-[91%] flex-1 overflow-y-auto p-6">
+              {children}
+            </main>
+          </Header>
+        </div>
+      </div>
+      <PlayingBar /> 
+    </div>
+  );
+};
+
+// Main layout component that provides context
 export default function SiteLayout({
   children,
 }: {
@@ -46,28 +71,11 @@ export default function SiteLayout({
 
   return (
     <PlayerProvider user={user}>
-      <div className="h-full">
-        <ToastContainer />
-        <div className="flex h-full">
-          <Sidebar user={user}>{''}</Sidebar>
-          <div className="
-            bg-gradient-to-b from-cyan-800
-            rounded-lg
-            h-full
-            w-[99.5%]
-            overflow-hidden
-            overflow-y-auto
-            pb-20  
-          ">
-            <Header className="flex-shrink-0 p-6" user={user}>
-              <main className="h-[91%] flex-1 overflow-y-auto p-6">
-                {children}
-              </main>
-            </Header>
-          </div>
-        </div>
-        <PlayingBar /> 
-      </div>
+      <LayoutProvider>
+        <LayoutContent user={user}>
+          {children}
+        </LayoutContent>
+      </LayoutProvider>
     </PlayerProvider>
   );
 }
