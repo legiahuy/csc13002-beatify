@@ -58,6 +58,12 @@ const userSchema = new mongoose.Schema(
         verificationTokenExpiresAt: {
             type: Date, // Thời gian hết hạn token xác minh email
         },
+        recentlyPlayed: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "song", // Tham chiếu đến bài hát trong collection song
+            },
+        ],
     },
     { timestamps: true } // Tự động thêm createdAt và updatedAt
 );

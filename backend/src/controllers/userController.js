@@ -172,6 +172,46 @@ const likeSong = async (req, res) => {
     }
 };
 
+const addSongToRecentlyPlayed = async (req, res) => {
+    try {
+        const { userId, songId } = req.body;
+
+        if (!userId || !songId) {
+            return res.status(400).json({ success: false, message: "User ID and Song ID are required!" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        if (user.recentlyPlayed.includes(songId)) {
+            // Nếu có, di chuyển bài hát đó lên đầu mảng
+            user.recentlyPlayed = user.recentlyPlayed.filter(song => song.toString() !== songId);
+            user.recentlyPlayed.unshift(songId); // Thêm vào đầu mảng
+        } else {
+            // Nếu chưa, thêm bài hát vào đầu mảng
+            user.recentlyPlayed.unshift(songId);
+        }
+
+        // Giới hạn mảng chỉ chứa tối đa 10 bài hát
+        if (user.recentlyPlayed.length > 10) {
+            user.recentlyPlayed.pop(); // Loại bỏ bài hát cũ nhất (ở cuối mảng)
+        }
+
+        // Lưu thay đổi
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Song added to recently played",
+            recentlyPlayed: user.recentlyPlayed,
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 
 
-export { addUser, listUser, removeUser, togglePlaylist, likeSong};
+
+export { addUser, listUser, removeUser, togglePlaylist, likeSong,addSongToRecentlyPlayed};
