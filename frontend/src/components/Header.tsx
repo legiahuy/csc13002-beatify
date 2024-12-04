@@ -61,7 +61,7 @@ const Header:React.FC<HeaderProps> = ({
   }
   
   return (
-    <div className={twMerge(`sticky top-0 z-50 h-fit bg-gradient-to-b from-cyan-800`)}>
+    <div className="mt-4 mx-4">
       <div className="w-full mb-4 flex items-center justify-between gap-x-4">
         <div className="hidden md:flex gap-x-2 items-center flex-shrink-0">
         <button

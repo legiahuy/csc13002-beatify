@@ -33,22 +33,34 @@ export default function ArtistPage({ params }: ArtistPageProps) {
   const isPlayingArtistSongs = currentSong && artistSongs.some((song: any) => song._id === currentSong._id);
 
   return (
-    <div className="bg-gradient-to-b from-[#121212] to-[#18181b] text-white min-h-screen w-full">
-      {/* Artist Header */}
-      <div className="relative w-full h-72 md:h-96 bg-black">
-        <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12">
-          <div className="relative h-24 w-24 md:h-32 md:w-32">
+    <div className="h-full w-[99.5%] rounded-lg overflow-hidden overflow-y-auto">
+      <div></div>
+      <div className="p-6">
+        {/* Artist Header Section */}
+        <div className="flex flex-col md:flex-row items-center gap-x-7">
+          <div className="relative aspect-square w-64 rounded-full overflow-hidden flex-shrink-0">  
             <Image
-              className="object-cover rounded-full"
+              className="object-cover"
               fill
+              sizes="256px"
               src={artist.pfp || "/default-profile.png"}
               alt={artist.name}
             />
           </div>
-          <h1 className="text-5xl font-bold mt-4">{artist.name}</h1>
-          <p className="text-gray-300 text-sm">{artist.desc || "No bio available"}</p>
+          <div className="flex flex-col justify-center gap-y-2 mt-4 md:mt-0 flex-grow">
+            <p className="text-sm font-semibold text-white uppercase">
+              Artist
+            </p>
+            <h1 className="text-white text-7xl font-bold break-words">
+              {artist.name}
+            </h1>
+            <div className="flex items-center gap-x-2 mt-4">
+              <p className="text-gray-300 text-sm font-semibold">
+                {artist.desc || "No bio available"}
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
 
       {/* Play All Button */}
       <div className="mt-6 px-6 md:px-12">
@@ -122,9 +134,11 @@ export default function ArtistPage({ params }: ArtistPageProps) {
                 {/* Song Duration */}
                 <div className="w-[60px] text-right">{song.duration || "0:00"}</div>
               </div>
-            ))}
-          </div>
-        )}
+              ))
+            }
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

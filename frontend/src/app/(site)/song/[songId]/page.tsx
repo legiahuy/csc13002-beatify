@@ -57,8 +57,8 @@ export default function SongPage({ params }: SongPageProps) {
     <div className="h-full w-[99.5%] rounded-lg overflow-hidden overflow-y-auto">
       <div></div>
       <div className="p-6">
-        <div className="flex flex-col md:flex-row items-end gap-x-7">
-          <div className="relative h-64 w-64 shadow-2xl">
+        <div className="flex flex-col md:flex-row items-start gap-x-7">
+          <div className="relative aspect-square w-64 flex-shrink-0">
             <Image
               className="object-cover rounded-lg"
               fill
@@ -66,11 +66,11 @@ export default function SongPage({ params }: SongPageProps) {
               alt={song.name}
             />
           </div>
-          <div className="flex flex-col gap-y-2 mt-4 md:mt-0">
+          <div className="flex flex-col gap-y-2 mt-4 md:mt-0 flex-grow">
             <p className="text-sm font-semibold text-white uppercase">
               {'Single'}
             </p>
-            <h1 className="text-white text-8xl font-bold">
+            <h1 className="text-white text-8xl font-bold break-words">
               {song.name}
             </h1>
             <div className="flex items-center gap-x-2 mt-4">
