@@ -50,6 +50,7 @@ interface PlayerContextType {
   volume: number;
   isMuted: boolean;
   isRandom: boolean;
+  isRepeat: boolean;
   audioRef: React.RefObject<HTMLAudioElement>;
   playSong: (song: Song, scope: { type: "artist" | "playlist" | "single"; id: string }) => void;
   pauseSong: () => void;
@@ -58,6 +59,7 @@ interface PlayerContextType {
   toggleMute: () => void;
   toggleFavourite: () => void;
   toggleRandom: () => void;
+  toggleRepeat: () => void;
   setCurrentTime: (time: number) => void;
   playNextSong: () => void;
   playPreviousSong: () => void;
@@ -89,6 +91,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isRandom, setIsRandom] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
 
   const [navigationScope, setNavigationScope] = useState<{
     type: "artist" | "playlist" | "single";
@@ -133,26 +136,50 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     setIsRandom(!isRandom);
   }
 
+  const handleToggleRepeat = () => {
+    setIsRepeat(!isRepeat);
+  }
+
   
+
   const playSong = (song: Song, scope: { type: "artist" | "playlist" | "single"; id: string }) => {
     if (audioRef.current) {
       audioRef.current.pause();
     }
   
-    if (!audioRef.current || currentSong?._id !== song._id) {
-      audioRef.current = new Audio(song.file);
-      audioRef.current.volume = isMuted ? 0 : volume;
-      audioRef.current.onended = playNextSong;
-    }
+    audioRef.current = new Audio(song.file);
+    audioRef.current.volume = isMuted ? 0 : volume;
+  
+    audioRef.current.onended = () => {
+      if (scope.type === "single" && !isRepeat) {
+        setIsPlaying(false);
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+        }
+      } else {
+        console.log("playing next song");
+        playNextSong();
+      }
+    };
   
     setCurrentSong(song);
     setIsPlaying(true);
-    setNavigationScope(scope); // Set the navigation scope
+    setNavigationScope(scope);
     audioRef.current.play().catch(console.error);
   };
   
   const playNextSong = () => {
     if (!currentSong || !songsData) return;
+  
+    console.log("?");
+    // If repeat is enabled, replay the current song from the beginning
+    if (isRepeat) {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+      }
+      playSong(currentSong, navigationScope);
+      return;
+    }
   
     let songList: Song[] = [];
   
@@ -175,7 +202,12 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         songList = songsData.filter((song) => song.artist_id.includes(artist._id));
       }
     } else if (navigationScope.type === "single") {
-      songList = [currentSong];
+      // For single mode, stop playing when the song ends (unless repeat is enabled)
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        setIsPlaying(false);
+      }
+      return;
     }
   
     const currentIndex = songList.findIndex((song) => song._id === currentSong._id);
@@ -200,6 +232,15 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const playPreviousSong = () => {
     if (!currentSong || !songsData) return;
 
+    // For single mode or repeat, always restart the current song
+    if (navigationScope.type === "single" || isRepeat) {
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+      }
+      playSong(currentSong, navigationScope);
+      return;
+    }
+
     let songList: Song[] = [];
 
     if (navigationScope.type === "playlist") {
@@ -218,7 +259,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
       if (artist) {
         songList = songsData.filter((song) => song.artist_id.includes(artist._id));
       }
-    } else if (navigationScope.type === "single") {
+    } else {
       songList = [currentSong];
     }
 
@@ -333,6 +374,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         volume,
         isMuted,
         isRandom,
+        isRepeat,
         audioRef,
         playSong,
         pauseSong,
@@ -341,6 +383,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         toggleMute: handleToggleMute,
         toggleFavourite: handleToggleFavourite,
         toggleRandom: handleToggleRandom,
+        toggleRepeat: handleToggleRepeat,
         setCurrentTime,
         songsData,
         playlistsData,
