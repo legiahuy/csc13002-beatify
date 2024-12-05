@@ -17,10 +17,12 @@ const PlayingBar: React.FC = () => {
     volume,
     isMuted,
     isRandom,
+    isRepeat,
     audioRef,
     setVolume: updateVolumeContext,
     toggleMute: toggleMuteContext,
     toggleRandom: toggleRandomContext,
+    toggleRepeat: toggleRepeatContext,
     setCurrentTime: updateCurrentTime,
     artistsData,
     userPlaylistsData,
@@ -221,7 +223,10 @@ const PlayingBar: React.FC = () => {
               className="text-gray-400 hover:text-white cursor-pointer transition-colors"
               onClick={playNextSong}
             />
-            <BsRepeat className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
+            <BsRepeat className={`cursor-pointer transition-colors ${
+                isRepeat ? "text-white" : "text-gray-400 hover:text-white"
+              }`}
+              onClick={toggleRepeatContext} />
           </div>
 
           {/* Progress bar */}

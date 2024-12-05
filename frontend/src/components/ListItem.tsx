@@ -78,7 +78,7 @@ const ListItem: React.FC<ListItemProps> = ({
               flex 
               items-center 
               justify-center 
-              bg-green-500 
+              bg-gray-100 
               p-4 
               drop-shadow-md 
               bottom-2 
@@ -87,7 +87,6 @@ const ListItem: React.FC<ListItemProps> = ({
               group-hover:opacity-100 
               group-hover:translate-y-0
               hover:scale-110
-              hover:bg-green-400
             "
           >
             <FaPlay className="text-black" />

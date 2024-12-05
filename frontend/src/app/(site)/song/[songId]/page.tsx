@@ -12,6 +12,11 @@ interface SongPageProps {
     songId: string;
   }
 }
+const formatDuration = (duration: string): string => {
+  const [minutes, seconds] = duration.split(':');
+  const paddedSeconds = seconds.padStart(2, '0');
+  return `${minutes}:${paddedSeconds}`;
+};
 
 export default function SongPage({ params }: SongPageProps) {
 
@@ -83,7 +88,7 @@ export default function SongPage({ params }: SongPageProps) {
                 />
               </div>
               <p className="text-gray-300 text-sm font-semibold">
-                {artistLinks} • {song.duration || '0:00'}
+                {artistLinks} • {song.duration ? formatDuration(song.duration) : '0:00'}
               </p>
             </div>
           </div>
@@ -98,7 +103,21 @@ export default function SongPage({ params }: SongPageProps) {
                 playSong(song, { type: "single", id: song._id });
               }
             }}
-            className="bg-green-500 rounded-full w-14 h-14 flex items-center justify-center hover:scale-105 transition"
+            className={`
+              bg-gray-100 
+              rounded-full 
+              w-14 h-14 flex 
+              items-center 
+              justify-center 
+              group-hover:opacity-100 
+              group-hover:translate-y-0
+              hover:scale-110
+              transition
+              items-center 
+              justify-center 
+              bg-gray-100 
+              drop-shadow-md 
+              `} 
           >
             {isCurrentSong && isPlaying ? (
               <FaPause size={24} className="text-black" />
@@ -115,7 +134,7 @@ export default function SongPage({ params }: SongPageProps) {
           </div>
           <Link href={`/song/${song._id}`}>
             <div 
-              className="flex items-center text-neutral-400 text-sm px-6 py-4 hover:bg-white/10 rounded-lg cursor-pointer group"
+              className="flex items-center justify-center text-gray-400 text-sm px-6 py-4 hover:bg-white/10 rounded-lg cursor-pointer group"
             >
               <div className="w-[30px]">
                 <button
@@ -135,8 +154,8 @@ export default function SongPage({ params }: SongPageProps) {
                   )}
                 </button>
               </div>
-              <div className="flex-1">{song.name}</div>
-              <div className="w-[100px] text-right">{song.duration}</div>
+              <div className="text-white font-medium hover:underline flex-1">{song.name}</div>
+              <div className="w-[100px] text-right">{song.duration ? formatDuration(song.duration) : '0:00'}</div>
             </div>
           </Link>
         </div>

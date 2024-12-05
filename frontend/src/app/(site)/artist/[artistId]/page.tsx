@@ -42,9 +42,14 @@ export default function ArtistPage({ params }: ArtistPageProps) {
   const isCurrentSong = (song: any) => currentSong?._id === song._id;
   const isPlayingArtistSongs = currentSong && artistSongs.some((song: any) => song._id === currentSong._id);
 
+  const formatDuration = (duration: string): string => {
+    const [minutes, seconds] = duration.split(':');
+    const paddedSeconds = seconds.padStart(2, '0');
+    return `${minutes}:${paddedSeconds}`;
+  };
+
   return (
     <div className="h-full w-[99.5%] rounded-lg overflow-hidden overflow-y-auto">
-      <div></div>
       <div className="p-6">
         {/* Artist Header Section */}
         <div className="flex flex-col md:flex-row items-center gap-x-7">
@@ -75,7 +80,21 @@ export default function ArtistPage({ params }: ArtistPageProps) {
       {/* Play All Button */}
       <div className="mt-6 px-6 md:px-12">
         <button
-          className="bg-green-500 rounded-full w-14 h-14 flex items-center justify-center hover:scale-105 transition"
+          className={`
+            bg-gray-100 
+            rounded-full 
+            w-14 h-14 flex 
+            items-center 
+            justify-center 
+            group-hover:opacity-100 
+            group-hover:translate-y-0
+            hover:scale-110
+            transition
+            items-center 
+            justify-center 
+            bg-gray-100 
+            drop-shadow-md 
+            `} 
           onClick={() => {
             if (isPlayingArtistSongs) {
               togglePlay();
@@ -98,11 +117,15 @@ export default function ArtistPage({ params }: ArtistPageProps) {
         {artistSongs.length === 0 ? (
           <p className="text-gray-400">No songs found for this artist.</p>
         ) : (
-          <div className="divide-y divide-gray-800">
+          <div>
             {artistSongs.map((song: any) => (
               <div
                 key={song._id}
-                className="flex items-center text-gray-400 text-sm py-3 hover:bg-[#2a2a2a] rounded-lg cursor-pointer group px-4"
+                className={`
+                  flex items-center text-gray-400 text-sm py-3 
+                  hover:bg-white/10
+                  cursor-pointer group px-4 rounded-lg
+                `}
               >
                 {/* Song Cover */}
                 <div className="relative w-12 h-12 mr-4">
@@ -142,7 +165,7 @@ export default function ArtistPage({ params }: ArtistPageProps) {
                 </div>
 
                 {/* Song Duration */}
-                <div className="w-[60px] text-right">{song.duration || "0:00"}</div>
+                <div className="w-[60px] text-right">{song.duration ? formatDuration(song.duration) : '0:00'} </div>
               </div>
               ))
             }
