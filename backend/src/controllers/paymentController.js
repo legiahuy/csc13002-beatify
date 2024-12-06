@@ -17,6 +17,9 @@ const createSession = async (req, res) => {
                 price: STRIPE_PRICE_ID,
                 quantity: 1,
             }],
+            metadata: {
+                userId: req.body.userId
+            },
             success_url: `http://localhost:${port}/api/payment/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `http://localhost:${port}/api/payment/cancel`,
         });
@@ -47,22 +50,23 @@ const myWebhook = async (req, res) => {
 
 const successPayment = async (req, res) => {
     try {
-        console.log("Success payment", req.query.session_id);
         const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
         
-        // Calculate expiration date (1 month = 30 days from now)
+        const userId = session.metadata.userId;
+        
         const currentDate = new Date();
         const expirationDate = new Date(currentDate.getTime() + (30 * 24 * 60 * 60 * 1000));
 
-        // Update user's plan to premium with expiration date
-        const user = await User.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userId },
             { 
                 plan: "premium",
                 planExpires: expirationDate
             },
+            { new: true }
         );
+        console.log("User updated", updatedUser);
 
-        // Redirect to frontend with success message
         return res.redirect(`http://localhost:3000/premium?status=success`);
     } catch (error) {
         console.log("Error in success payment", error);

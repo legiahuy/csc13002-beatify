@@ -32,7 +32,9 @@ const PremiumPage = () => {
 
   const handleSubscribe = async () => {
     try {
-      const response = await axios.post(`${url}/api/payment/session`, {}, {
+      const response = await axios.post(`${url}/api/payment/session`, {
+        userId: user?._id
+      }, {
         withCredentials: true
       });
       
