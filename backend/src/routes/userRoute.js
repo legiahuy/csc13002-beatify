@@ -1,5 +1,5 @@
 import express from 'express';
-import { addUser, listUser, removeUser,togglePlaylist, likeSong,addSongToRecentlyPlayed} from '../controllers/userController.js';
+import { addUser, listUser, removeUser,togglePlaylist, likeSong,addSongToRecentlyPlayed, listRecentlyPlayedSongs} from '../controllers/userController.js';
 import upload from '../middleware/multer.js';
 
 const userRouter = express.Router();
@@ -10,5 +10,7 @@ userRouter.post('/remove', removeUser);
 userRouter.post('/toggle-playlist', togglePlaylist); 
 userRouter.post("/song/:id", likeSong);
 userRouter.post("/add-to-recently-played", addSongToRecentlyPlayed);
+userRouter.post("/list-recently-played", listRecentlyPlayedSongs);
+
 
 export default userRouter;

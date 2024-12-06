@@ -72,6 +72,8 @@ interface PlayerContextType {
   user: any | null;
   getUserPlaylistsData: () => Promise<void>;
   userPlaylistsData: UserPlaylist[] | null;
+  recentlyPlayed: Song[] | null;
+  getRecentlyPlayedData: () => Promise<void>;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -104,6 +106,8 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const navigationScopeRef = useRef<{ type: "artist" | "playlist" | "single"; id: string }>({ type: "single", id: "" });
 
   const url = "http://localhost:4000";
+
+  const [recentlyPlayed, setRecentlyPlayed] = useState<Song[] | null>(null);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -157,10 +161,24 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
 
   
 
-  const playSong = (song: Song, scope: { type: "artist" | "playlist" | "single"; id: string }) => {
+  const playSong = async (song: Song, scope: { type: "artist" | "playlist" | "single"; id: string }) => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.onended = null;
+    }
+  
+    // Add the song to recently played if user is logged in
+    if (user?._id) {
+      try {
+        await axios.post(`${url}/api/user/add-to-recently-played`, {
+          userId: user._id,
+          songId: song._id
+        });
+        // Optionally refresh the recently played list
+        await getRecentlyPlayedData();
+      } catch (error) {
+        console.error("Error adding song to recently played:", error);
+      }
     }
   
     const audio = new Audio(song.file);
@@ -369,6 +387,25 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     }
   };
 
+  const getRecentlyPlayedData = async () => {
+    if (!user?._id) return;
+    try {
+      const response = await axios.post(`${url}/api/user/list-recently-played`, {
+        userId: user._id
+      });
+      
+      if (response.data.success && songsData) {
+        // Convert song IDs to full song objects
+        console.log("response.data.recentlyPlayed", response.data.recentlyPlayed);
+        const recentSongs = response.data.recentlyPlayed || [];
+        console.log(recentSongs)
+        setRecentlyPlayed(recentSongs);
+      }
+    } catch (error) {
+      console.error("Error fetching recently played songs:", error);
+    }
+  };
+
   useEffect(() => {
     getSongsData();
     getPlaylistsData();
@@ -384,6 +421,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   useEffect(() => {
     if (user?._id) {
       getUserPlaylistsData();
+      getRecentlyPlayedData();
     }
   }, [user]);
 
@@ -416,7 +454,9 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         getArtistsData,
         getUserPlaylistsData,
         userPlaylistsData,
-        user
+        user,
+        recentlyPlayed,
+        getRecentlyPlayedData,
       }}
     >
       {children}
