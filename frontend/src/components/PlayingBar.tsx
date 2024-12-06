@@ -21,6 +21,7 @@ const PlayingBar: React.FC = () => {
     audioRef,
     setVolume: updateVolumeContext,
     toggleMute: toggleMuteContext,
+    toggleFavourite: toggleFavouriteContext,
     toggleRandom: toggleRandomContext,
     toggleRepeat: toggleRepeatContext,
     setCurrentTime: updateCurrentTime,
@@ -127,23 +128,6 @@ const PlayingBar: React.FC = () => {
     };
   }, [isDraggingVolume]);
 
-  const toggleFavorite = async () => {
-    if (!currentSong || !user?._id) return;
-
-    try {
-      const response = await axios.post('http://localhost:4000/api/userPlaylist/toggleLikedSong', {
-        userId: user._id,
-        songId: currentSong._id
-      });
-
-      if (response.data.success) {
-        await getUserPlaylistsData();
-      }
-    } catch (error) {
-      console.error('Error toggling favorite song:', error);
-    }
-  };
-
   const getArtistInfo = (artistIds: string[]) => {
     return artistIds
       .map((id) => {
@@ -173,7 +157,7 @@ const PlayingBar: React.FC = () => {
               <Link href={`/song/${currentSong?._id}`}>
                 {currentSong?.name || "No song selected"}
               </Link>
-              <button onClick={toggleFavorite}>
+              <button onClick={toggleFavouriteContext}>
                 {isCurrentSongLiked ? (
                   <FaHeart className="text-red-500" size={20} />
                 ) : (
