@@ -100,6 +100,9 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [userPlaylistsData, setUserPlaylistsData] = useState<UserPlaylist[] | null>(null);
 
+  const currentSongRef = useRef<Song | null>(null);
+  const navigationScopeRef = useRef<{ type: "artist" | "playlist" | "single"; id: string }>({ type: "single", id: "" });
+
   const url = "http://localhost:4000";
 
   useEffect(() => {
@@ -128,8 +131,20 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     }
   };
 
-  const handleToggleFavourite = () => {
-    
+  const handleToggleFavourite = async () => {
+    if (!currentSong || !user?._id) return;
+    try {
+      const response = await axios.post('http://localhost:4000/api/userPlaylist/toggleLikedSong', {
+        userId: user._id,
+        songId: currentSong._id
+      });
+
+      if (response.data.success) {
+        await getUserPlaylistsData();
+      }
+    } catch (error) {
+      console.error('Error toggling favorite song:', error);
+    }
   };
 
   const handleToggleRandom = () => {
@@ -145,34 +160,44 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const playSong = (song: Song, scope: { type: "artist" | "playlist" | "single"; id: string }) => {
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current.onended = null;
     }
   
-    audioRef.current = new Audio(song.file);
+    const audio = new Audio(song.file);
+    audioRef.current = audio;
     audioRef.current.volume = isMuted ? 0 : volume;
-  
-    audioRef.current.onended = () => {
+    
+    setCurrentSong(song);
+    setIsPlaying(true);
+    setNavigationScope(scope);
+    
+    audio.addEventListener('ended', () => {
+      console.log("Song ended. Current song:", song);
+      console.log("Scope:", scope);
+      console.log("Is repeat:", isRepeat);
+      
       if (scope.type === "single" && !isRepeat) {
         setIsPlaying(false);
         if (audioRef.current) {
           audioRef.current.currentTime = 0;
         }
       } else {
-        console.log("playing next song");
         playNextSong();
       }
-    };
+    });
   
-    setCurrentSong(song);
-    setIsPlaying(true);
-    setNavigationScope(scope);
     audioRef.current.play().catch(console.error);
   };
   
   const playNextSong = () => {
+    const currentSong = currentSongRef.current;
+    const navigationScope = navigationScopeRef.current;
+    
+    console.log("playNextSong called. Current song:", currentSong);
+    console.log("Navigation scope:", navigationScope);
+    
     if (!currentSong || !songsData) return;
-  
-    console.log("?");
-    // If repeat is enabled, replay the current song from the beginning
+
     if (isRepeat) {
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
@@ -180,20 +205,16 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
       playSong(currentSong, navigationScope);
       return;
     }
-  
+
     let songList: Song[] = [];
-  
+
     if (navigationScope.type === "playlist") {
       if (navigationScope.id === "liked-songs" && userPlaylistsData?.[0]) {
-        // If we're in the liked songs playlist
         songList = userPlaylistsData[0].songs;
-        console.log("songList: ", songList);
       } else if (playlistsData) {
-        // For regular playlists
         const playlist = playlistsData.find((pl) => pl._id === navigationScope.id);
         if (playlist) {
           songList = songsData.filter((song) => song.playlist.includes(playlist.name));
-          console.log("songList: ", songList);
         }
       }
     } else if (navigationScope.type === "artist" && artistsData) {
@@ -202,16 +223,15 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         songList = songsData.filter((song) => song.artist_id.includes(artist._id));
       }
     } else if (navigationScope.type === "single") {
-      // For single mode, stop playing when the song ends (unless repeat is enabled)
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
         setIsPlaying(false);
       }
       return;
     }
-  
+
     const currentIndex = songList.findIndex((song) => song._id === currentSong._id);
-  
+
     if (isRandom) {
       const availableSongs = songList.filter((song) => song._id !== currentSong._id);
       if (availableSongs.length > 0) {
@@ -221,6 +241,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     } else {
       if (currentIndex !== -1) {
         if (currentIndex < songList.length - 1) {
+          console.log("currentIndex: ", currentIndex);
           playSong(songList[currentIndex + 1], navigationScope);
         } else {
           playSong(songList[0], navigationScope); // Loop back to the first song
