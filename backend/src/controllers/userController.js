@@ -212,6 +212,28 @@ const addSongToRecentlyPlayed = async (req, res) => {
     }
 };
 
+const listRecentlyPlayedSongs = async (req, res) => {
+    try {
+        const { userId } = req.body;
 
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID is required!" });
+        }
 
-export { addUser, listUser, removeUser, togglePlaylist, likeSong,addSongToRecentlyPlayed};
+        const user = await User.findById(userId)
+            .populate('recentlyPlayed');  // Populate the recentlyPlayed field with actual song data
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        res.status(200).json({
+            success: true,
+            recentlyPlayed: user.recentlyPlayed
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export { addUser, listUser, removeUser, togglePlaylist, likeSong, addSongToRecentlyPlayed, listRecentlyPlayedSongs };
