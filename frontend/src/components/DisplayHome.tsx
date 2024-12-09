@@ -3,21 +3,113 @@ import { BiChevronRight } from 'react-icons/bi';
 import Image from 'next/image';
 import ListItem from '@/components/ListItem';
 import { usePlayer } from '@/contexts/PlayerContext';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+interface Song {
+    _id: string;
+    name: string;
+    artist_id: string[];
+    desc: string;
+    image: string;
+    file: string;
+}
 
 const DisplayHome = () => {
+    const { songsData, artistsData, playlistsData, user, recentlyPlayed } = usePlayer();
+    const [recommendedSongs, setRecommendedSongs] = useState<Song[]>([]);
 
-    const { songsData, artistsData, playlistsData } = usePlayer();
+    // Function to get random songs
+    const getRandomSongs = (songs: Song[], count: number): Song[] => {
+        // Create a copy of the songs array
+        const availableSongs = [...songs];
+        const result: Song[] = [];
+        
+        // Get 'count' number of random songs
+        while (result.length < count && availableSongs.length > 0) {
+            // Get a random index
+            const randomIndex = Math.floor(Math.random() * availableSongs.length);
+            // Remove and get the song at the random index
+            const [song] = availableSongs.splice(randomIndex, 1);
+            result.push(song);
+        }
+        
+        return result;
+    };
+
+    useEffect(() => {
+        const getRecommendations = async () => {
+            if (!user?._id || !songsData) {
+                console.log("Missing required data:", { user: !!user, songsData: !!songsData });
+                return;
+            }
+
+            try {
+                // Get IDs of recently played songs to exclude them
+                const recentIds = recentlyPlayed?.map(song => song._id) || [];
+                
+                // Filter out songs that are in recently played
+                const availableSongs = songsData.filter(song => 
+                    !recentIds.includes(song._id)
+                );
+
+                if (recentlyPlayed && recentlyPlayed.length > 0) {
+                    // Score each available song based on description similarity with recently played songs
+                    const scoredSongs = availableSongs.map(song => {
+                        let score = 0;
+                        recentlyPlayed.forEach(recent => {
+                            if (song.desc && recent.desc) {
+                                const songWords = song.desc.toLowerCase().split(/\s+/);
+                                const recentWords = recent.desc.toLowerCase().split(/\s+/);
+                                const commonWords = songWords.filter(word => recentWords.includes(word));
+                                score += commonWords.length;
+                            }
+                        });
+                        return { song, score };
+                    });
+
+                    // Sort by score and get top 5
+                    const recommendations = scoredSongs
+                        .sort((a, b) => b.score - a.score)
+                        .filter(item => item.score > 0)
+                        .slice(0, 5)
+                        .map(item => item.song);
+
+                    console.log("Found recommendations:", recommendations.length);
+
+                    if (recommendations.length > 0) {
+                        setRecommendedSongs(recommendations);
+                        return;
+                    }
+                }
+
+                // If no recommendations found or no recently played songs, get random songs
+                if (availableSongs.length > 0) {
+                    const randomSongs = getRandomSongs(availableSongs, 5);
+                    console.log("Using random songs instead:", randomSongs.length);
+                    setRecommendedSongs(randomSongs);
+                }
+
+            } catch (error) {
+                console.error('Error generating recommendations:', error);
+            }
+        };
+
+        getRecommendations();
+    }, [user, songsData, recentlyPlayed]);
 
     // Utility function to get artist names by IDs
     const getArtistNames = (artistIds: string[]) => {
         return artistIds.map(id => {
             const artist = artistsData?.find(artist => artist._id === id);
-            return artist ? artist.name : 'Unknown Artist'; // Return artist name or fallback to 'Unknown Artist'
+            return artist ? artist.name : 'Unknown Artist';
         });
     };
 
     return (
         <div>
+
+
             {/* Trending Hits Section */}
             <div className="mb-8">
                 <div className="flex justify-between items-center mb-6">
@@ -34,22 +126,46 @@ const DisplayHome = () => {
                 </div>
                 <div className="grid grid-cols-5 gap-4">
                     {songsData?.slice(0, 5).map((item) => {
-                        // Get artist names for each song
                         const artistNames = getArtistNames(item.artist_id);
-
                         return (
                             <ListItem 
                                 _id={item._id}
                                 image={item.image}
                                 name={item.name}
                                 file={item.file}
-                                artist={artistNames}  // Pass the list of artist names
+                                artist={artistNames}
                                 key={item._id}
                             />
                         );
                     })}
                 </div>
             </div>
+
+            {/* Recommended For You Section */}
+            {user && recommendedSongs.length > 0 && (
+                <div className="mb-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-white text-2xl font-semibold">
+                            {recentlyPlayed && recentlyPlayed.length > 0 ? 'Recommended For You' : 'You Might Like'}
+                        </h1>
+                    </div>
+                    <div className="grid grid-cols-5 gap-4">
+                        {recommendedSongs.map((item) => {
+                            const artistNames = getArtistNames(item.artist_id);
+                            return (
+                                <ListItem 
+                                    _id={item._id}
+                                    image={item.image}
+                                    name={item.name}
+                                    file={item.file}
+                                    artist={artistNames}
+                                    key={item._id}
+                                />
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             {/* Top Artists Section */}
             <div className="mb-6">
@@ -84,7 +200,6 @@ const DisplayHome = () => {
                     ))}
                 </div>
             </div>
-      
 
             {/* Playlists Section */}
             <div className="mb-6">
@@ -124,7 +239,7 @@ const DisplayHome = () => {
                     ))}
                 </div>
             </div>
-    </div>
+        </div>
     );
 }
 
