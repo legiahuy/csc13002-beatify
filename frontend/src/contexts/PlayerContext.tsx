@@ -213,6 +213,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
 
       // Nếu đang ở chế độ repeat
       if (isRepeat) {
+        console.log("Playing repeat song");
         if (audioRef.current) {
           audioRef.current.currentTime = 0;
           audioRef.current.play();
@@ -242,6 +243,14 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   };
   
   const playNextSong = () => {
+    if (isRepeat) {
+      console.log("Playing repeat song");
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play();
+      }
+      return;
+    }
     console.log("playNextSong called");
     const currentScope = navigationScopeRef.current;
     console.log("Current scope:", currentScope);

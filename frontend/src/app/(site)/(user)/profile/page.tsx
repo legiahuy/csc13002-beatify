@@ -31,7 +31,7 @@ const ProfilePage = () => {
           <div className="flex flex-col gap-y-2 mt-4 md:mt-0">
           <p className="text-gray-300 text-sm font-semibold">Profile</p>
             <h1 className="text-white text-6xl font-bold">{user?.name}</h1>
-            <p className="text-gray-300 text-sm font-semibold">
+            <p className="text-gray-300 text-sm">
               <span className="font-bold">Role:  </span>
               {user?.role}
             </p>
