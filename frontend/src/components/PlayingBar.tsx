@@ -8,7 +8,9 @@ import { HiSpeakerXMark, HiSpeakerWave } from "react-icons/hi2";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import Link from "next/link";
 import axios from "axios";
-
+import { Tooltip } from "@/components/Tooltip";
+import { MdSpeed } from "react-icons/md";
+import { IoMusicalNotes } from "react-icons/io5";
 const PlayingBar: React.FC = () => {
   const {
     currentSong,
@@ -31,12 +33,23 @@ const PlayingBar: React.FC = () => {
     playPreviousSong,
     user,
     getUserPlaylistsData,
+    playbackSpeed,
+    setPlaybackSpeed,
+    isPremiumUser,
   } = usePlayer();
 
   const [localCurrentTime, setLocalCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isDraggingVolume, setIsDraggingVolume] = useState(false);
   const volumeBarRef = useRef<HTMLDivElement>(null);
+  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+  const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 2];
+  const [showEqualizer, setShowEqualizer] = useState(false);
+  const [eqSettings, setEqSettings] = useState({
+    low: 0,
+    mid: 0,
+    high: 0
+  });
 
   const likedSongsPlaylist = userPlaylistsData?.[0];
   const isCurrentSongLiked = currentSong 
@@ -142,6 +155,89 @@ const PlayingBar: React.FC = () => {
       .filter((artist) => artist !== null);
   };
 
+  const SpeedButton = ({ speed }: { speed: number }) => {
+    const handleClick = () => {
+      if (!isPremiumUser && speed !== 1) {
+        return;
+      }
+      setPlaybackSpeed(speed);
+      setShowSpeedMenu(false);
+    };
+
+    return (
+      <button
+        onClick={handleClick}
+        className={`w-full text-left px-2 py-1 text-sm rounded hover:bg-gray-800 ${
+          playbackSpeed === speed ? 'text-white bg-gray-800' : 'text-gray-400'
+        }`}
+      >
+        {speed}x
+      </button>
+    );
+  };
+
+  const EqualizerControl = () => {
+    const handleEqChange = (band: 'low' | 'mid' | 'high', value: number) => {
+      if (!isPremiumUser) return;
+      setEqSettings(prev => ({
+        ...prev,
+        [band]: value
+      }));
+    };
+  
+    return (
+      <div className="absolute bottom-full right-0 mb-2 bg-gray-900 rounded-lg shadow-lg p-4">
+        <h3 className="text-white text-sm font-semibold mb-3">Equalizer</h3>
+        <div className="flex gap-6 items-end h-32">
+          {/* Low Frequency */}
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-xs text-gray-400 text-center">{eqSettings.low}dB</span>
+            <input
+              type="range"
+              min="-12"
+              max="12"
+              value={eqSettings.low}
+              onChange={(e) => handleEqChange('low', Number(e.target.value))}
+              className="h-24 -rotate-90 accent-white"
+              disabled={!isPremiumUser}
+            />
+            <label className="text-xs text-gray-400">Low</label>
+          </div>
+  
+          {/* Mid Frequency */}
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-xs text-gray-400 text-center">{eqSettings.mid}dB</span>
+            <input
+              type="range"
+              min="-12"
+              max="12"
+              value={eqSettings.mid}
+              onChange={(e) => handleEqChange('mid', Number(e.target.value))}
+              className="h-24 -rotate-90 accent-white"
+              disabled={!isPremiumUser}
+            />
+            <label className="text-xs text-gray-400">Mid</label>
+          </div>
+  
+          {/* High Frequency */}
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-xs text-gray-400 text-center">{eqSettings.high}dB</span>
+            <input
+              type="range"
+              min="-12"
+              max="12"
+              value={eqSettings.high}
+              onChange={(e) => handleEqChange('high', Number(e.target.value))}
+              className="h-24 -rotate-90 accent-white"
+              disabled={!isPremiumUser}
+            />
+            <label className="text-xs text-gray-400">High</label>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black border-t border-gray-800 fixed bottom-0 left-0 right-0 z-50 h-20">
       <div className="h-full w-full px-4 flex items-center">
@@ -233,28 +329,76 @@ const PlayingBar: React.FC = () => {
           </div>
         </div>
 
-        {/* Volume control - right side */}
+        {/* Volume and playback speed controls - right side */}
         <div className="absolute right-4">
-          <div className="flex items-center gap-x-2">
-            <button onClick={toggleMuteContext}>
-              {isMuted || volume === 0 ? (
-                <HiSpeakerXMark size={24} className="text-gray-400 hover:text-white cursor-pointer" />
-              ) : volume < 0.5 ? (
-                <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
-              ) : (
-                <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+          <div className="flex items-center gap-x-4">
+            {/* Equalizer Control */}
+            <div className="relative">
+              <button
+                onClick={() => isPremiumUser && setShowEqualizer(!showEqualizer)}
+                className={`flex items-center gap-1 ${
+                  isPremiumUser ? 'text-gray-400 hover:text-white' : 'text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                <IoMusicalNotes size={20} />
+              </button>
+              
+              {!isPremiumUser && (
+                <Tooltip content="Premium feature!">
+                  <div className="absolute inset-0" />
+                </Tooltip>
               )}
-            </button>
-            <div
-              ref={volumeBarRef}
-              className="w-24 h-1 bg-gray-600 rounded-full relative cursor-pointer"
-              onClick={handleVolumeClick}
-              onMouseDown={handleVolumeDragStart}
-            >
+              
+              {showEqualizer && isPremiumUser && <EqualizerControl />}
+            </div>
+
+            {/* Playback Speed Control - Move it before volume controls */}
+            <div className="relative">
+              <button
+                onClick={() => isPremiumUser && setShowSpeedMenu(!showSpeedMenu)}
+                className={`flex items-center gap-1 ${
+                  isPremiumUser ? 'text-gray-400 hover:text-white' : 'text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                <MdSpeed size={20} />
+                <span className="text-xs">{playbackSpeed}x</span>
+              </button>
+              
+              {!isPremiumUser && (
+                <Tooltip content="Premium feature!">
+                  <div className="absolute inset-0" />
+                </Tooltip>
+              )}
+              
+              {showSpeedMenu && isPremiumUser && (
+                <div className="absolute bottom-full right-0 mb-2 bg-gray-900 rounded-lg shadow-lg p-2 w-24">
+                  {speedOptions.map((speed) => (
+                    <SpeedButton key={speed} speed={speed} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Volume Controls */}
+            <div className="flex items-center gap-x-2">
+              <button onClick={toggleMuteContext}>
+                {isMuted || volume === 0 ? (
+                  <HiSpeakerXMark size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+                ) : (
+                  <HiSpeakerWave size={24} className="text-gray-400 hover:text-white cursor-pointer" />
+                )}
+              </button>
               <div
-                className="h-full bg-white rounded-full absolute left-0 top-0"
-                style={{ width: `${volume * 100}%` }}
-              />
+                ref={volumeBarRef}
+                className="w-24 h-1 bg-gray-600 rounded-full relative cursor-pointer"
+                onClick={handleVolumeClick}
+                onMouseDown={handleVolumeDragStart}
+              >
+                <div
+                  className="h-full bg-white rounded-full absolute left-0 top-0"
+                  style={{ width: `${volume * 100}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
