@@ -181,7 +181,6 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
           userId: user._id,
           songId: song._id
         });
-        // Optionally refresh the recently played list
         await getRecentlyPlayedData();
       } catch (error) {
         console.error("Error adding song to recently played:", error);
@@ -191,7 +190,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     const audio = new Audio(song.file);
     audioRef.current = audio;
     audioRef.current.volume = isMuted ? 0 : volume;
-    // Apply current playback speed to new song
+    
     if (isPremiumUser) {
       audioRef.current.playbackRate = playbackSpeed;
     }
@@ -199,83 +198,134 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     setCurrentSong(song);
     setIsPlaying(true);
     setNavigationScope(scope);
-    
-    audio.addEventListener('ended', () => {
-      console.log("Song ended. Current song:", song);
-      console.log("Scope:", scope);
-      console.log("Is repeat:", isRepeat);
-      
-      if (scope.type === "single" && !isRepeat) {
-        setIsPlaying(false);
-        if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-        }
-      } else {
-        playNextSong();
-      }
-    });
-  
-    audioRef.current.play().catch(console.error);
-  };
-  
-  const playNextSong = () => {
-    const currentSong = currentSongRef.current;
-    const navigationScope = navigationScopeRef.current;
-    
-    console.log("playNextSong called. Current song:", currentSong);
-    console.log("Navigation scope:", navigationScope);
-    
-    if (!currentSong || !songsData) return;
 
-    if (isRepeat) {
+    navigationScopeRef.current = scope;
+    currentSongRef.current = song;
+    
+    // Xử lý sự kiện kết thúc bài hát
+    const handleEnded = () => {
+      console.log("Song ended, current scope:", navigationScopeRef.current);
+      
+      // Reset time về 0
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
       }
-      playSong(currentSong, navigationScope);
-      return;
+
+      // Nếu đang ở chế độ repeat
+      if (isRepeat) {
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        }
+        return;
+      }
+
+      // Nếu không phải single mode thì chuyển bài tiếp theo
+      if (navigationScopeRef.current.type !== "single") {
+        console.log("Playing next song with scope:", navigationScopeRef.current);
+        playNextSong();
+      } else {
+        // Nếu là single mode thì dừng phát nhạc
+        setIsPlaying(false);
+      }
+    };
+
+    // Gán handler cho sự kiện ended
+    audio.addEventListener('ended', handleEnded);
+  
+    try {
+      await audio.play();
+    } catch (error) {
+      console.error("Error playing audio:", error);
+      setIsPlaying(false);
+    }
+  };
+  
+  const playNextSong = () => {
+    console.log("playNextSong called");
+    const currentScope = navigationScopeRef.current;
+    console.log("Current scope:", currentScope);
+    
+    if (!currentSongRef.current || !songsData) {
+        console.log("Missing currentSong or songsData");
+        return;
     }
 
     let songList: Song[] = [];
 
-    if (navigationScope.type === "playlist") {
-      if (navigationScope.id === "liked-songs" && userPlaylistsData?.[0]) {
-        songList = userPlaylistsData[0].songs;
-      } else if (playlistsData) {
-        const playlist = playlistsData.find((pl) => pl._id === navigationScope.id);
-        if (playlist) {
-          songList = songsData.filter((song) => song.playlist.includes(playlist.name));
+    // Get the correct song list based on navigation scope
+    if (currentScope.type === "playlist") {
+        console.log("In playlist mode");
+        if (currentScope.id === "liked-songs" && userPlaylistsData?.[0]) {
+            songList = userPlaylistsData[0].songs;
+            console.log("Found liked songs:", songList.length);
+        } else {
+            // Tìm trong userPlaylistsData trước
+            const userPlaylist = userPlaylistsData?.find(
+                (playlist) => playlist._id === currentScope.id
+            );
+            
+            if (userPlaylist) {
+                songList = userPlaylist.songs;
+                console.log("Found user playlist songs:", songList.length);
+            } else {
+                const playlist = playlistsData?.find(
+                    (pl) => pl._id === currentScope.id
+                );
+                
+                if (playlist) {
+                    songList = songsData.filter((song) => 
+                        song.playlist.includes(playlist.name)
+                    );
+                    console.log("Found regular playlist songs:", songList.length);
+                }
+            }
         }
-      }
-    } else if (navigationScope.type === "artist" && artistsData) {
-      const artist = artistsData.find((ar) => ar._id === navigationScope.id);
-      if (artist) {
-        songList = songsData.filter((song) => song.artist_id.includes(artist._id));
-      }
-    } else if (navigationScope.type === "single") {
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        setIsPlaying(false);
-      }
-      return;
+        
+        // Log thêm thông tin để debug
+        console.log("Current playlist ID:", currentScope.id);
+        console.log("Available playlists:", playlistsData?.map(p => ({id: p._id, name: p.name})));
+        console.log("Available user playlists:", userPlaylistsData?.map(p => ({id: p._id, name: p.name})));
+    } else if (currentScope.type === "artist" && artistsData) {
+        const artist = artistsData.find((ar) => ar._id === currentScope.id);
+        if (artist) {
+            songList = songsData.filter((song) => song.artist_id.includes(artist._id));
+            console.log("Found artist songs:", songList.length);
+        }
+    } else if (currentSongRef.current) {
+        songList = [currentSongRef.current];
     }
 
-    const currentIndex = songList.findIndex((song) => song._id === currentSong._id);
+    if (songList.length === 0) {
+        console.log("No songs in list");
+        return;
+    }
 
+    const currentIndex = songList.findIndex((song) => song._id === currentSongRef.current?._id);
+    console.log("Current index:", currentIndex, "Total songs:", songList.length);
+
+    // Handle random play
     if (isRandom) {
-      const availableSongs = songList.filter((song) => song._id !== currentSong._id);
-      if (availableSongs.length > 0) {
-        const randomIndex = Math.floor(Math.random() * availableSongs.length);
-        playSong(availableSongs[randomIndex], navigationScope);
-      }
-    } else {
-      if (currentIndex !== -1) {
-        if (currentIndex < songList.length - 1) {
-          console.log("currentIndex: ", currentIndex);
-          playSong(songList[currentIndex + 1], navigationScope);
-        } else {
-          playSong(songList[0], navigationScope); // Loop back to the first song
+        const availableSongs = songList.filter((song) => song._id !== currentSongRef.current?._id);
+        if (availableSongs.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableSongs.length);
+            const nextSong = availableSongs[randomIndex];
+            console.log("Playing random song:", nextSong.name);
+            playSong(nextSong, currentScope);
         }
-      }
+    } else {
+        // Normal sequential play
+        if (currentIndex !== -1) {
+            if (currentIndex < songList.length - 1) {
+                const nextSong = songList[currentIndex + 1];
+                console.log("Playing next song:", nextSong.name);
+                playSong(nextSong, currentScope);
+            } else {
+                // Loop back to first song if at the end
+                console.log("Looping back to first song");
+                playSong(songList[0], currentScope);
+            }
+        }
     }
   };
 
