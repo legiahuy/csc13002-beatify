@@ -2,6 +2,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import bcryptjs from 'bcryptjs';
 import User from '../models/userModel.js';
 import UserPlaylist from "../models/userPlaylistModel.js";
+import Song from '../models/songModel.js';
 
 // Controller thêm user mới
 const addUser = async (req, res) => {
@@ -236,4 +237,63 @@ const listRecentlyPlayedSongs = async (req, res) => {
     }
 };
 
-export { addUser, listUser, removeUser, togglePlaylist, likeSong, addSongToRecentlyPlayed, listRecentlyPlayedSongs };
+const getRecommendedSongs = async (req, res) => {
+    try {
+        const { userId } = req.query;
+
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID is required!" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Get user's recently played songs with their descriptions
+        const recentlyPlayedSongs = await Song.find({
+            '_id': { $in: user.recentlyPlayed }
+        });
+
+        // Get all songs from database
+        const allSongs = await Song.find({
+            '_id': { $nin: user.recentlyPlayed } // Exclude recently played songs
+        });
+
+        // Create a map of word frequencies from recently played songs' descriptions
+        const wordFrequency = new Map();
+        recentlyPlayedSongs.forEach(song => {
+            const words = song.desc.toLowerCase().split(/\s+/);
+            words.forEach(word => {
+                wordFrequency.set(word, (wordFrequency.get(word) || 0) + 1);
+            });
+        });
+
+        // Score each song based on description similarity
+        const scoredSongs = allSongs.map(song => {
+            let score = 0;
+            const songWords = song.desc.toLowerCase().split(/\s+/);
+            songWords.forEach(word => {
+                if (wordFrequency.has(word)) {
+                    score += wordFrequency.get(word);
+                }
+            });
+            return { song, score };
+        });
+
+        // Sort songs by score and get top 10
+        const recommendedSongs = scoredSongs
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 10)
+            .map(item => item.song);
+
+        res.status(200).json({
+            success: true,
+            recommendedSongs
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export { addUser, listUser, removeUser, togglePlaylist, likeSong, addSongToRecentlyPlayed, listRecentlyPlayedSongs, getRecommendedSongs };
