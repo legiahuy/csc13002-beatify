@@ -43,7 +43,7 @@ export default function RecentlyPlayedPage() {
                 className="object-cover rounded"
                 fill
                 sizes="256px"
-                src="/images/recent-plays.png"
+                src="/images/history.png"
                 alt="Recently Played"
               />
             </div>

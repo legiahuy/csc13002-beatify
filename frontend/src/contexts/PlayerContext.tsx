@@ -74,6 +74,9 @@ interface PlayerContextType {
   userPlaylistsData: UserPlaylist[] | null;
   recentlyPlayed: Song[] | null;
   getRecentlyPlayedData: () => Promise<void>;
+  playbackSpeed: number;
+  setPlaybackSpeed: (speed: number) => void;
+  isPremiumUser: boolean;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -108,6 +111,10 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const url = "http://localhost:4000";
 
   const [recentlyPlayed, setRecentlyPlayed] = useState<Song[] | null>(null);
+
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  
+  const isPremiumUser = user?.plan === "premium";
 
   useEffect(() => {
     if (audioRef.current) {
@@ -184,6 +191,10 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     const audio = new Audio(song.file);
     audioRef.current = audio;
     audioRef.current.volume = isMuted ? 0 : volume;
+    // Apply current playback speed to new song
+    if (isPremiumUser) {
+      audioRef.current.playbackRate = playbackSpeed;
+    }
     
     setCurrentSong(song);
     setIsPlaying(true);
@@ -406,6 +417,17 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     }
   };
 
+  const handleSetPlaybackSpeed = (speed: number) => {
+    if (!isPremiumUser) {
+      console.warn("Premium subscription required for playback speed control");
+      return;
+    }
+    setPlaybackSpeed(speed);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = speed;
+    }
+  };
+
   useEffect(() => {
     getSongsData();
     getPlaylistsData();
@@ -457,6 +479,9 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         user,
         recentlyPlayed,
         getRecentlyPlayedData,
+        playbackSpeed,
+        setPlaybackSpeed: handleSetPlaybackSpeed,
+        isPremiumUser,
       }}
     >
       {children}

@@ -44,7 +44,7 @@ export default function LikedSongsPage() {
                 className="object-cover rounded"
                 fill
                 sizes="256px"
-                src="/images/liked-songs.jfif"
+                src="/images/liked-songs.png"
                 alt="Liked Songs"
               />
             </div>
