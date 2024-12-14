@@ -2,12 +2,15 @@
 
 import Image from "next/image";
 import { FaPlay, FaPause } from "react-icons/fa";
+import { FiEdit2 } from "react-icons/fi";
 import Link from "next/link";
 import { usePlayer } from "@/contexts/PlayerContext";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLayout } from "@/contexts/LayoutContext";
+import { useAuthStore } from "@/store/authStore";
+import axios from "axios";
 
 interface PlaylistPageProps {
   params: {
@@ -16,9 +19,15 @@ interface PlaylistPageProps {
 }
 
 export default function PlaylistPage({ params }: PlaylistPageProps) {
-  const { songsData, playlistsData, playSong, currentSong, isPlaying, togglePlay, userPlaylistsData } = usePlayer();
+  const { songsData, playlistsData, playSong, currentSong, isPlaying, togglePlay, userPlaylistsData, getUserPlaylistsData } = usePlayer();
   const router = useRouter();
   const { setGradient } = useLayout();
+  const { user } = useAuthStore();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState("");
 
   useEffect(() => {
     // Check for liked songs playlist redirect first
@@ -28,12 +37,60 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
     }
 
     // Set gradient color
-    const playlist = playlistsData?.find((playlist: any) => playlist._id === params.playlistId);
-    const gradientColor = playlist?.bgColour || '#164e63';
+    const playlist = playlistsData?.find((playlist: any) => playlist._id === params.playlistId) || 
+                    userPlaylistsData?.find((playlist: any) => playlist._id === params.playlistId);
+    const gradientColor = (playlist as any)?.bgColour || '#164e63';
     setGradient(gradientColor);
 
-    return () => setGradient('#164e63'); // Reset when leaving page
+    if (playlist) {
+      setEditedName(playlist.name);
+      setPreviewImage((playlist as any).image || "");
+    }
+
+    return () => setGradient('#164e63');
   }, [setGradient, playlistsData, params.playlistId, userPlaylistsData, router]);
+
+  const isUserPlaylist = userPlaylistsData?.some(
+    (playlist) => playlist._id === params.playlistId && playlist.name.includes("My Playlist")
+  );
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("playlistId", params.playlistId);
+      formData.append("name", editedName);
+      if (selectedImage) {
+        formData.append("image", selectedImage);
+      }
+
+      const response = await axios.post(
+        "http://localhost:4000/api/userPlaylist/update", 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+
+      if (response.data.success) {
+        await getUserPlaylistsData();
+        setIsEditing(false);
+      } else {
+        console.error("Failed to update playlist");
+      }
+    } catch (error) {
+      console.error("Error updating playlist:", error);
+    }
+  };
 
   if (!songsData || !playlistsData) {
     return (
@@ -44,7 +101,8 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
     );
   }
 
-  const playlist = playlistsData.find((playlist: any) => playlist._id === params.playlistId);
+  const playlist = playlistsData.find((playlist: any) => playlist._id === params.playlistId) ||
+                  userPlaylistsData?.find((playlist: any) => playlist._id === params.playlistId);
 
   if (!playlist) {
     return <div className="text-white">Playlist not found!</div>;
@@ -66,26 +124,76 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
         {/* Playlist Header Section */}
         <div className="flex flex-col md:flex-row items-center gap-x-7">
           <div className="relative aspect-square w-64 overflow-hidden flex-shrink-0">  
-            <Image
-              className="object-cover rounded"
-              fill
-              sizes="256px"
-              src={playlist.image}
-              alt={playlist.name}
-            />
+            {isEditing ? (
+              <div className="w-full h-full relative">
+                <Image
+                  className="object-cover rounded cursor-pointer"
+                  fill
+                  sizes="256px"
+                  src={previewImage || (playlist as any).image}
+                  alt={editedName || playlist.name}
+                />
+                <input
+                  type="file"
+                  onChange={handleImageChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  accept="image/*"
+                />
+              </div>
+            ) : (
+              <Image
+                className="object-cover rounded"
+                fill
+                sizes="256px"
+                src={(playlist as any).image || "/images/default-playlist.png"}
+                alt={playlist.name}
+              />
+            )}
           </div>
           <div className="flex flex-col justify-center gap-y-2 mt-4 md:mt-0 flex-grow">
             <p className="text-sm font-semibold text-white uppercase">
               Playlist
             </p>
-            <h1 className="text-white text-7xl font-bold break-words">
-              {playlist.name}
-            </h1>
-            <div className="flex items-center gap-x-2 mt-4">
-              <p className="text-gray-300 text-sm font-semibold">
-                {playlist.desc || "No description available"}
-              </p>
-            </div>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                className="text-white text-7xl font-bold bg-transparent border-b border-white focus:outline-none"
+              />
+            ) : (
+              <h1 className="text-white text-7xl font-bold break-words">
+                {playlist.name}
+              </h1>
+            )}
+            {isUserPlaylist && user && (
+              <div className="flex items-center gap-x-4 mt-4">
+                {isEditing ? (
+                  <>
+                    <button
+                      onClick={handleSaveChanges}
+                      className="bg-white text-black px-4 py-2 rounded-full"
+                    >
+                      Save Changes
+                    </button>
+                    <button
+                      onClick={() => setIsEditing(false)}
+                      className="text-white border border-white px-4 py-2 rounded-full"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-x-2 text-white hover:text-gray-300"
+                  >
+                    <FiEdit2 size={20} />
+                    Edit Playlist
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

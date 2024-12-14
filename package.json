@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "express-fileupload": "^1.5.1",
     "framer-motion": "^11.12.0",
     "lucide-react": "^0.454.0",
     "mailtrap": "^3.4.0",

@@ -1,5 +1,6 @@
 import UserPlaylist from "../models/userPlaylistModel.js";
 import User from "../models/userModel.js";
+import cloudinary from "../config/cloudinary.js";
 
 const createPlaylist = async (req, res) => {
     try {
@@ -160,5 +161,33 @@ const deletePlaylist = async (req, res) => {
     }
 };
 
+const updatePlaylist = async (req, res) => {
+    try {
+        const { playlistId, name } = req.body;
+        const image = req.files?.image;
 
-export { createPlaylist, toggleSongInPlaylist,toggleLikedSong, listPlaylists, deletePlaylist };
+        const playlist = await UserPlaylist.findById(playlistId);
+        if (!playlist) {
+            return res.status(404).json({ success: false, message: "Playlist not found" });
+        }
+
+        if (name) {
+            playlist.name = name;
+        }
+
+        if (image) {
+            // Upload ảnh mới lên Cloudinary
+            const result = await cloudinary.uploader.upload(image.tempFilePath, {
+                folder: "playlist_covers",
+            });
+            playlist.image = result.secure_url;
+        }
+
+        await playlist.save();
+        res.status(200).json({ success: true, playlist });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export { createPlaylist, toggleSongInPlaylist,toggleLikedSong, listPlaylists, deletePlaylist, updatePlaylist };
