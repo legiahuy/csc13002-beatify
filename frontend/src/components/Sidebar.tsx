@@ -7,13 +7,16 @@ import { IoAlbumsOutline } from 'react-icons/io5';
 import { HiOutlineMusicalNote } from 'react-icons/hi2';
 import { RiUserVoiceLine } from 'react-icons/ri';
 import { MdOutlineHistory } from 'react-icons/md';
-import { IoHeartOutline, IoAddOutline } from 'react-icons/io5';
+import { IoHeartOutline, IoAddOutline, IoTrashOutline } from 'react-icons/io5';
 import { MdAdminPanelSettings } from "react-icons/md";
 import { MdOutlinePlaylistAdd } from "react-icons/md";
 
 
 import SidebarItem from "./SidebarItem";
 import Link from "next/link"; 
+import { usePlayer } from '@/contexts/PlayerContext';
+import { useAuthStore } from "@/store/authStore";
+import axios from "axios";
 
 
 interface SidebarProps {
@@ -23,6 +26,58 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
   const pathname = usePathname();
+  const { userPlaylistsData, getUserPlaylistsData } = usePlayer();
+  const { user: authUser } = useAuthStore();
+
+  const handleCreatePlaylist = async () => {
+    if (!authUser?._id) return;
+
+    try {
+      // Tính toán số thứ tự cho playlist mới
+      const existingPlaylists = userPlaylistsData || [];
+      const playlistNumbers = existingPlaylists
+        .map(p => {
+          const match = p.name.match(/My Playlist #(\d+)/);
+          return match ? parseInt(match[1]) : 0;
+        })
+        .filter(n => !isNaN(n));
+      
+      const nextNumber = playlistNumbers.length > 0 
+        ? Math.max(...playlistNumbers) + 1 
+        : 1;
+
+      // Tạo playlist mới
+      const response = await axios.post('http://localhost:4000/api/userPlaylist/create', {
+        name: `My Playlist #${nextNumber}`,
+        owner: authUser._id
+      });
+
+      if (response.data.success) {
+        // Cập nhật lại danh sách playlist
+        await getUserPlaylistsData();
+      }
+    } catch (error) {
+      console.error('Error creating playlist:', error);
+    }
+  };
+
+  const handleDeletePlaylist = async (playlistId: string) => {
+    if (!authUser?._id) return;
+
+    try {
+      const response = await axios.post('http://localhost:4000/api/userPlaylist/delete', {
+        playlistId,
+        owner: authUser._id
+      });
+
+      if (response.data.success) {
+        // Cập nhật lại danh sách playlist
+        await getUserPlaylistsData();
+      }
+    } catch (error) {
+      console.error('Error deleting playlist:', error);
+    }
+  };
 
   // Định nghĩa các mục trong Sidebar
   const sections = useMemo(() => [
@@ -102,16 +157,36 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
         {
           icon: IoAddOutline,
           label: 'Create new',
-          active: pathname === '/create-playlist',
-          href: '/create-playlist'
-        }
+          active: false,
+          href: '#',
+          onClick: handleCreatePlaylist
+        },
+        // Hiển thị danh sách các playlist của user
+        ...(userPlaylistsData?.filter(playlist => playlist.name !== "Liked Songs").map(playlist => ({
+          icon: HiOutlineMusicalNote,
+          label: playlist.name,
+          active: pathname === `/playlist/${playlist._id}`,
+          href: `/playlist/${playlist._id}`,
+          extra: (
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDeletePlaylist(playlist._id);
+              }}
+              className="bg-neutral-800 p-2 rounded-full shadow-lg hover:bg-neutral-700 transition"
+            >
+              <IoTrashOutline size={16} className="text-neutral-400 hover:text-white" />
+            </button>
+          )
+        })) || [])
       ]
     }
-  ].filter(Boolean), [pathname, user]); // Lọc bỏ các mục `null` nếu user là `null`
+  ].filter(Boolean), [pathname, user, userPlaylistsData]); // Lọc bỏ các mục `null` nếu user là `null`
 
   return (
     <div className="flex h-full">
-      <div className="hidden md:flex flex-col w-[260px] bg-[#0A0A0A] h-full">
+      <div className="hidden md:flex flex-col w-[260px] bg-[#0A0A0A] h-full overflow-y-auto ">
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-x-2 px-6 h-[80px]">
           <span className="text-white text-2xl">♪</span>
@@ -144,8 +219,9 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
               </div>
             )
           ))}
-        </div>
-
+          
+        <div className="h-10"></div>
+      </div>
       </div>
       <main className="h-full flex-1 overflow-y-auto py-2">
         {children}

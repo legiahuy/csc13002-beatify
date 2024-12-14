@@ -9,6 +9,12 @@ import Link from "next/link";
 import { BiChevronRight } from "react-icons/bi";
 import { usePlayer } from '@/contexts/PlayerContext';
 
+interface UserPlaylist {
+  _id: string;
+  name: string;
+  image?: string;
+}
+
 const ProfilePage = () => {
   const { user } = useAuthStore(); // Assuming playlistsData is available in the auth store
   const { userPlaylistsData, playlistsData } = usePlayer();
@@ -82,7 +88,7 @@ const ProfilePage = () => {
                 <Link href={`/playlist/${playlist._id}`}>
                   <div className="relative aspect-square w-[150px] sm:w-[180px] overflow-hidden cursor-pointer hover:opacity-80 transition">
                     <Image
-                      src={playlist.image || "/images/liked-songs.jfif"}
+                      src={(playlist as any).image || "/images/liked-songs.jfif"}
                       fill
                       alt={playlist.name}
                       className="object-cover"
