@@ -1,6 +1,5 @@
 import UserPlaylist from "../models/userPlaylistModel.js";
 import User from "../models/userModel.js";
-import cloudinary from "../config/cloudinary.js";
 
 const createPlaylist = async (req, res) => {
     try {
@@ -166,7 +165,7 @@ const deletePlaylist = async (req, res) => {
 
 const updatePlaylist = async (req, res) => {
     try {
-        const { playlistId, name, image, owner } = req.body;
+        const { playlistId, name, owner } = req.body;
 
         // Find playlist and verify ownership
         const playlist = await UserPlaylist.findOne({ _id: playlistId, owner });
@@ -174,20 +173,9 @@ const updatePlaylist = async (req, res) => {
             return res.status(404).json({ success: false, message: "Playlist not found" });
         }
 
-        // Update fields if provided
-        if (name) playlist.name = name;
-        
-        // Handle image update
-        if (image) {
-            // If image is base64
-            if (image.startsWith('data:image')) {
-                const uploadResponse = await cloudinary.uploader.upload(image, {
-                    folder: 'playlist_covers'
-                });
-                playlist.image = uploadResponse.secure_url;
-            } else {
-                playlist.image = image;
-            }
+        // Update name if provided
+        if (name) {
+            playlist.name = name;
         }
 
         await playlist.save();

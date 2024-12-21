@@ -81,12 +81,9 @@ interface PlayerContextType {
   playbackSpeed: number;
   setPlaybackSpeed: (speed: number) => void;
   isPremiumUser: boolean;
-<<<<<<< HEAD
   addSongToPlaylist: (songId: string, playlistId: string) => Promise<void>;
-=======
   filters: BiquadFilterNode[];
   updateFilter: (index: number, value: number) => void;
->>>>>>> 79b53f99d6db1539a4c4efd8522b5d2099480cba
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -630,12 +627,9 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         playbackSpeed,
         setPlaybackSpeed: handleSetPlaybackSpeed,
         isPremiumUser,
-<<<<<<< HEAD
-        addSongToPlaylist
-=======
+        addSongToPlaylist,
         filters,
         updateFilter,
->>>>>>> 79b53f99d6db1539a4c4efd8522b5d2099480cba
       }}
     >
       {children}
