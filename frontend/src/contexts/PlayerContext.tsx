@@ -44,6 +44,10 @@ interface UserPlaylist {
   updatedAt: string;
 }
 
+// Add new types for EQ functionality
+const frequencies = [100, 100, 8000];
+const filterLabels = ['Low', 'Mid', 'High'];
+
 interface PlayerContextType {
   currentSong: Song | null;
   isPlaying: boolean;
@@ -77,7 +81,12 @@ interface PlayerContextType {
   playbackSpeed: number;
   setPlaybackSpeed: (speed: number) => void;
   isPremiumUser: boolean;
+<<<<<<< HEAD
   addSongToPlaylist: (songId: string, playlistId: string) => Promise<void>;
+=======
+  filters: BiquadFilterNode[];
+  updateFilter: (index: number, value: number) => void;
+>>>>>>> 79b53f99d6db1539a4c4efd8522b5d2099480cba
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -98,6 +107,11 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const [isMuted, setIsMuted] = useState(false);
   const [isRandom, setIsRandom] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [filters, setFilters] = useState<BiquadFilterNode[]>([]);
+  const [audioSource, setAudioSource] = useState<MediaElementAudioSourceNode | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  
 
   const [navigationScope, setNavigationScope] = useState<{
     type: "artist" | "playlist" | "single";
@@ -167,81 +181,138 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     setIsRepeat(!isRepeat);
   }
 
-  
+  const setupAudioChain = (audio: HTMLAudioElement) => {
+    const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+    setAudioContext(context);
+    
+    try {
+      const source = context.createMediaElementSource(audio);
+      setAudioSource(source);
+
+      // Load saved EQ settings
+      const savedSettings = localStorage.getItem('savedEqSettings');
+      const eqSettings = savedSettings ? JSON.parse(savedSettings) : Array(frequencies.length).fill(0);
+
+      // Create new filters with saved settings
+      const newFilters = frequencies.map((frequency, index) => {
+        const filter = context.createBiquadFilter();
+        filter.type = 'peaking';
+        filter.frequency.value = frequency;
+        filter.Q.value = 1;
+        filter.gain.value = eqSettings[index]; // Apply saved settings
+        return filter;
+      });
+      
+      setFilters(newFilters);
+
+      // Connect the audio chain
+      source.connect(newFilters[0]);
+      for (let i = 0; i < newFilters.length - 1; i++) {
+        newFilters[i].connect(newFilters[i + 1]);
+      }
+      newFilters[newFilters.length - 1].connect(context.destination);
+      
+      return true;
+    } catch (e) {
+      console.error('Error setting up audio chain:', e);
+      return false;
+    }
+  };
 
   const playSong = async (song: Song, scope: { type: "artist" | "playlist" | "single"; id: string }) => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.onended = null;
-    }
-  
-    // Add the song to recently played if user is logged in
-    if (user?._id) {
-      try {
-        await axios.post(`${url}/api/user/add-to-recently-played`, {
-          userId: user._id,
-          songId: song._id
-        });
-        await getRecentlyPlayedData();
-      } catch (error) {
-        console.error("Error adding song to recently played:", error);
-      }
-    }
-  
-    const audio = new Audio(song.file);
-    audioRef.current = audio;
-    audioRef.current.volume = isMuted ? 0 : volume;
-    
-    if (isPremiumUser) {
-      audioRef.current.playbackRate = playbackSpeed;
-    }
-    
-    setCurrentSong(song);
-    setIsPlaying(true);
-    setNavigationScope(scope);
-
-    navigationScopeRef.current = scope;
-    currentSongRef.current = song;
-    
-    // Xử lý sự kiện kết thúc bài hát
-    const handleEnded = () => {
-      console.log("Song ended, current scope:", navigationScopeRef.current);
-      
-      // Reset time về 0
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-      }
-
-      // Nếu đang ở chế độ repeat
-      if (isRepeat) {
-        console.log("Playing repeat song");
-        if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-          audioRef.current.play();
-        }
-        return;
-      }
-
-      // Nếu không phải single mode thì chuyển bài tiếp theo
-      if (navigationScopeRef.current.type !== "single") {
-        console.log("Playing next song with scope:", navigationScopeRef.current);
-        playNextSong();
-      } else {
-        // Nếu là single mode thì dừng phát nhạc
-        setIsPlaying(false);
-      }
-    };
-
-    // Gán handler cho sự kiện ended
-    audio.addEventListener('ended', handleEnded);
-  
     try {
+      // Stop current playback
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.onended = null;
+      }
+
+      // Create new audio element
+      const audio = new Audio();
+      audio.crossOrigin = "anonymous";
+      
+      // Set up audio before loading source
+      const setupSuccess = setupAudioChain(audio);
+      if (!setupSuccess) {
+        throw new Error('Failed to set up audio chain');
+      }
+
+      // Now load the source
+      audio.src = song.file;
+      audioRef.current = audio;
+
+      // Set initial properties
+      audio.volume = isMuted ? 0 : volume;
+      if (isPremiumUser) {
+        audio.playbackRate = playbackSpeed;
+      }
+
+      // Add ended event handler
+      audio.onended = () => {
+        if (isRepeat) {
+          audio.currentTime = 0;
+          audio.play();
+        } else {
+          playNextSong();
+        }
+      };
+
+      setCurrentSong(song);
+      setIsPlaying(true);
+      setNavigationScope(scope);
+      navigationScopeRef.current = scope;
+      currentSongRef.current = song;
+
+      // Add to recently played if user is logged in
+      if (user?._id) {
+        try {
+          await axios.post(`${url}/api/user/add-to-recently-played`, {
+            userId: user._id,
+            songId: song._id
+          });
+          await getRecentlyPlayedData();
+        } catch (error) {
+          console.error("Error adding song to recently played:", error);
+        }
+      }
+
       await audio.play();
+
     } catch (error) {
       console.error("Error playing audio:", error);
       setIsPlaying(false);
     }
   };
+
+  const setCurrentTime = (time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+    }
+  };
+
+  // Clean up function
+  useEffect(() => {
+    return () => {
+      if (audioSource) {
+        audioSource.disconnect();
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (audioSource) {
+        audioSource.disconnect();
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
   
   const playNextSong = () => {
     if (isRepeat) {
@@ -402,12 +473,6 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     setIsPlaying(!isPlaying);
   };
 
-  const setCurrentTime = (time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
-    }
-  };
-
   const getSongsData = async () => {
     try {
       const response = await axios.get(`${url}/api/song/list`);
@@ -524,6 +589,12 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     }
   }, [user]);
 
+  const updateFilter = (index: number, value: number) => {
+    if (filters[index]) {
+      filters[index].gain.value = value;
+    }
+  };
+
   return (
     <PlayerContext.Provider
       value={{
@@ -559,7 +630,12 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         playbackSpeed,
         setPlaybackSpeed: handleSetPlaybackSpeed,
         isPremiumUser,
+<<<<<<< HEAD
         addSongToPlaylist
+=======
+        filters,
+        updateFilter,
+>>>>>>> 79b53f99d6db1539a4c4efd8522b5d2099480cba
       }}
     >
       {children}
@@ -574,3 +650,5 @@ export const usePlayer = () => {
   }
   return context;
 };
+
+export { filterLabels, frequencies };

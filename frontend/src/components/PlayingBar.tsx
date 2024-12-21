@@ -11,6 +11,10 @@ import axios from "axios";
 import { Tooltip } from "@/components/Tooltip";
 import { MdSpeed } from "react-icons/md";
 import { IoMusicalNotes } from "react-icons/io5";
+import { filterLabels } from "@/contexts/PlayerContext"; // Import filterLabels
+import { BiReset } from "react-icons/bi";
+import { HiSave } from "react-icons/hi";
+
 const PlayingBar: React.FC = () => {
   const {
     currentSong,
@@ -35,6 +39,8 @@ const PlayingBar: React.FC = () => {
     getUserPlaylistsData,
     playbackSpeed,
     setPlaybackSpeed,
+    filters,
+    updateFilter,
     isPremiumUser,
   } = usePlayer();
 
@@ -45,11 +51,8 @@ const PlayingBar: React.FC = () => {
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 2];
   const [showEqualizer, setShowEqualizer] = useState(false);
-  const [eqSettings, setEqSettings] = useState({
-    low: 0,
-    mid: 0,
-    high: 0
-  });
+  const speedMenuRef = useRef<HTMLDivElement>(null);
+  const eqMenuRef = useRef<HTMLDivElement>(null);
 
   const likedSongsPlaylist = userPlaylistsData?.[0];
   const isCurrentSongLiked = currentSong 
@@ -122,7 +125,8 @@ const PlayingBar: React.FC = () => {
 
     const rect = e.currentTarget.getBoundingClientRect();
     const clickPositionX = e.clientX - rect.left;
-    const clickPositionRatio = clickPositionX / rect.width;
+    const progressWidth = rect.width;
+    const clickPositionRatio = Math.max(0, Math.min(1, clickPositionX / progressWidth));
     const newTime = clickPositionRatio * duration;
 
     updateCurrentTime(newTime);
@@ -177,66 +181,115 @@ const PlayingBar: React.FC = () => {
   };
 
   const EqualizerControl = () => {
-    const handleEqChange = (band: 'low' | 'mid' | 'high', value: number) => {
+    const handleEqChange = (index: number, value: number) => {
       if (!isPremiumUser) return;
-      setEqSettings(prev => ({
-        ...prev,
-        [band]: value
-      }));
+      updateFilter(index, value);
+    };
+
+    const handleResetEq = () => {
+      if (!isPremiumUser) return;
+      // Reset all filters to 0
+      filterLabels.forEach((_, index) => {
+        updateFilter(index, 0);
+      });
+      // Automatically save the reset state
+      const resetSettings = Array(filterLabels.length).fill(0);
+      localStorage.setItem('savedEqSettings', JSON.stringify(resetSettings));
+    };
+
+    const handleSaveEq = () => {
+      if (!isPremiumUser) return;
+      // Save current EQ settings to localStorage
+      const eqSettings = filters.map(filter => filter?.gain.value || 0);
+      localStorage.setItem('savedEqSettings', JSON.stringify(eqSettings));
     };
   
     return (
-      <div className="absolute bottom-full right-0 mb-2 bg-gray-900 rounded-lg shadow-lg p-4">
-        <h3 className="text-white text-sm font-semibold mb-3">Equalizer</h3>
-        <div className="flex gap-6 items-end h-32">
-          {/* Low Frequency */}
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xs text-gray-400 text-center">{eqSettings.low}dB</span>
-            <input
-              type="range"
-              min="-12"
-              max="12"
-              value={eqSettings.low}
-              onChange={(e) => handleEqChange('low', Number(e.target.value))}
-              className="h-24 -rotate-90 accent-white"
-              disabled={!isPremiumUser}
-            />
-            <label className="text-xs text-gray-400">Low</label>
+      <div className="absolute bottom-full right-0 mb-2 bg-gray-900/95 backdrop-blur-sm rounded-lg shadow-lg p-6 border border-gray-800">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-white text-sm font-semibold">Equalizer</h3>
+            <button 
+              onClick={() => setShowEqualizer(false)}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
           </div>
-  
-          {/* Mid Frequency */}
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xs text-gray-400 text-center">{eqSettings.mid}dB</span>
-            <input
-              type="range"
-              min="-12"
-              max="12"
-              value={eqSettings.mid}
-              onChange={(e) => handleEqChange('mid', Number(e.target.value))}
-              className="h-24 -rotate-90 accent-white"
-              disabled={!isPremiumUser}
-            />
-            <label className="text-xs text-gray-400">Mid</label>
+          <div className="flex items-center gap-3 border-b border-gray-800 pb-4">
+            <button 
+              onClick={handleResetEq}
+              className="text-gray-400 hover:text-white flex items-center gap-1 text-sm"
+              title="Reset EQ"
+            >
+              <BiReset size={16} />
+              Reset
+            </button>
+            <button 
+              onClick={handleSaveEq}
+              className="text-gray-400 hover:text-white flex items-center gap-1 text-sm"
+              title="Save EQ"
+            >
+              <HiSave size={16} />
+              Save
+            </button>
           </div>
-  
-          {/* High Frequency */}
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xs text-gray-400 text-center">{eqSettings.high}dB</span>
-            <input
-              type="range"
-              min="-12"
-              max="12"
-              value={eqSettings.high}
-              onChange={(e) => handleEqChange('high', Number(e.target.value))}
-              className="h-24 -rotate-90 accent-white"
-              disabled={!isPremiumUser}
-            />
-            <label className="text-xs text-gray-400">High</label>
-          </div>
+        </div>
+        <div className="flex gap-6 items-end mt-4">
+          {filterLabels.map((label, index) => (
+            <div key={label} className="flex flex-col items-center gap-2 group w-8">
+              <span className="text-xs text-gray-400 font-medium text-center">
+                {filters[index]?.gain.value > 0 ? "+" : ""}
+                {filters[index]?.gain.value.toFixed(1)}
+              </span>
+              <div className="h-32 relative w-full flex items-center justify-center">
+                <input
+                  type="range"
+                  min="-12"
+                  max="12"
+                  step="0.1"
+                  value={filters[index]?.gain.value || 0}
+                  onChange={(e) => handleEqChange(index, Number(e.target.value))}
+                  className="absolute -rotate-90 w-32 origin-center
+                    appearance-none bg-transparent cursor-pointer
+                    [&::-webkit-slider-runnable-track]:bg-gray-700
+                    [&::-webkit-slider-runnable-track]:rounded-full
+                    [&::-webkit-slider-thumb]:appearance-none
+                    [&::-webkit-slider-thumb]:h-3
+                    [&::-webkit-slider-thumb]:w-3
+                    [&::-webkit-slider-thumb]:rounded-full
+                    [&::-webkit-slider-thumb]:bg-white
+                    [&::-webkit-slider-thumb]:transition-colors"
+                  disabled={!isPremiumUser}
+                />
+              </div>
+              <span className="text-[10px] text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                {label}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     );
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Handle speed menu
+      if (speedMenuRef.current && !speedMenuRef.current.contains(event.target as Node)) {
+        setShowSpeedMenu(false);
+      }
+      // Handle EQ menu
+      if (eqMenuRef.current && !eqMenuRef.current.contains(event.target as Node)) {
+        setShowEqualizer(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="bg-gradient-to-b from-gray-900 to-black border-t border-gray-800 fixed bottom-0 left-0 right-0 z-50 h-20">
@@ -315,7 +368,7 @@ const PlayingBar: React.FC = () => {
               {formatTime(localCurrentTime)}
             </span>
             <div
-              className="w-[400px] h-1 bg-gray-600 rounded-full relative cursor-pointer"
+              className="w-[400px] h-1 bg-gray-600 rounded-full relative cursor-pointer group"
               onClick={handleProgressClick}
             >
               <div
@@ -323,6 +376,10 @@ const PlayingBar: React.FC = () => {
                 style={{ width: `${(localCurrentTime / duration) * 100}%` }}
               />
             </div>
+            <div 
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{ left: `${(localCurrentTime / duration) * 100}%`, transform: 'translate(-50%, -50%)' }}
+             />
             <span className="text-xs text-gray-400 w-10">
               {formatTime(duration)}
             </span>
@@ -333,9 +390,15 @@ const PlayingBar: React.FC = () => {
         <div className="absolute right-4">
           <div className="flex items-center gap-x-4">
             {/* Equalizer Control */}
-            <div className="relative">
+            <div className="relative" ref={eqMenuRef}>
               <button
-                onClick={() => isPremiumUser && setShowEqualizer(!showEqualizer)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isPremiumUser) {
+                    setShowEqualizer(!showEqualizer);
+                    setShowSpeedMenu(false); // Close other menu
+                  }
+                }}
                 className={`flex items-center gap-1 ${
                   isPremiumUser ? 'text-gray-400 hover:text-white' : 'text-gray-500 cursor-not-allowed'
                 }`}
@@ -353,9 +416,15 @@ const PlayingBar: React.FC = () => {
             </div>
 
             {/* Playback Speed Control - Move it before volume controls */}
-            <div className="relative">
+            <div className="relative" ref={speedMenuRef}>
               <button
-                onClick={() => isPremiumUser && setShowSpeedMenu(!showSpeedMenu)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isPremiumUser) {
+                    setShowSpeedMenu(!showSpeedMenu);
+                    setShowEqualizer(false); // Close other menu
+                  }
+                }}
                 className={`flex items-center gap-1 ${
                   isPremiumUser ? 'text-gray-400 hover:text-white' : 'text-gray-500 cursor-not-allowed'
                 }`}
