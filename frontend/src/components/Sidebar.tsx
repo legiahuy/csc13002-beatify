@@ -17,23 +17,25 @@ import Link from "next/link";
 import { usePlayer } from '@/contexts/PlayerContext';
 import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 
 interface SidebarProps {
   children: React.ReactNode;
-  user: { name: string; image: string; role: string } | null;  // Nhận thêm prop `user`
+  user: {_id:string; name: string; image: string; role: string } | null;  // Nhận thêm prop `user`
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
   const pathname = usePathname();
   const { userPlaylistsData, getUserPlaylistsData } = usePlayer();
   const { user: authUser } = useAuthStore();
+  const router = useRouter();
+
+  console.log('Current auth user:', authUser);
 
   const handleCreatePlaylist = async () => {
-    if (!authUser?._id) return;
-
     try {
-      // Tính toán số thứ tự cho playlist mới
+      // Calculate playlist number
       const existingPlaylists = userPlaylistsData || [];
       const playlistNumbers = existingPlaylists
         .map(p => {
@@ -46,15 +48,14 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
         ? Math.max(...playlistNumbers) + 1 
         : 1;
 
-      // Tạo playlist mới
       const response = await axios.post('http://localhost:4000/api/userPlaylist/create', {
         name: `My Playlist #${nextNumber}`,
-        owner: authUser._id
+        owner: user?._id || ''
       });
 
       if (response.data.success) {
-        // Cập nhật lại danh sách playlist
         await getUserPlaylistsData();
+        router.push(`/userPlaylist/${response.data.playlist._id}`);
       }
     } catch (error) {
       console.error('Error creating playlist:', error);
@@ -62,16 +63,13 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
   };
 
   const handleDeletePlaylist = async (playlistId: string) => {
-    if (!authUser?._id) return;
-
     try {
       const response = await axios.post('http://localhost:4000/api/userPlaylist/delete', {
         playlistId,
-        owner: authUser._id
+        owner: user?._id
       });
 
       if (response.data.success) {
-        // Cập nhật lại danh sách playlist
         await getUserPlaylistsData();
       }
     } catch (error) {
@@ -161,25 +159,29 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
           href: '#',
           onClick: handleCreatePlaylist
         },
-        // Hiển thị danh sách các playlist của user
-        ...(userPlaylistsData?.filter(playlist => playlist.name !== "Liked Songs").map(playlist => ({
-          icon: HiOutlineMusicalNote,
-          label: playlist.name,
-          active: pathname === `/playlist/${playlist._id}`,
-          href: `/playlist/${playlist._id}`,
-          extra: (
-            <button 
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleDeletePlaylist(playlist._id);
-              }}
-              className="bg-neutral-800 p-2 rounded-full shadow-lg hover:bg-neutral-700 transition"
-            >
-              <IoTrashOutline size={16} className="text-neutral-400 hover:text-white" />
-            </button>
-          )
-        })) || [])
+        ...(userPlaylistsData 
+          ? userPlaylistsData
+              .filter(playlist => playlist.name !== "Liked Songs")
+              .map(playlist => ({
+                icon: HiOutlineMusicalNote,
+                label: playlist.name,
+                active: pathname === `/userPlaylist/${playlist._id}`,
+                href: `/userPlaylist/${playlist._id}`,
+                extra: (
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDeletePlaylist(playlist._id);
+                    }}
+                    className="bg-neutral-800 p-2 rounded-full shadow-lg hover:bg-neutral-700 transition"
+                  >
+                    <IoTrashOutline size={16} className="text-neutral-400 hover:text-white" />
+                  </button>
+                )
+              }))
+          : []
+        )
       ]
     }
   ].filter(Boolean), [pathname, user, userPlaylistsData]); // Lọc bỏ các mục `null` nếu user là `null`

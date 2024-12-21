@@ -7,28 +7,31 @@ const createPlaylist = async (req, res) => {
         const { name, owner } = req.body;
 
         if (!name || !owner) {
-            return res.status(400).json({ success: false, message: "Playlist name and owner are required!" });
+            return res.status(400).json({ 
+                success: false, 
+                message: "Name and owner are required" 
+            });
         }
 
-        const playlist = new UserPlaylist({
+        const newPlaylist = new UserPlaylist({
             name,
             owner,
             songs: []
         });
 
-        await playlist.save();
+        await newPlaylist.save();
 
-        // Thêm playlist vào danh sách playlist của user
-        const user = await User.findById(owner);
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-        user.playlists.push(playlist._id);
-        await user.save();
-
-        res.status(201).json({ success: true, playlist });
+        res.json({ 
+            success: true, 
+            playlist: newPlaylist,
+            message: "Playlist created successfully" 
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error('Error creating playlist:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message || "Failed to create playlist" 
+        });
     }
 };
 
@@ -163,31 +166,60 @@ const deletePlaylist = async (req, res) => {
 
 const updatePlaylist = async (req, res) => {
     try {
-        const { playlistId, name } = req.body;
-        const image = req.files?.image;
+        const { playlistId, name, image, owner } = req.body;
 
-        const playlist = await UserPlaylist.findById(playlistId);
+        // Find playlist and verify ownership
+        const playlist = await UserPlaylist.findOne({ _id: playlistId, owner });
         if (!playlist) {
             return res.status(404).json({ success: false, message: "Playlist not found" });
         }
 
-        if (name) {
-            playlist.name = name;
-        }
-
+        // Update fields if provided
+        if (name) playlist.name = name;
+        
+        // Handle image update
         if (image) {
-            // Upload ảnh mới lên Cloudinary
-            const result = await cloudinary.uploader.upload(image.tempFilePath, {
-                folder: "playlist_covers",
-            });
-            playlist.image = result.secure_url;
+            // If image is base64
+            if (image.startsWith('data:image')) {
+                const uploadResponse = await cloudinary.uploader.upload(image, {
+                    folder: 'playlist_covers'
+                });
+                playlist.image = uploadResponse.secure_url;
+            } else {
+                playlist.image = image;
+            }
         }
 
         await playlist.save();
-        res.status(200).json({ success: true, playlist });
+        res.json({ success: true, playlist });
     } catch (error) {
+        console.error('Error updating playlist:', error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
 
-export { createPlaylist, toggleSongInPlaylist,toggleLikedSong, listPlaylists, deletePlaylist, updatePlaylist };
+export const addSongToPlaylist = async (req, res) => {
+  try {
+    const { playlistId, songId } = req.body;
+    
+    // Find the playlist
+    const playlist = await UserPlaylist.findById(playlistId);
+    if (!playlist) {
+      return res.status(404).json({ success: false, message: 'Playlist not found' });
+    }
+
+    // Check if song already exists in playlist
+    if (!playlist.songs.includes(songId)) {
+      // Add song only if it doesn't exist
+      playlist.songs.push(songId);
+      await playlist.save();
+    }
+    
+    return res.json({ success: true, playlist });
+  } catch (error) {
+    console.error('Error adding song to playlist:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+export { createPlaylist, toggleSongInPlaylist, toggleLikedSong, listPlaylists, deletePlaylist, updatePlaylist, addSongToPlaylist };

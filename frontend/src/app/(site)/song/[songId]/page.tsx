@@ -5,6 +5,8 @@ import { FaPlay, FaPause } from 'react-icons/fa';
 import Link from 'next/link';
 import { usePlayer } from "@/contexts/PlayerContext";
 import { Loader } from "lucide-react";  // Import lucide icons
+import { BsThreeDots } from 'react-icons/bs';
+import { PlaylistMenu } from "@/components/PlaylistMenu";
 
 
 interface SongPageProps {
@@ -22,7 +24,6 @@ export default function SongPage({ params }: SongPageProps) {
 
   const { songsData, artistsData } = usePlayer();
   
-  // Handle case when songsData is null or undefined
   if (!songsData || !artistsData) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -41,7 +42,6 @@ export default function SongPage({ params }: SongPageProps) {
 
   const isCurrentSong = currentSong?._id === song._id;
 
-  // Retrieve artist names and make them clickable
   const artistLinks = song.artist_id.map((artistId, index) => {
     const artist = artistsData.find(artist => artist._id === artistId);
     return artist ? (
@@ -67,7 +67,7 @@ export default function SongPage({ params }: SongPageProps) {
             <Image
               className="object-cover rounded-lg"
               fill
-              src={song.image} // Use the first artist's image, fallback to song image
+              src={song.image} 
               alt={song.name}
             />
           </div>
@@ -83,8 +83,8 @@ export default function SongPage({ params }: SongPageProps) {
                 <Image
                   className="rounded-full"
                   fill
-                  src={firstArtist?.pfp || song.image} // Use first artist's image for the circle
-                  alt={artistLinks.toString()} // Accessibility: List all artists as alt text
+                  src={firstArtist?.pfp || song.image} 
+                  alt={artistLinks.toString()} 
                 />
               </div>
               <p className="text-gray-300 text-sm font-semibold">
@@ -128,36 +128,46 @@ export default function SongPage({ params }: SongPageProps) {
         </div>
 
         <div className="mt-8">
-          <div className="flex text-white text-sm px-6 py-4">
-            <div className="flex-1">Title</div>
-            <div className="w-[100px] text-right">⏱</div>
-          </div>
-          <Link href={`/song/${song._id}`}>
-            <div 
-              className="flex items-center justify-center text-gray-400 text-sm px-6 py-4 hover:bg-white/10 rounded-lg cursor-pointer group"
-            >
-              <div className="w-[30px]">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault(); // Prevent page change when clicking play
-                    if (isCurrentSong) {
-                      togglePlay();
-                    } else {
-                      playSong(song, { type: "single", id: song._id });
-                    }
-                  }}
-                >
-                  {isCurrentSong && isPlaying ? (
-                    <FaPause size={16} />
-                  ) : (
-                    <FaPlay size={16} />
-                  )}
-                </button>
-              </div>
-              <div className="text-white font-medium hover:underline flex-1">{song.name}</div>
-              <div className="w-[100px] text-right">{song.duration ? formatDuration(song.duration) : '0:00'}</div>
+          <div 
+            className="flex items-center justify-center text-gray-400 text-sm px-6 py-4 hover:bg-white/10 rounded-lg cursor-pointer group"
+          >
+            <div className="w-[30px]">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isCurrentSong) {
+                    togglePlay();
+                  } else {
+                    playSong(song, { type: "single", id: song._id });
+                  }
+                }}
+              >
+                {isCurrentSong && isPlaying ? (
+                  <FaPause size={16} />
+                ) : (
+                  <FaPlay size={16} />
+                )}
+              </button>
             </div>
-          </Link>
+            <Link href={`/song/${song._id}`} className="flex-1">
+              <div className="text-white font-medium hover:underline">{song.name}</div>
+            </Link>
+            <div className="flex items-center gap-x-4">
+              <div className="w-[60px] text-right">
+                {song.duration ? formatDuration(song.duration) : '0:00'}
+              </div>
+              <div className="w-[40px] flex justify-center">
+                <PlaylistMenu 
+                  trigger={
+                    <button className="p-2 hover:bg-neutral-800 rounded-full">
+                      <BsThreeDots size={20} className="text-neutral-400 hover:text-white" />
+                    </button>
+                  }
+                  songId={song._id}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -77,6 +77,7 @@ interface PlayerContextType {
   playbackSpeed: number;
   setPlaybackSpeed: (speed: number) => void;
   isPremiumUser: boolean;
+  addSongToPlaylist: (songId: string, playlistId: string) => Promise<void>;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -487,6 +488,23 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
     }
   };
 
+  const addSongToPlaylist = async (songId: string, playlistId: string) => {
+    try {
+      const response = await axios.post('http://localhost:4000/api/userPlaylist/add-song', {
+        playlistId,
+        songId
+      });
+      
+      if (response.data.success) {
+        // Refresh the user playlists data
+        await getUserPlaylistsData();
+      }
+    } catch (error) {
+      console.error('Error adding song to playlist:', error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     getSongsData();
     getPlaylistsData();
@@ -541,6 +559,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
         playbackSpeed,
         setPlaybackSpeed: handleSetPlaybackSpeed,
         isPremiumUser,
+        addSongToPlaylist
       }}
     >
       {children}
