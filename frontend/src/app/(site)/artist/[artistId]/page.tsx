@@ -6,6 +6,8 @@ import Link from "next/link";
 import { usePlayer } from "@/contexts/PlayerContext";
 import { useLayout } from "@/contexts/LayoutContext";
 import { useEffect } from "react";
+import { BsThreeDots } from "react-icons/bs";
+import { PlaylistMenu } from "@/components/PlaylistMenu";
 
 interface ArtistPageProps {
   params: {
@@ -165,7 +167,21 @@ export default function ArtistPage({ params }: ArtistPageProps) {
                 </div>
 
                 {/* Song Duration */}
-                <div className="w-[60px] text-right">{song.duration ? formatDuration(song.duration) : '0:00'} </div>
+                <div className="flex items-center gap-x-4">
+                  <div className="w-[60px] text-right">
+                    {song.duration ? formatDuration(song.duration) : '0:00'}
+                  </div>
+                  <div className="w-[40px] flex justify-center">
+                    <PlaylistMenu 
+                      trigger={
+                        <button className="p-2 hover:bg-neutral-800 rounded-full">
+                          <BsThreeDots size={20} className="text-neutral-400 hover:text-white" />
+                        </button>
+                      }
+                      songId={song._id}
+                    />
+                  </div>
+                </div>
               </div>
               ))
             }

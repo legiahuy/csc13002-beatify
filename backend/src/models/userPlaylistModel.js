@@ -15,9 +15,12 @@ const userPlaylistSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
+    },
+    image: {
+        type: String,
+        default: "/images/default-playlist.png"
     }
 }, { timestamps: true });
 
 const UserPlaylist = mongoose.model("UserPlaylist", userPlaylistSchema);
-
 export default UserPlaylist;
