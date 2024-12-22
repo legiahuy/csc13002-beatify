@@ -15,7 +15,7 @@ const ForgotPasswordPage: React.FC = () => {
 	const [email, setEmail] = useState<string>("");
 	const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 	const [setIsLoading] = useState<boolean>(false); // Trạng thái tải, nếu cần
-	const { isLoading, checkAuth, isCheckingAuth, forgotPassword} = useAuthStore();
+	const { isLoading, checkAuth, isCheckingAuth, forgotPassword, error} = useAuthStore();
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -63,6 +63,7 @@ const ForgotPasswordPage: React.FC = () => {
 								onChange={(e) => setEmail(e.target.value)}
 								required
 							/>
+							 {error && <p className='text-red-500 font-semibold mb-2'>{error}</p>}
 							<motion.button
 								whileHover={{ scale: 1.02 }}
 								whileTap={{ scale: 0.98 }}
