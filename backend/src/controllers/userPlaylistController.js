@@ -186,7 +186,7 @@ const updatePlaylist = async (req, res) => {
     }
 };
 
-export const addSongToPlaylist = async (req, res) => {
+const addSongToPlaylist = async (req, res) => {
   try {
     const { playlistId, songId } = req.body;
     
