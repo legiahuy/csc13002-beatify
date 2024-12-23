@@ -126,23 +126,6 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
         {/* Playlist Header Section */}
         <div className="flex flex-col md:flex-row items-center gap-x-7">
           <div className="relative aspect-square w-64 overflow-hidden flex-shrink-0">  
-            {isEditing ? (
-              <div className="w-full h-full relative">
-                <Image
-                  className="object-cover rounded cursor-pointer"
-                  fill
-                  sizes="256px"
-                  src={previewImage || (playlist as any).image}
-                  alt={editedName || playlist.name}
-                />
-                <input
-                  type="file"
-                  onChange={handleImageChange}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  accept="image/*"
-                />
-              </div>
-            ) : (
               <Image
                 className="object-cover rounded"
                 fill
@@ -150,52 +133,19 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
                 src={(playlist as any).image || "/images/default-playlist.png"}
                 alt={playlist.name}
               />
-            )}
           </div>
           <div className="flex flex-col justify-center gap-y-2 mt-4 md:mt-0 flex-grow">
             <p className="text-sm font-semibold text-white uppercase">
               Playlist
             </p>
-            {isEditing ? (
-              <input
-                type="text"
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
-                className="text-white text-7xl font-bold bg-transparent border-b border-white focus:outline-none"
-              />
-            ) : (
               <h1 className="text-white text-7xl font-bold break-words">
                 {playlist.name}
               </h1>
-            )}
-            {isUserPlaylist && user && (
-              <div className="flex items-center gap-x-4 mt-4">
-                {isEditing ? (
-                  <>
-                    <button
-                      onClick={handleSaveChanges}
-                      className="bg-white text-black px-4 py-2 rounded-full"
-                    >
-                      Save Changes
-                    </button>
-                    <button
-                      onClick={() => setIsEditing(false)}
-                      className="text-white border border-white px-4 py-2 rounded-full"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-x-2 text-white hover:text-gray-300"
-                  >
-                    <FiEdit2 size={20} />
-                    Edit Playlist
-                  </button>
-                )}
-              </div>
-            )}
+              <div className="flex items-center gap-y-2 mt-4">
+              <p className="text-gray-300 text-sm font-semibold">
+                {playlist.desc || "No description available"}
+              </p>
+            </div>
           </div>
         </div>
 
