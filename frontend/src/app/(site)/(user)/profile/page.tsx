@@ -75,7 +75,7 @@ const ProfilePage = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-white text-2xl font-semibold">User Playlists</h1>
             <Link
-              href="/playlists"
+              href="/userPlaylist"
               className="text-neutral-400 hover:text-white flex items-center gap-x-1 cursor-pointer transition text-sm font-medium"
             >
               Show all
@@ -88,7 +88,7 @@ const ProfilePage = () => {
                 <Link href={`/playlist/${playlist._id}`}>
                   <div className="relative aspect-square w-[150px] sm:w-[180px] overflow-hidden cursor-pointer hover:opacity-80 transition">
                     <Image
-                      src={(playlist as any).image || "/images/liked-songs.jfif"}
+                      src={(playlist as any).image || "/images/liked-songs.png"}
                       fill
                       alt={playlist.name}
                       className="object-cover"

@@ -53,6 +53,7 @@ export const signup = async (req, res) => {
             name: "Liked Songs",
             owner: user._id,
             songs: [],
+            image: "/images/liked-songs.png"
         });
 
         await likedPlaylist.save();
