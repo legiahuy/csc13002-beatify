@@ -208,7 +208,7 @@ const DisplayHome = () => {
                         Playlists
                     </h1>
                     <Link 
-                        href="/playlists"
+                        href="/playlist"
                         className="text-neutral-400 hover:text-white flex items-center gap-x-1 cursor-pointer transition text-sm font-medium"
                     >
                         Show all
