@@ -4,16 +4,37 @@ import songModel from "../models/songModel.js";
 const addSong = async (req, res) => {
     try {
         const name = req.body.name;
-        const artist_id = req.body.artist_id
+        const artist_id = req.body.artist_id;
         const desc = req.body.desc;
         const playlist = req.body.playlist;
+
+        let existingSong;
+        if (playlist === 'none') {
+            existingSong = await songModel.findOne({
+                name: name,
+                artist_id: artist_id,
+                playlist: 'none'
+            });
+        } else {
+            existingSong = await songModel.findOne({
+                name: name,
+                artist_id: artist_id,
+                playlist: playlist
+            });
+        }
+
+        if (existingSong) {
+            return res.json({ 
+                success: false, 
+                message: "This song already exists" + (playlist !== 'none' ? " in this playlist!" : "!")
+            });
+        }
+
         const audioFile = req.files.audio[0];
         const imageFile = req.files.image[0];
         const audioUpload = await cloudinary.uploader.upload(audioFile.path, {resource_type: "video"});
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type: "image"});    
         const duration = `${Math.floor(audioUpload.duration/60)}:${Math.floor(audioUpload.duration%60)}`
-
-        console.log(name, artist_id, desc, playlist, audioUpload, imageUpload);
 
         const songData = {
             name, 
@@ -25,13 +46,19 @@ const addSong = async (req, res) => {
             duration
         }
 
+        console.log(name, artist_id, desc, playlist, audioUpload, imageUpload);
+
         const song = songModel(songData);
         await song.save();
 
         res.json({ success: true, message: "Song added!", songId: song._id });
 
     } catch (error) {
-        res.json({success: false})
+        console.error("Error adding song:", error);
+        res.json({
+            success: false,
+            message: "Error adding song"
+        });
     }
 }
 
