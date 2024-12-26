@@ -45,7 +45,7 @@ interface UserPlaylist {
 }
 
 // Add new types for EQ functionality
-const frequencies = [100, 100, 8000];
+const frequencies = [100, 1000, 8000];
 const filterLabels = ['Low', 'Mid', 'High'];
 
 interface PlayerContextType {
