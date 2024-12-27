@@ -1,0 +1,5 @@
+Date: 16/11/2024
+Team: Group02
+
+We have not updated the Software Development Plan and Vision Document in this iteration because our instructor reviewed and approved the current version, deeming it good/perfect without requiring further modifications.
+
