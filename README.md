@@ -40,18 +40,24 @@
 # Tech Stack
 
 ### Frontend
-- **Next.js and React:** Framework and library for building dynamic user interfaces
+- **Next.js** Framework and library for building dynamic user interfaces
 - **Tailwind CSS:** Styling with modern, customizable utility-first CSS framework
+![NextJS][NextJS] 
+![TailwindCSS][TailwindCSS]
 
 ### Backend
 - **Express.js:** API creation, authentication, and backend logic
-- **MongoDB and Supabase:** Database management for songs, users, playlists
+- **MongoDB:** Database management for songs, users, playlists
+![Express.js][Express.js]
+![MongoDB][MongoDB] ![Mongoose][Mongoose]
 
 ### Cloud and Media Management
 - **Cloudinary:** For storing and delivering media assets like audio files and album art
+![Cloudinary][Cloudinary]
 
 ### Payment Integration
 - **Stripe:** Secure and efficient handling of subscription payments
+![Stripe][Stripe] 
 
 
 # Building the Project
