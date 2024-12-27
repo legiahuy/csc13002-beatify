@@ -90,3 +90,4 @@
 [Mongoose]: https://img.shields.io/badge/mongoose-%23880000?style=for-the-badge&logo=mongoose&logoColor=white
 [Cloudinary]: https://img.shields.io/badge/cloudinary-%233448C5?style=for-the-badge&logo=cloudinary&logoColor=white
 [Stripe]: https://img.shields.io/badge/stripe-626CD9?style=for-the-badge&logo=stripe&logoColor=white 
+[TailwindCSS]: https://img.shields.io/badge/Tailwind_CSS-grey?style=for-the-badge&logo=tailwind-css&logoColor=38B2AC
