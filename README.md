@@ -43,7 +43,7 @@
 - **Next.js** Framework and library for building dynamic user interfaces
 - **Tailwind CSS:** Styling with modern, customizable utility-first CSS framework
 
-![NextJS][NextJS] 
+![Next.JS][Next.js] 
 ![TailwindCSS][TailwindCSS]
 
 ### Backend
@@ -80,3 +80,13 @@
    npm run dev (FE)
    npm run server (BE)
    ```
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+
+[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Express.js]: https://img.shields.io/badge/express-%23000000?style=for-the-badge&logo=express&logoColor=white
+[MongoDB]: https://img.shields.io/badge/mongodb-%2347A248?style=for-the-badge&logo=mongodb&logoColor=white
+[Mongoose]: https://img.shields.io/badge/mongoose-%23880000?style=for-the-badge&logo=mongoose&logoColor=white
+[Cloudinary]: https://img.shields.io/badge/cloudinary-%233448C5?style=for-the-badge&logo=cloudinary&logoColor=white
+[Stripe]: https://img.shields.io/badge/stripe-626CD9?style=for-the-badge&logo=stripe&logoColor=white 
