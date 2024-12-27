@@ -1,0 +1,6 @@
+Date: 14/12/2024
+Team: Group02
+
+For this PA submission, we have updated the Software Architecture Document to address the teacher's feedback. 
+The updates include ensuring consistency in the format of all diagrams and reorganizing the class diagrams into appropriate packages. 
+These revisions aim to improve the clarity and organization of the document, ensuring it provides a more accurate and structured representation of the system's architecture.
