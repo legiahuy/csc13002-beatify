@@ -13,8 +13,8 @@ import RedirectAuthenticatedUser from "@/components/redirectAuthenticatedUser"; 
 const Login: React.FC = () => {
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
-	const [setError] = useState<string | null>(null); // Assuming you may want to handle an error state
-	const [setIsLoading] = useState<boolean>(false); // Loading state for the button
+	//const [setError] = useState<string | null>(null); // Assuming you may want to handle an error state
+	//const [setIsLoading] = useState<boolean>(false); // Loading state for the button
   const { login, isLoading, error, checkAuth, isCheckingAuth} = useAuthStore();
   const [emailError, setEmailError] = useState<string>(""); 
   const [passwordError, setPasswordError] = useState<string>("");
@@ -112,7 +112,7 @@ const Login: React.FC = () => {
           </div>
           <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
             <p className="text-sm text-gray-400">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/signup" className="text-purple-400 hover:underline">
                 Sign up
               </Link>

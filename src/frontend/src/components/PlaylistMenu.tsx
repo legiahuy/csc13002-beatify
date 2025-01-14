@@ -31,7 +31,7 @@ export const PlaylistMenu: React.FC<PlaylistMenuProps> = ({ trigger, songId }) =
         return;
       }
 
-      const response = await axios.post('http://localhost:4000/api/userPlaylist/toggle', {
+      const response = await axios.post('https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/toggle', {
         playlistId,
         songId,
         owner

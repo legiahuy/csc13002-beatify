@@ -1,4 +1,4 @@
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CuratorDashboardSidebar from "@/components/CuratorDashboardSidebar";
 import ProtectedRoute from "@/components/protectedRoute";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
@@ -48,18 +48,34 @@ const EmailVerificationPage = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-		console.log("handleSubmit called");
-        e.preventDefault();
-        const verificationCode = code.join("");
-        try {
-            await verifyEmail(verificationCode);
-            router.push("/"); // Navigate to the home page on success
-            toast.success("Email verified successfully");
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    // const handleSubmit = async (e: React.FormEvent) => {
+	// 	console.log("handleSubmit called");
+    //     e.preventDefault();
+    //     const verificationCode = code.join("");
+    //     try {
+    //         await verifyEmail(verificationCode);
+    //         router.push("/"); // Navigate to the home page on success
+    //         toast.success("Email verified successfully");
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
+
+    const handleSubmit = useCallback(
+        async (e: React.FormEvent) => {
+            console.log("handleSubmit called");
+            e.preventDefault();
+            const verificationCode = code.join("");
+            try {
+                await verifyEmail(verificationCode);
+                router.push("/"); // Navigate to the home page on success
+                toast.success("Email verified successfully");
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        [code, verifyEmail, router] // Add dependencies
+    );
 
     // Auto submit when all fields are filled
 	useEffect(() => {

@@ -6,11 +6,10 @@ import { useAuthStore } from "@/store/authStore";
 import Input from "@/components/Input";
 import { Lock, Loader } from "lucide-react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation"; // Use Next.js router
-import { usePathname } from "next/navigation"; // To access the current pathname
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
-import RedirectAuthenticatedUser from "@/components/redirectAuthenticatedUser"; // Adjust the path as necessary
-
+import RedirectAuthenticatedUser from "@/components/redirectAuthenticatedUser";
 
 const ResetPasswordPage = () => {
     const [password, setPassword] = useState("");
@@ -18,7 +17,14 @@ const ResetPasswordPage = () => {
     const { resetPassword, error, isLoading, message, checkAuth, isCheckingAuth } = useAuthStore();
     const router = useRouter();
     const pathname = usePathname();
-    const token = pathname.split("/").pop(); //
+    const token = pathname.split("/").pop();
+
+    useEffect(() => {
+        const checkUserAuth = async () => {
+            await checkAuth(); // Ensure this returns a promise if needed
+        };
+        checkUserAuth();
+    }, [checkAuth]);
 
     if (!token) {
         return (
@@ -33,6 +39,13 @@ const ResetPasswordPage = () => {
         );
     }
 
+    if (isCheckingAuth) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-900">
+                <Loader className='animate-spin' size={24} />
+            </div>
+        );
+    }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -46,28 +59,13 @@ const ResetPasswordPage = () => {
 
             toast.success("Password reset successfully, redirecting to login page...");
             setTimeout(() => {
-                router.push("/login"); // Navigate to the login page
+                router.push("/login");
             }, 2000);
         } catch (error) {
             console.error(error);
             toast.error(error instanceof Error ? error.message : "Error resetting password");
         }
     };
-
-    useEffect(() => {
-        const checkUserAuth = async () => {
-            await checkAuth(); // Ensure this returns a promise if needed
-        };
-        checkUserAuth();
-      }, [checkAuth]);
-    
-      if (isCheckingAuth) {
-        return (
-          <div className="flex items-center justify-center min-h-screen bg-gray-900">
-              <Loader className='animate-spin' size={24} />
-          </div>
-        );
-      }
 
     return (
         <RedirectAuthenticatedUser>

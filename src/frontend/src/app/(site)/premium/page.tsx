@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
-export const url = 'http://localhost:4000';
+export const url = 'https://csc13002-beatify-e74095d5501c.herokuapp.com';
 
 
 const PremiumPage = () => {

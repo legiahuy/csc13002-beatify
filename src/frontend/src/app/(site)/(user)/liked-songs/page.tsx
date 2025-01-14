@@ -7,6 +7,7 @@ import { usePlayer } from "@/contexts/PlayerContext";
 import { Loader } from "lucide-react";
 import ProtectedRoute from "@/components/protectedRoute";
 
+
 export default function LikedSongsPage() {
   const { userPlaylistsData, playSong, currentSong, isPlaying, togglePlay } = usePlayer();
   

@@ -7,7 +7,7 @@ import upload_area from "@/assets/upload_area.png";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export const url = "http://localhost:4000";
+export const url = "https://csc13002-beatify-e74095d5501c.herokuapp.com";
 
 interface Playlist {
   name: string;
