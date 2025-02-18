@@ -23,11 +23,19 @@ const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 
+const allowedOrigins = [
+    "http://localhost:3000",  
+    "https://csc13002-beatify.vercel.app" 
+  ];
+  
+
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "http://localhost:3000", credentials: true}));
-
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+  }));
 // intializing routes
 app.use("/api/song", songRouter);
 app.use("/api/playlist", playlistRouter);
