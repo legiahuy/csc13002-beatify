@@ -5,7 +5,7 @@
   <p align="center">
     A modern music streaming platform designed for seamless user experience
   </p>
-  <a href="[[csc13002-sound-vault.vercel.app](csc13002-sound-vault.vercel.app)](https://csc13002-beatify.vercel.app/)">Go to Beatify!</a>
+  <a href="https://csc13002-beatify.vercel.app/">Go to Beatify!</a>
 </div>
 
 # Description
