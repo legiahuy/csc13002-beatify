@@ -28,7 +28,6 @@ const allowedOrigins = [
     "https://csc13002-beatify.vercel.app" 
   ];
   
-
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
