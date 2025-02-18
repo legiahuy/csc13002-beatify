@@ -6,8 +6,7 @@ import upload_added from "@/assets/upload_added.png";
 import upload_area from "@/assets/upload_area.png";
 import axios from "axios";
 import { toast } from "react-toastify";
-
-export const url = "https://csc13002-beatify-e74095d5501c.herokuapp.com";
+import { API_BASE_URL } from '@/config';
 
 interface Playlist {
   name: string;
@@ -45,7 +44,7 @@ const AddSong = () => {
       // Append each artist ID individually
       selectedArtists.forEach((id) => formData.append("artist_id[]", id));
   
-      const response = await axios.post(`${url}/api/song/add`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/song/add`, formData);
 
       console.log(response.data)
   
@@ -68,7 +67,7 @@ const AddSong = () => {
   
   const loadPlaylistData = async () => {
     try {
-      const response = await axios.get(`${url}/api/playlist/list`);
+      const response = await axios.get(`${API_BASE_URL}/api/playlist/list`);
       if (response.data.success) {
         setPlaylistData(response.data.playlists);
       } else {
@@ -81,7 +80,7 @@ const AddSong = () => {
 
   const loadArtistData = async () => {
     try {
-      const response = await axios.get(`${url}/api/artist/list`);
+      const response = await axios.get(`${API_BASE_URL}/api/artist/list`);
       if (response.data.success) {
         setArtistData(response.data.artists);
       } else {

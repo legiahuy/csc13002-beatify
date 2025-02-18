@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import Image from 'next/image'
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from '@/config';
 
-export const url = 'https://csc13002-beatify-e74095d5501c.herokuapp.com'
+
 
 type Playlist = {
   image: string;
@@ -20,7 +21,7 @@ const ListPlaylist = () => {
 
   const fetchPlaylists = async() => {
     try {
-      const response = await axios.get(`${url}/api/playlist/list`)
+      const response = await axios.get(`${API_BASE_URL}/api/playlist/list`)
       if(response.data.success) {
         setData(response.data.playlists)
       }
@@ -33,7 +34,7 @@ const ListPlaylist = () => {
 
   const removePlaylist = async (id: string) => {
     try {
-      const response = await axios.post(`${url}/api/playlist/remove`, {id})
+      const response = await axios.post(`${API_BASE_URL}/api/playlist/remove`, {id})
       if(response.data.success) {
         //setData(response.data.songs)
         await fetchPlaylists();

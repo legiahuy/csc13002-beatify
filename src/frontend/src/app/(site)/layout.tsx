@@ -10,16 +10,16 @@ import { twMerge } from "tailwind-merge";
 import Header from "@/components/Header";
 import { PlayerProvider } from '@/contexts/PlayerContext'
 import { LayoutProvider, useLayout } from '@/contexts/LayoutContext';
+import { API_BASE_URL } from '@/config';
 
 
-export const url = 'https://csc13002-beatify-e74095d5501c.herokuapp.com';
 
 const useAuth = () => {
   const [user, setUser] = useState<{ name: string; image: string; role: string; _id: string; plan: string } | null>(null);
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get(`${url}/api/auth/check-auth`, {
+      const response = await axios.get(`${API_BASE_URL}/api/auth/check-auth`, {
         withCredentials: true
       });
       if (response.data.success) {

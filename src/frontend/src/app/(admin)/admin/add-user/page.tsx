@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE_URL } from '@/config';
 
 import { useState, ChangeEvent, FormEvent } from "react";
 import Image from "next/image";
@@ -6,7 +7,6 @@ import upload_area from "@/assets/upload_area.png";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export const url = "https://csc13002-beatify-e74095d5501c.herokuapp.com";
 
 const AddUser = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -34,7 +34,7 @@ const AddUser = () => {
       formData.append("role", role);
       if (image) formData.append("image", image); 
       
-      const response = await axios.post(`${url}/api/user/add`, formData)
+      const response = await axios.post(`${API_BASE_URL}/api/user/add`, formData)
 
       if (response.data.success) {
         toast.success("User added successfully");

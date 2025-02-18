@@ -142,9 +142,9 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
                 {playlist.name}
               </h1>
               <div className="flex items-center gap-y-2 mt-4">
-              <p className="text-gray-300 text-sm font-semibold">
+              {/* <p className="text-gray-300 text-sm font-semibold">
                 {playlist.desc || "No description available"}
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

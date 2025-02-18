@@ -5,8 +5,9 @@ import Image from 'next/image'
 import upload_area from '@/assets/upload_area.png'
 import axios from "axios";
 import { toast } from "react-toastify";
+import { API_BASE_URL } from '@/config';
 
-export const url = 'https://csc13002-beatify-e74095d5501c.herokuapp.com'
+
 
 const AddArtist = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -26,7 +27,7 @@ const AddArtist = () => {
       if (image) formData.append('image', image); 
       formData.append('bgColour', colour);
 
-      const response = await axios.post(`${url}/api/artist/add`, formData)
+      const response = await axios.post(`${API_BASE_URL}/api/artist/add`, formData)
 
       if(response.data.success) {
         toast.success("Artist added");

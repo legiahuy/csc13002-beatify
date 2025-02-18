@@ -74,6 +74,7 @@ const Login: React.FC = () => {
 
             <form onSubmit={handleLogin}>
               <Input
+                label=""
                 icon={Mail}
                 type="email"
                 placeholder="Email Address"
@@ -83,6 +84,7 @@ const Login: React.FC = () => {
               {emailError && <p className="text-red-500 font-semibold mb-2">{emailError}</p>}
 
               <Input
+                label=""
                 icon={Lock}
                 type="password"
                 placeholder="Password"

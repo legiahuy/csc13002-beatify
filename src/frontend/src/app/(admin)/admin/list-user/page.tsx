@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import Image from 'next/image';
 import axios from "axios";
 import { toast } from "react-toastify";
-
-export const url = 'https://csc13002-beatify-e74095d5501c.herokuapp.com';
+import { API_BASE_URL } from '@/config';
 
 type User = {
   pfp: string;
@@ -21,7 +20,7 @@ const ListUser = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${url}/api/user/list`);
+      const response = await axios.get(`${API_BASE_URL}/api/user/list`);
       if (response.data.success) {
         setData(response.data.users);
       }
@@ -32,7 +31,7 @@ const ListUser = () => {
 
   const removeUser = async (id: string) => {
     try {
-      const response = await axios.post(`${url}/api/user/remove`, { id });
+      const response = await axios.post(`${API_BASE_URL}/api/user/remove`, { id });
       if (response.data.success) {
         await fetchUsers();
       }

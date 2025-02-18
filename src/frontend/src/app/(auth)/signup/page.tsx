@@ -59,6 +59,7 @@ const Register: React.FC = () => {
 
                         <form onSubmit={handleSignUp}>
                             <Input
+                                label=""
                                 icon={User}
                                 type="text"
                                 placeholder="Username"
@@ -66,6 +67,7 @@ const Register: React.FC = () => {
                                 onChange={(e) => setName(e.target.value)}
                             />
                             <Input
+                                label=""
                                 icon={Mail}
                                 type="email"
                                 placeholder="Email"
@@ -73,6 +75,7 @@ const Register: React.FC = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                             <Input
+                                label=""
                                 icon={Lock}
                                 type="password"
                                 placeholder="Password"

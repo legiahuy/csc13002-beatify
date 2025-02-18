@@ -5,13 +5,11 @@ import ProtectedRoute from "@/components/protectedRoute";
 import Image from "next/image";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { API_BASE_URL } from '@/config';
 
-export const url = 'https://csc13002-beatify-e74095d5501c.herokuapp.com';
-
-
-const PremiumPage = () => {
+const SearchParamsHandler = () => {
   const { user } = useAuthStore();
   const searchParams = useSearchParams();
 
@@ -30,9 +28,15 @@ const PremiumPage = () => {
     window.history.replaceState({}, '', window.location.pathname);
   }, [searchParams, user]);
 
+  return null;
+};
+
+const PremiumPage = () => {
+  const { user } = useAuthStore();
+
   const handleSubscribe = async () => {
     try {
-      const response = await axios.post(`${url}/api/payment/session`, {
+      const response = await axios.post(`${API_BASE_URL}/api/payment/session`, {
         userId: user?._id
       }, {
         withCredentials: true
@@ -55,6 +59,9 @@ const PremiumPage = () => {
 
   return (
     <ProtectedRoute>
+      <Suspense fallback={null}>
+        <SearchParamsHandler />
+      </Suspense>
       <div className="p-6 space-y-6">
         {/* Decorative Background Element */}
         <div className="fixed top-0 right-0 -z-10 opacity-10">

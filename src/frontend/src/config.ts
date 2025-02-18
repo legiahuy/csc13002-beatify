@@ -1,0 +1,1 @@
+export const API_BASE_URL = 'https://csc13002-beatify-e74095d5501c.herokuapp.com';

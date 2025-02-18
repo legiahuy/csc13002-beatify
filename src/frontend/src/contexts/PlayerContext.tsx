@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
 import axios from "axios";
+import { API_BASE_URL } from '@/config';
+
 
 interface Song {
   image: string;
@@ -120,7 +122,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const currentSongRef = useRef<Song | null>(null);
   const navigationScopeRef = useRef<{ type: "artist" | "playlist" | "single"; id: string }>({ type: "single", id: "" });
 
-  const url = "https://csc13002-beatify-e74095d5501c.herokuapp.com";
+  const url = API_BASE_URL;
 
   const [recentlyPlayed, setRecentlyPlayed] = useState<Song[] | null>(null);
 
@@ -157,7 +159,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
   const handleToggleFavourite = async () => {
     if (!currentSong || !user?._id) return;
     try {
-      const response = await axios.post('https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/toggleLikedSong', {
+      const response = await axios.post(`${url}/api/userPlaylist/toggleLikedSong`, {
         userId: user._id,
         songId: currentSong._id
       });
