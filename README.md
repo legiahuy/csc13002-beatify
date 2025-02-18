@@ -5,6 +5,7 @@
   <p align="center">
     A modern music streaming platform designed for seamless user experience
   </p>
+  <a href="https://csc13002-beatify.vercel.app/">Go to Beatify!</a>
 </div>
 
 # Description
