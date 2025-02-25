@@ -79,7 +79,9 @@ export const useAuthStore = create((set) => ({
         //await new Promise((resolve) => setTimeout(resolve, 2000))
         set({isCheckingAuth: true, error:null});
         try {
-            const response = await axios.get(`${API_URL}/check-auth`);
+            const response = await axios.get(`${API_URL}/check-auth`, {
+                withCredentials: true, // Ensure cookies are sent with the request
+            });
             set({user: response.data.user, isAuthenticated:true, isCheckingAuth: false});
         } catch(error) {
             set({error:null, isCheckingAuth: false, isAuthenticated: false});

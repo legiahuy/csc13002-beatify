@@ -23,24 +23,37 @@ const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 
+// Important: Add trust proxy setting for Heroku
+app.set('trust proxy', 1);
+
 const allowedOrigins = [
     "http://localhost:3000",  
     "https://csc13002-beatify.vercel.app" 
-  ];
+];
   
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: allowedOrigins,
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            var msg = 'The CORS policy for this site does not ' +
+                      'allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
     credentials: true
-  }));
+}));
+
 // intializing routes
 app.use("/api/song", songRouter);
 app.use("/api/playlist", playlistRouter);
 app.use("/api/artist", artistRouter);
 app.use("/api/user", userRouter);
-app.use("/api/userPlaylist",userPlaylistRouter)
+app.use("/api/userPlaylist", userPlaylistRouter)
 app.use("/api/payment", paymentRouter);
 app.get('/', (req, res)=> {
     res.send("API working.");
