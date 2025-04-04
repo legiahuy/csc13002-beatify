@@ -99,7 +99,7 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
           return;
         }
 
-        const response = await axios.post('https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/toggle', {
+        const response = await axios.post('https://beatify-production.up.railway.app/api/userPlaylist/toggle', {
           playlistId: params.playlistId,
           songId: songId,
           owner: currentPlaylist.owner
@@ -132,7 +132,7 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
         return;
       }
 
-      const response = await axios.post('https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/toggle', {
+      const response = await axios.post('https://beatify-production.up.railway.app/api/userPlaylist/toggle', {
         playlistId: params.playlistId,
         songId: songId,
         owner: currentPlaylist.owner
@@ -161,7 +161,7 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
         return;
       }
 
-      const response = await axios.post('https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/update', {
+      const response = await axios.post('https://beatify-production.up.railway.app/api/userPlaylist/update', {
         playlistId: params.playlistId,
         name: editedName,
         owner: currentPlaylist.owner

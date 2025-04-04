@@ -2,7 +2,7 @@ import {create} from "zustand";
 import axios from "axios";
 import { resolve } from "path";
 
-const API_URL = "https://csc13002-beatify-e74095d5501c.herokuapp.com/api/auth";
+const API_URL = "https://beatify-production.up.railway.app/api/auth";
 
 axios.defaults.withCredentials = true;
 

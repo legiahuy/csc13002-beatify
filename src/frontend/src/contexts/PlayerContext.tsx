@@ -554,7 +554,7 @@ export function PlayerProvider({ children, user }: PlayerProviderProps) {
 
   const addSongToPlaylist = async (songId: string, playlistId: string) => {
     try {
-      const response = await axios.post('https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/add-song', {
+      const response = await axios.post('https://beatify-production.up.railway.app/api/userPlaylist/add-song', {
         playlistId,
         songId
       });

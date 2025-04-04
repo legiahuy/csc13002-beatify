@@ -74,7 +74,7 @@ export default function PlaylistPage({ params }: PlaylistPageProps) {
       }
 
       const response = await axios.post(
-        "https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/update", 
+        "https://beatify-production.up.railway.app/api/userPlaylist/update", 
         formData,
         {
           headers: {

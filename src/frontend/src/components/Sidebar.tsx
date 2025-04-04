@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
         ? Math.max(...playlistNumbers) + 1 
         : 1;
 
-      const response = await axios.post('https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/create', {
+      const response = await axios.post('https://beatify-production.up.railway.app/api/userPlaylist/create', {
         name: `My Playlist #${nextNumber}`,
         owner: user?._id || ''
       });
@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children, user }) => {
 
   const handleDeletePlaylist = async (playlistId: string) => {
     try {
-      const response = await axios.post('https://csc13002-beatify-e74095d5501c.herokuapp.com/api/userPlaylist/delete', {
+      const response = await axios.post('https://beatify-production.up.railway.app/api/userPlaylist/delete', {
         playlistId,
         owner: user?._id
       });
